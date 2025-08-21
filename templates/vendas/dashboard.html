@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard de Vendas - Sistema MIMO{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Estética MIMO - Dashboard de Vendas */
+.mimo-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(252,251,248,0.9) 100%);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.mimo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.mimo-gradient-text {
+    background: var(--mimo-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+}
+
+.heatmap-cell {
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+    margin: 1px;
+    display: inline-block;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.2);
+    z-index: 10;
+    position: relative;
+}
+
+.top-produto-item {
+    background: var(--mimo-gradient-soft);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid transparent;
+    background-clip: padding-box;
+    transition: all 0.3s ease;
+}
+
+.top-produto-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+    background: rgba(255,255,255,0.8);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho Elegante -->
+    <div class="row mb-5">
+        <div class="col">
+            <div class="text-center">
+                <h1 class="display-3 mimo-gradient-text mb-2">Dashboard de Vendas</h1>
+                <p class="lead" style="font-family: 'Montserrat', sans-serif; color: #666;">
+                    Análise completa das suas vendas • Insights • Performance
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-5">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="mimo-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-graph-up display-4" style="color: var(--mimo-orange);"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold mimo-gradient-text">{{ total_vendas }}</h2>
+                    <p class="text-muted mb-0">Total de Vendas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="mimo-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-calendar-month display-4" style="color: var(--mimo-pink);"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold mimo-gradient-text">{{ vendas_mes }}</h2>
+                    <p class="text-muted mb-0">Vendas Este Mês</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="mimo-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-currency-dollar display-4" style="color: var(--mimo-blue);"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold mimo-gradient-text">{{ receita_total | currency }}</h2>
+                    <p class="text-muted mb-0">Receita Total</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="mimo-card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-wallet2 display-4" style="color: var(--mimo-yellow);"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold mimo-gradient-text">{{ receita_mes | currency }}</h2>
+                    <p class="text-muted mb-0">Receita Este Mês</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Top Produtos -->
+        <div class="col-lg-6 mb-4">
+            <div class="mimo-card h-100">
+                <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
+                    <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
+                        <i class="bi bi-trophy me-2"></i>
+                        Top Produtos Mais Vendidos
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if top_produtos %}
+                    {% for produto in top_produtos %}
+                    <div class="top-produto-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 fw-bold">{{ produto.nome }}</h6>
+                                <small class="text-muted">{{ produto.num_vendas }} vendas</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold" style="color: var(--mimo-orange);">{{ produto.total_vendido }} un.</div>
+                                <small class="text-success">{{ produto.receita | currency }}</small>
+                            </div>
+                        </div>
+                        <div class="progress mt-2" style="height: 6px;">
+                            <div class="progress-bar" style="background: var(--mimo-gradient); width: {{ (produto.total_vendido / top_produtos[0].total_vendido * 100) }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-box display-1 text-muted"></i>
+                        <p class="text-muted mt-3">Nenhum produto vendido ainda</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Mapa de Calor -->
+        <div class="col-lg-6 mb-4">
+            <div class="mimo-card h-100">
+                <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
+                    <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
+                        <i class="bi bi-thermometer-half me-2"></i>
+                        Mapa de Calor de Vendas
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        <small class="text-muted">Horários com mais vendas por dia da semana</small>
+                    </div>
+                    
+                    <!-- Legenda de horas -->
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">0h</small>
+                        <small class="text-muted">6h</small>
+                        <small class="text-muted">12h</small>
+                        <small class="text-muted">18h</small>
+                        <small class="text-muted">24h</small>
+                    </div>
+                    
+                    <!-- Mapa de calor -->
+                    <div id="heatmap-container">
+                        {% set dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'] %}
+                        {% for dia_idx in range(7) %}
+                        <div class="d-flex align-items-center mb-1">
+                            <div style="width: 60px; font-size: 0.8rem;" class="text-muted">{{ dias[dia_idx][:3] }}</div>
+                            {% for hora in range(24) %}
+                            {% set cell_data = mapa_calor | selectattr('dia_idx', 'equalto', dia_idx) | selectattr('hora', 'equalto', hora) | first %}
+                            {% if cell_data %}
+                            <div class="heatmap-cell" 
+                                 style="background-color: rgba(255, 142, 99, {{ cell_data.intensidade }});"
+                                 data-bs-toggle="tooltip" 
+                                 title="{{ cell_data.vendas }} vendas às {{ hora }}h - {{ dias[dia_idx] }}">
+                            </div>
+                            {% else %}
+                            <div class="heatmap-cell" style="background-color: #f8f9fa;"></div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Legenda de intensidade -->
+                    <div class="d-flex justify-content-center align-items-center mt-3">
+                        <small class="text-muted me-2">Menos</small>
+                        <div class="d-flex">
+                            {% for i in range(5) %}
+                            <div class="heatmap-cell" style="background-color: rgba(255, 142, 99, {{ i * 0.2 }});"></div>
+                            {% endfor %}
+                        </div>
+                        <small class="text-muted ms-2">Mais</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Clientes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="mimo-card">
+                <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
+                    <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
+                        <i class="bi bi-people me-2"></i>
+                        Top Clientes
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if top_clientes %}
+                    <div class="row">
+                        {% for cliente in top_clientes %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="top-produto-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                                             style="width: 50px; height: 50px; background: var(--mimo-gradient); color: white; font-weight: bold;">
+                                            {{ cliente.nome[0].upper() }}
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-bold">{{ cliente.nome }}</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">{{ cliente.num_compras }} compras</small>
+                                            <small class="text-success fw-bold">{{ cliente.valor_total | currency }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <p class="text-muted mt-3">Nenhum cliente com compras ainda</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Inicializar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Animações suaves
+    $('.mimo-card').each(function(index) {
+        $(this).css('animation-delay', (index * 0.1) + 's');
+        $(this).addClass('fade-in');
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} - Sistema MIMO{% endblock %}
+
+{% block extra_css %}
+<style>
+.mimo-card {
+    background: rgba(255,255,255,0.95);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.produto-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.produto-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.total-venda {
+    background: var(--mimo-gradient);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Cabeçalho -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('vendas.listar') }}">Vendas</a></li>
+                    <li class="breadcrumb-item active">{{ titulo }}</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mimo-gradient-text mb-0">
+                        <i class="bi bi-cart-plus me-2"></i>
+                        {{ titulo }}
+                    </h2>
+                    <p class="text-muted mb-0">Registre uma nova venda</p>
+                </div>
+                <a href="{{ url_for('vendas.listar') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário -->
+    <form method="POST" id="vendaForm">
+        {{ form.hidden_tag() }}
+        
+        <div class="row">
+            <!-- Dados da Venda -->
+            <div class="col-lg-8">
+                <div class="mimo-card mb-4">
+                    <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
+                        <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Dados da Venda
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.cliente_id.label(class="form-label fw-bold") }}
+                                <span class="text-danger">*</span>
+                                {{ form.cliente_id() }}
+                                {% if form.cliente_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.cliente_id.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <a href="{{ url_for('clientes.novo') }}" target="_blank">
+                                        <i class="bi bi-plus-circle me-1"></i>Cadastrar novo cliente
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                {{ form.data_entrega.label(class="form-label fw-bold") }}
+                                <span class="text-danger">*</span>
+                                {{ form.data_entrega() }}
+                                {% if form.data_entrega.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.data_entrega.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.valor_entrega.label(class="form-label fw-bold") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    {{ form.valor_entrega() }}
+                                </div>
+                                {% if form.valor_entrega.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.valor_entrega.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.desconto.label(class="form-label fw-bold") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    {{ form.desconto() }}
+                                </div>
+                                {% if form.desconto.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.desconto.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.forma_pagamento.label(class="form-label fw-bold") }}
+                                {{ form.forma_pagamento() }}
+                                {% if form.forma_pagamento.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.forma_pagamento.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                {{ form.observacoes.label(class="form-label fw-bold") }}
+                                {{ form.observacoes() }}
+                                {% if form.observacoes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.observacoes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itens da Venda -->
+                <div class="mimo-card">
+                    <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
+                                <i class="bi bi-list me-2"></i>
+                                Itens da Venda
+                            </h5>
+                            <button type="button" class="btn btn-light btn-sm" id="addItem">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Adicionar Item
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="itensContainer">
+                            <!-- Itens serão adicionados aqui via JavaScript -->
+                        </div>
+                        
+                        <div class="text-center py-4" id="noItems">
+                            <i class="bi bi-cart-x display-1 text-muted"></i>
+                            <h5 class="mt-3 text-muted">Nenhum item adicionado</h5>
+                            <p class="text-muted">Clique em "Adicionar Item" para começar</p>
+                            <button type="button" class="btn-add-item" id="addFirstItem">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Adicionar Primeiro Item
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar - Resumo -->
+            <div class="col-lg-4">
+                <div class="mimo-card mb-4">
+                    <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
+                        <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
+                            <i class="bi bi-calculator me-2"></i>
+                            Resumo da Venda
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">R$ 0,00</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Taxa de Entrega:</span>
+                                <span id="taxaEntrega">R$ 0,00</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between text-danger">
+                                <span>Desconto:</span>
+                                <span id="desconto">- R$ 0,00</span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="total-venda">
+                            <h4 class="mb-0">Total</h4>
+                            <h2 class="mb-0" id="total">R$ 0,00</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações -->
+                <div class="mimo-card">
+                    <div class="card-body p-4">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>
+                                {{ acao }} Venda
+                            </button>
+                            <button type="button" class="btn btn-outline-warning" id="saveAsDraft">
+                                <i class="bi bi-save me-2"></i>
+                                Salvar Rascunho
+                            </button>
+                            <a href="{{ url_for('vendas.listar') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Template para Item -->
+<template id="itemTemplate">
+    <div class="item-venda" data-item-index="">
+        <div class="row align-items-center">
+            <div class="col-md-5 mb-2">
+                <label class="form-label fw-bold">Produto:</label>
+                <select class="form-select produto-select" name="produto_id[]" required>
+                    <option value="">Selecione um produto...</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-2">
+                <label class="form-label fw-bold">Qtd:</label>
+                <input type="number" class="form-control quantidade-input" name="quantidade[]" min="1" value="1" required>
+            </div>
+            <div class="col-md-2 mb-2">
+                <label class="form-label fw-bold">Preço:</label>
+                <input type="text" class="form-control preco-input" name="preco_unitario[]" readonly>
+            </div>
+            <div class="col-md-2 mb-2">
+                <label class="form-label fw-bold">Subtotal:</label>
+                <div class="fw-bold subtotal-display">R$ 0,00</div>
+            </div>
+            <div class="col-md-1 mb-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 remove-item">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+$(document).ready(function() {
+    let itemIndex = 0;
+    let produtos = [];
+    
+    // Carregar produtos via AJAX
+    $.get('/produtos/api/buscar', function(data) {
+        produtos = data;
+    });
+    
+    // Aplicar máscaras
+    $('#valor_entrega, #desconto').mask('#.##0,00', {reverse: true});
+    
+    // Adicionar item
+    $('#addItem, #addFirstItem').on('click', function() {
+        addItem();
+    });
+    
+    function addItem() {
+        const template = document.getElementById('itemTemplate');
+        const clone = template.content.cloneNode(true);
+        
+        // Configurar índice
+        const itemDiv = clone.querySelector('.item-venda');
+        itemDiv.setAttribute('data-item-index', itemIndex);
+        
+        // Adicionar produtos ao select
+        const select = clone.querySelector('.produto-select');
+        produtos.forEach(produto => {
+            const option = document.createElement('option');
+            option.value = produto.id;
+            option.textContent = produto.text;
+            option.setAttribute('data-preco', produto.preco);
+            select.appendChild(option);
+        });
+        
+        // Adicionar ao container
+        document.getElementById('itensContainer').appendChild(clone);
+        document.getElementById('noItems').style.display = 'none';
+        
+        itemIndex++;
+        
+        // Configurar eventos
+        setupItemEvents();
+        calcularTotal();
+    }
+    
+    function setupItemEvents() {
+        // Mudança de produto
+        $('.produto-select').off('change').on('change', function() {
+            const preco = $(this).find(':selected').data('preco') || 0;
+            const precoInput = $(this).closest('.item-venda').find('.preco-input');
+            precoInput.val(formatCurrency(preco));
+            calcularSubtotal($(this).closest('.item-venda'));
+        });
+        
+        // Mudança de quantidade
+        $('.quantidade-input').off('input').on('input', function() {
+            calcularSubtotal($(this).closest('.item-venda'));
+        });
+        
+        // Remover item
+        $('.remove-item').off('click').on('click', function() {
+            $(this).closest('.item-venda').remove();
+            if ($('.item-venda').length === 0) {
+                document.getElementById('noItems').style.display = 'block';
+            }
+            calcularTotal();
+        });
+    }
+    
+    function calcularSubtotal(itemDiv) {
+        const quantidade = parseInt(itemDiv.find('.quantidade-input').val()) || 0;
+        const preco = parseFloat(itemDiv.find('.preco-input').val().replace(',', '.')) || 0;
+        const subtotal = quantidade * preco;
+        
+        itemDiv.find('.subtotal-display').text(formatCurrency(subtotal));
+        calcularTotal();
+    }
+    
+    function calcularTotal() {
+        let subtotal = 0;
+        
+        $('.item-venda').each(function() {
+            const quantidade = parseInt($(this).find('.quantidade-input').val()) || 0;
+            const preco = parseFloat($(this).find('.preco-input').val().replace(',', '.')) || 0;
+            subtotal += quantidade * preco;
+        });
+        
+        const taxaEntrega = parseFloat($('#valor_entrega').val().replace(',', '.')) || 0;
+        const desconto = parseFloat($('#desconto').val().replace(',', '.')) || 0;
+        const total = subtotal + taxaEntrega - desconto;
+        
+        $('#subtotal').text(formatCurrency(subtotal));
+        $('#taxaEntrega').text(formatCurrency(taxaEntrega));
+        $('#desconto').text('- ' + formatCurrency(desconto));
+        $('#total').text(formatCurrency(total));
+    }
+    
+    function formatCurrency(value) {
+        return 'R$ ' + parseFloat(value).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+    
+    // Recalcular ao mudar valores
+    $('#valor_entrega, #desconto').on('input', calcularTotal);
+    
+    // Validação do formulário
+    $('#vendaForm').on('submit', function(e) {
+        if ($('.item-venda').length === 0) {
+            e.preventDefault();
+            alert('Adicione pelo menos um item à venda!');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

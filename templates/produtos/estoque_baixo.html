@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Estoque Baixo - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('produtos.listar') }}">Produtos</a></li>
+                    <li class="breadcrumb-item active">Estoque Baixo</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                        Produtos com Estoque Baixo
+                    </h2>
+                    <p class="text-muted mb-0">Produtos que precisam de reposição</p>
+                </div>
+                <a href="{{ url_for('produtos.listar') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Voltar aos Produtos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Produtos -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-list me-2"></i>
+                Produtos com Estoque Baixo
+                <span class="badge bg-warning ms-2">{{ produtos|length }} produto(s)</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if produtos %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Estoque Atual</th>
+                            <th>Estoque Mínimo</th>
+                            <th>Diferença</th>
+                            <th>Preço</th>
+                            <th width="200">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos %}
+                        <tr class="{% if produto.quantidade_estoque == 0 %}table-danger{% else %}table-warning{% endif %}">
+                            <td>
+                                <div>
+                                    <strong>{{ produto.nome }}</strong>
+                                    {% if produto.categoria %}
+                                    <br><span class="badge bg-secondary">{{ produto.categoria.replace('_', ' ').title() }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ produto.quantidade_estoque }} {{ produto.unidade }}</span>
+                                    {% if produto.quantidade_estoque == 0 %}
+                                    <span class="badge bg-danger">Zerado</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Baixo</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>{{ produto.estoque_minimo }} {{ produto.unidade }}</td>
+                            <td>
+                                {% set diferenca = produto.estoque_minimo - produto.quantidade_estoque %}
+                                <span class="text-danger fw-bold">
+                                    -{{ diferenca }} {{ produto.unidade }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong class="text-success">{{ produto.preco | currency }}</strong>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ url_for('produtos.visualizar', id=produto.id) }}" 
+                                       class="btn btn-outline-info" 
+                                       data-bs-toggle="tooltip" title="Visualizar">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <button class="btn btn-outline-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#ajustarEstoqueModal"
+                                            data-produto-id="{{ produto.id }}"
+                                            data-produto-nome="{{ produto.nome }}"
+                                            data-estoque-atual="{{ produto.quantidade_estoque }}"
+                                            data-estoque-minimo="{{ produto.estoque_minimo }}"
+                                            data-unidade="{{ produto.unidade }}"
+                                            data-bs-toggle="tooltip" title="Ajustar Estoque">
+                                        <i class="bi bi-box"></i>
+                                    </button>
+                                    <a href="{{ url_for('produtos.editar', id=produto.id) }}" 
+                                       class="btn btn-outline-secondary"
+                                       data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-check-circle display-1 text-success"></i>
+                <h4 class="mt-3 text-success">Parabéns!</h4>
+                <p class="text-muted">
+                    Todos os produtos estão com estoque adequado.
+                    <br>Não há produtos com estoque baixo no momento.
+                </p>
+                <a href="{{ url_for('produtos.listar') }}" class="btn btn-success">
+                    <i class="bi bi-box me-2"></i>
+                    Ver Todos os Produtos
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if produtos %}
+    <!-- Resumo e Sugestões -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Resumo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                            <strong>{{ produtos|length }}</strong> produtos com estoque baixo
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-x-circle text-danger me-2"></i>
+                            <strong>{{ produtos|selectattr('quantidade_estoque', 'equalto', 0)|list|length }}</strong> produtos zerados
+                        </li>
+                        <li>
+                            <i class="bi bi-currency-dollar text-success me-2"></i>
+                            Valor total em estoque baixo: 
+                            <strong>{{ (produtos|sum(attribute='preco')|float * produtos|sum(attribute='quantidade_estoque')|float) | currency }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightbulb me-2"></i>
+                        Sugestões
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-arrow-right text-primary me-2"></i>
+                            Priorize a reposição dos produtos zerados
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-arrow-right text-primary me-2"></i>
+                            Considere aumentar o estoque mínimo dos produtos mais vendidos
+                        </li>
+                        <li>
+                            <i class="bi bi-arrow-right text-primary me-2"></i>
+                            Configure alertas automáticos para evitar rupturas
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal Ajustar Estoque -->
+<div class="modal fade" id="ajustarEstoqueModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-box me-2"></i>
+                    Ajustar Estoque
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="ajustarEstoqueForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Produto:</label>
+                        <p class="fw-bold" id="modal-produto-nome"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantidade Atual:</label>
+                        <p class="fw-bold" id="modal-estoque-atual"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estoque Mínimo:</label>
+                        <p class="text-muted" id="modal-estoque-minimo"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nova_quantidade" class="form-label">Nova Quantidade:</label>
+                        <input type="number" class="form-control" id="nova_quantidade" name="nova_quantidade" 
+                               min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="motivo" class="form-label">Motivo do Ajuste:</label>
+                        <select class="form-select" id="motivo" name="motivo" required>
+                            <option value="">Selecione o motivo...</option>
+                            <option value="Entrada de mercadoria">Entrada de mercadoria</option>
+                            <option value="Reposição de estoque">Reposição de estoque</option>
+                            <option value="Correção de inventário">Correção de inventário</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Ajustar Estoque</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Configurar modal de ajuste de estoque
+    $('#ajustarEstoqueModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const produtoId = button.data('produto-id');
+        const produtoNome = button.data('produto-nome');
+        const estoqueAtual = button.data('estoque-atual');
+        const estoqueMinimo = button.data('estoque-minimo');
+        const unidade = button.data('unidade');
+        
+        // Atualizar conteúdo do modal
+        $('#modal-produto-nome').text(produtoNome);
+        $('#modal-estoque-atual').text(estoqueAtual + ' ' + unidade);
+        $('#modal-estoque-minimo').text(estoqueMinimo + ' ' + unidade);
+        $('#nova_quantidade').val(Math.max(estoqueAtual, estoqueMinimo));
+        
+        // Atualizar action do formulário
+        $('#ajustarEstoqueForm').attr('action', '/produtos/' + produtoId + '/ajustar-estoque');
+    });
+    
+    // Sugerir quantidade mínima
+    $('#nova_quantidade').on('focus', function() {
+        const estoqueMinimo = parseInt($('#modal-estoque-minimo').text());
+        if ($(this).val() < estoqueMinimo) {
+            $(this).val(estoqueMinimo);
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Cabeçalho -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('produtos.listar') }}">Produtos</a></li>
+                    <li class="breadcrumb-item active">{{ titulo }}</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="bi bi-box me-2"></i>
+                        {{ titulo }}
+                    </h2>
+                    <p class="text-muted mb-0">Preencha os dados do produto</p>
+                </div>
+                <a href="{{ url_for('produtos.listar') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-box-seam me-2"></i>
+                        Dados do Produto
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="produtoForm" data-autosave="true">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Informações Básicas -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-success border-bottom pb-2 mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Informações Básicas
+                                </h6>
+                            </div>
+                            
+                            <div class="col-md-8 mb-3">
+                                {{ form.nome.label(class="form-label") }}
+                                <span class="text-danger">*</span>
+                                {{ form.nome() }}
+                                {% if form.nome.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.nome.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.categoria.label(class="form-label") }}
+                                {{ form.categoria() }}
+                                {% if form.categoria.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.categoria.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                {{ form.descricao.label(class="form-label") }}
+                                {{ form.descricao() }}
+                                <div class="form-text">
+                                    Descrição detalhada do produto (ingredientes, características, etc.)
+                                </div>
+                                {% if form.descricao.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.descricao.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Preços e Custos -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-success border-bottom pb-2 mb-3">
+                                    <i class="bi bi-currency-dollar me-2"></i>
+                                    Preços e Custos
+                                </h6>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.preco.label(class="form-label") }}
+                                <span class="text-danger">*</span>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    {{ form.preco() }}
+                                </div>
+                                {% if form.preco.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.preco.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.custo.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    {{ form.custo() }}
+                                </div>
+                                <div class="form-text">
+                                    Custo para calcular margem de lucro
+                                </div>
+                                {% if form.custo.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.custo.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Margem de Lucro</label>
+                                <div class="form-control bg-light" id="margem-display">
+                                    <i class="bi bi-calculator me-1"></i>
+                                    <span id="margem-valor">0%</span>
+                                </div>
+                                <div class="form-text">
+                                    Calculada automaticamente
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estoque -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-success border-bottom pb-2 mb-3">
+                                    <i class="bi bi-box me-2"></i>
+                                    Controle de Estoque
+                                </h6>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.quantidade_estoque.label(class="form-label") }}
+                                <span class="text-danger">*</span>
+                                {{ form.quantidade_estoque() }}
+                                {% if form.quantidade_estoque.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.quantidade_estoque.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.estoque_minimo.label(class="form-label") }}
+                                {{ form.estoque_minimo() }}
+                                <div class="form-text">
+                                    Alerta quando atingir este valor
+                                </div>
+                                {% if form.estoque_minimo.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.estoque_minimo.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                {{ form.unidade.label(class="form-label") }}
+                                {{ form.unidade() }}
+                                {% if form.unidade.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.unidade.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-success border-bottom pb-2 mb-3">
+                                    <i class="bi bi-toggle-on me-2"></i>
+                                    Status
+                                </h6>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-check">
+                                    {{ form.ativo() }}
+                                    {{ form.ativo.label(class="form-check-label") }}
+                                </div>
+                                <div class="form-text">
+                                    Produtos inativos não aparecerão nas listas de seleção
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('produtos.listar') }}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle me-2"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        {{ acao }} Produto
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Aplicar máscaras
+    $('#preco, #custo').mask('#.##0,00', {reverse: true});
+    
+    // Calcular margem de lucro em tempo real
+    function calcularMargem() {
+        const preco = parseFloat($('#preco').val().replace(',', '.')) || 0;
+        const custo = parseFloat($('#custo').val().replace(',', '.')) || 0;
+        
+        if (custo > 0 && preco > 0) {
+            const margem = ((preco - custo) / custo) * 100;
+            $('#margem-valor').text(margem.toFixed(1) + '%');
+            
+            // Colorir baseado na margem
+            if (margem < 20) {
+                $('#margem-display').removeClass('bg-light bg-success bg-warning').addClass('bg-danger text-white');
+            } else if (margem < 50) {
+                $('#margem-display').removeClass('bg-light bg-success bg-danger').addClass('bg-warning');
+            } else {
+                $('#margem-display').removeClass('bg-light bg-warning bg-danger').addClass('bg-success text-white');
+            }
+        } else {
+            $('#margem-valor').text('0%');
+            $('#margem-display').removeClass('bg-success bg-warning bg-danger text-white').addClass('bg-light');
+        }
+    }
+    
+    // Calcular margem ao digitar
+    $('#preco, #custo').on('input', calcularMargem);
+    
+    // Calcular margem inicial
+    calcularMargem();
+    
+    // Validação do formulário
+    $('#produtoForm').on('submit', function(e) {
+        let isValid = true;
+        
+        // Validar nome obrigatório
+        const nome = $('#nome').val().trim();
+        if (!nome) {
+            $('#nome').addClass('is-invalid');
+            isValid = false;
+        } else {
+            $('#nome').removeClass('is-invalid');
+        }
+        
+        // Validar preço obrigatório
+        const preco = parseFloat($('#preco').val().replace(',', '.')) || 0;
+        if (preco <= 0) {
+            $('#preco').addClass('is-invalid');
+            isValid = false;
+        } else {
+            $('#preco').removeClass('is-invalid');
+        }
+        
+        // Validar quantidade obrigatória
+        const quantidade = parseInt($('#quantidade_estoque').val()) || 0;
+        if (quantidade < 0) {
+            $('#quantidade_estoque').addClass('is-invalid');
+            isValid = false;
+        } else {
+            $('#quantidade_estoque').removeClass('is-invalid');
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            Notifications.error('Por favor, corrija os erros no formulário');
+        }
+    });
+    
+    // Limpar erros ao digitar
+    $('.form-control').on('input', function() {
+        $(this).removeClass('is-invalid');
+    });
+});
+</script>
+{% endblock %}

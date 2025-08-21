@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Vendas - Sistema MIMO{% endblock %}
+
+{% block extra_css %}
+<style>
+.mimo-card {
+    background: rgba(255,255,255,0.95);
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.mimo-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.venda-card {
+    background: var(--mimo-gradient-soft);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid transparent;
+    background-clip: padding-box;
+    transition: all 0.3s ease;
+}
+
+.venda-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.status-pendente {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: #000;
+}
+
+.status-entregue {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: white;
+}
+
+.status-cancelado {
+    background: linear-gradient(135deg, #dc3545, #fd7e14);
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mimo-gradient-text mb-0">
+                        <i class="bi bi-cart-check me-2"></i>
+                        Gerenciar Vendas
+                    </h2>
+                    <p class="text-muted mb-0">Controle completo das suas vendas</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('vendas.dashboard') }}" class="btn btn-outline-primary me-2">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('vendas.nova') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Nova Venda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" 
+                       placeholder="Buscar por cliente..." 
+                       value="{{ search }}"
+                       style="border-radius: 25px;">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+                {% if search %}
+                <a href="{{ url_for('vendas.listar') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-x"></i>
+                </a>
+                {% endif %}
+            </form>
+        </div>
+        <div class="col-md-3">
+            <form method="GET">
+                <select name="status" class="form-select" onchange="this.form.submit()" style="border-radius: 25px;">
+                    <option value="">Todos os status</option>
+                    <option value="PENDENTE" {% if status == 'PENDENTE' %}selected{% endif %}>Pendente</option>
+                    <option value="ENTREGUE" {% if status == 'ENTREGUE' %}selected{% endif %}>Entregue</option>
+                    <option value="CANCELADO" {% if status == 'CANCELADO' %}selected{% endif %}>Cancelado</option>
+                </select>
+                <input type="hidden" name="search" value="{{ search }}">
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Vendas -->
+    <div class="mimo-card">
+        <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
+            <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
+                <i class="bi bi-list me-2"></i>
+                Lista de Vendas
+                <span class="badge bg-light text-dark ms-2">{{ vendas.total }} venda(s)</span>
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            {% if vendas.items %}
+            {% for venda in vendas.items %}
+            <div class="venda-card">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 50px; height: 50px; background: var(--mimo-gradient); color: white; font-weight: bold;">
+                                {{ venda.cliente_obj.nome[0].upper() }}
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">{{ venda.cliente_obj.nome }}</h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    {{ venda.data_pedido.strftime('%d/%m/%Y') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2 text-center">
+                        <h5 class="mb-0 fw-bold" style="color: var(--mimo-orange);">
+                            {{ venda.valor_total | currency }}
+                        </h5>
+                        {% if venda.desconto > 0 %}
+                        <small class="text-muted">Desc: {{ venda.desconto | currency }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-2 text-center">
+                        {% if venda.data_entrega %}
+                        <div class="fw-bold">{{ venda.data_entrega.strftime('%d/%m/%Y') }}</div>
+                        <small class="text-muted">Entrega</small>
+                        {% else %}
+                        <span class="text-muted">Sem data</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-2 text-center">
+                        <span class="status-badge status-{{ venda.status.lower() }}">
+                            {{ venda.status }}
+                        </span>
+                    </div>
+                    
+                    <div class="col-md-3 text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('vendas.visualizar', id=venda.id) }}" 
+                               class="btn btn-outline-info" 
+                               data-bs-toggle="tooltip" title="Visualizar">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{{ url_for('vendas.editar', id=venda.id) }}" 
+                               class="btn btn-outline-primary"
+                               data-bs-toggle="tooltip" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% if venda.data_entrega %}
+                            <a href="{{ url_for('entregas.atualizar_status', venda_id=venda.id) }}" 
+                               class="btn btn-outline-warning"
+                               data-bs-toggle="tooltip" title="Atualizar Entrega">
+                                <i class="bi bi-truck"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Itens da venda -->
+                {% if venda.itens %}
+                <div class="mt-3 pt-3 border-top">
+                    <small class="text-muted fw-bold">Itens:</small>
+                    <div class="row mt-2">
+                        {% for item in venda.itens %}
+                        <div class="col-md-4 mb-1">
+                            <small class="text-muted">
+                                • {{ item.produto_obj.nome }} ({{ item.quantidade }}x)
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <!-- Paginação -->
+            {% if vendas.pages > 1 %}
+            <nav aria-label="Paginação de vendas" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if vendas.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('vendas.listar', page=vendas.prev_num, search=search, status=status) }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in vendas.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != vendas.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('vendas.listar', page=page_num, search=search, status=status) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if vendas.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('vendas.listar', page=vendas.next_num, search=search, status=status) }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-cart-x display-1 text-muted"></i>
+                <h4 class="mt-3">Nenhuma venda encontrada</h4>
+                <p class="text-muted">
+                    {% if search or status %}
+                    Não encontramos vendas com os filtros aplicados.
+                    <br><a href="{{ url_for('vendas.listar') }}">Ver todas as vendas</a>
+                    {% else %}
+                    Comece registrando sua primeira venda.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('vendas.nova') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Registrar Primeira Venda
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Inicializar tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+    
+    // Animações
+    $('.venda-card').each(function(index) {
+        $(this).css('animation-delay', (index * 0.1) + 's');
+        $(this).addClass('fade-in');
+    });
+});
+</script>
+{% endblock %}

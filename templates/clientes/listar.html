@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="bi bi-people me-2"></i>
+                        Gerenciar Clientes
+                    </h2>
+                    <p class="text-muted mb-0">Cadastre e gerencie seus clientes</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('clientes.novo') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Novo Cliente
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros e Busca -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" 
+                       placeholder="Buscar por nome, telefone ou email..." 
+                       value="{{ search }}"
+                       style="min-width: 300px;">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+                {% if search %}
+                <a href="{{ url_for('clientes.listar') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-x"></i>
+                </a>
+                {% endif %}
+            </form>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('clientes.aniversariantes') }}" class="btn btn-outline-warning">
+                <i class="bi bi-gift me-1"></i>
+                Aniversariantes
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabela de Clientes -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-list me-2"></i>
+                Lista de Clientes
+                <span class="badge bg-primary ms-2">{{ clientes.total }} cliente(s)</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if clientes.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Contato</th>
+                            <th>Email</th>
+                            <th>Cidade</th>
+                            <th>Cadastro</th>
+                            <th width="200">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes.items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary text-white me-2">
+                                        {{ cliente.nome[0].upper() }}
+                                    </div>
+                                    <div>
+                                        <strong>{{ cliente.nome }}</strong>
+                                        {% if cliente.data_aniversario %}
+                                        <br><small class="text-muted">
+                                            <i class="bi bi-gift me-1"></i>
+                                            {{ cliente.data_aniversario.strftime('%d/%m') }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if cliente.contato %}
+                                <a href="https://wa.me/55{{ cliente.contato.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') }}" 
+                                   target="_blank" class="text-success text-decoration-none">
+                                    <i class="bi bi-whatsapp me-1"></i>
+                                    {{ cliente.contato }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if cliente.email %}
+                                <a href="mailto:{{ cliente.email }}" class="text-decoration-none">
+                                    {{ cliente.email }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ cliente.cidade or '-' }}</td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ cliente.data_cadastro.strftime('%d/%m/%Y') }}
+                                </small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ url_for('clientes.visualizar', id=cliente.id) }}" 
+                                       class="btn btn-outline-info" 
+                                       data-bs-toggle="tooltip" title="Visualizar">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('clientes.editar', id=cliente.id) }}" 
+                                       class="btn btn-outline-primary"
+                                       data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    {% if cliente.ativo %}
+                                    <form method="POST" action="{{ url_for('clientes.desativar', id=cliente.id) }}" 
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-outline-warning"
+                                                data-bs-toggle="tooltip" title="Desativar"
+                                                onclick="return confirm('Desativar cliente {{ cliente.nome }}?')">
+                                            <i class="bi bi-pause"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <form method="POST" action="{{ url_for('clientes.ativar', id=cliente.id) }}" 
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-outline-success"
+                                                data-bs-toggle="tooltip" title="Ativar">
+                                            <i class="bi bi-play"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-people display-1 text-muted"></i>
+                <h4 class="mt-3">Nenhum cliente encontrado</h4>
+                <p class="text-muted">
+                    {% if search %}
+                    Não encontramos clientes com o termo "{{ search }}".
+                    <br><a href="{{ url_for('clientes.listar') }}">Ver todos os clientes</a>
+                    {% else %}
+                    Comece cadastrando seu primeiro cliente.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('clientes.novo') }}" class="btn btn-primary">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Cadastrar Primeiro Cliente
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Paginação -->
+        {% if clientes.pages > 1 %}
+        <div class="card-footer">
+            <nav aria-label="Paginação de clientes">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if clientes.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('clientes.listar', page=clientes.prev_num, search=search) }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in clientes.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != clientes.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('clientes.listar', page=page_num, search=search) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if clientes.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('clientes.listar', page=clientes.next_num, search=search) }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}

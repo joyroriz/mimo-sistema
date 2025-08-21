@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Calendário de Entregas - Sistema MIMO{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Estética MIMO - Calendário de Entregas */
+.mimo-calendar {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.calendar-header {
+    background: var(--mimo-gradient);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.calendar-day {
+    min-height: 120px;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.calendar-day:hover {
+    background-color: var(--mimo-gradient-soft);
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.calendar-day.today {
+    background: linear-gradient(135deg, rgba(255,142,99,0.2) 0%, rgba(255,126,176,0.2) 100%);
+    border: 2px solid var(--mimo-orange);
+}
+
+.calendar-event {
+    background: var(--mimo-gradient);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calendar-event:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.calendar-event.entregue {
+    background: linear-gradient(135deg, #198754, #20c997);
+}
+
+.calendar-event.atrasado {
+    background: linear-gradient(135deg, #dc3545, #fd7e14);
+    animation: pulse 2s infinite;
+}
+
+.stats-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    border-left: 4px solid transparent;
+    background-clip: padding-box;
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="text-center">
+                <h1 class="display-4 mimo-gradient-text">Calendário de Entregas</h1>
+                <p class="lead text-muted">Gerencie suas entregas com elegância</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas Rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stats-card" style="border-left-color: var(--mimo-blue);">
+                <h3 class="mimo-gradient-text">{{ total_entregas }}</h3>
+                <p class="text-muted mb-0">Total do Mês</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card" style="border-left-color: var(--mimo-orange);">
+                <h3 class="mimo-gradient-text">{{ entregas_hoje }}</h3>
+                <p class="text-muted mb-0">Hoje</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card" style="border-left-color: var(--mimo-red);">
+                <h3 class="mimo-gradient-text">{{ entregas_atrasadas }}</h3>
+                <p class="text-muted mb-0">Atrasadas</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card" style="border-left-color: var(--mimo-pink);">
+                <a href="{{ url_for('entregas.proximas') }}" class="text-decoration-none">
+                    <h3 class="mimo-gradient-text">Próximas</h3>
+                    <p class="text-muted mb-0">7 dias</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegação do Calendário -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{{ url_for('entregas.calendario', mes=mes_atual-1 if mes_atual > 1 else 12, ano=ano_atual if mes_atual > 1 else ano_atual-1) }}" 
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-chevron-left"></i> Anterior
+                    </a>
+                </div>
+                <div>
+                    <h3 class="mimo-gradient-text mb-0">
+                        {{ calendar.month_name[mes_atual] }} {{ ano_atual }}
+                    </h3>
+                </div>
+                <div>
+                    <a href="{{ url_for('entregas.calendario', mes=mes_atual+1 if mes_atual < 12 else 1, ano=ano_atual if mes_atual < 12 else ano_atual+1) }}" 
+                       class="btn btn-outline-primary">
+                        Próximo <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendário -->
+    <div class="mimo-calendar">
+        <div class="calendar-header">
+            <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif;">
+                <i class="bi bi-calendar-event me-2"></i>
+                Agenda de Entregas
+            </h5>
+        </div>
+        
+        <!-- Cabeçalho dos dias da semana -->
+        <div class="row g-0 bg-light">
+            {% set dias_semana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'] %}
+            {% for dia in dias_semana %}
+            <div class="col text-center py-2 fw-bold text-muted">
+                {{ dia }}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Dias do mês - Versão Simplificada -->
+        {% for dia in range(1, 32) %}
+        {% if (dia - 1) % 7 == 0 %}<div class="row g-0">{% endif %}
+
+        <div class="col calendar-day {% if dia == hoje.day and mes_atual == hoje.month and ano_atual == hoje.year %}today{% endif %}">
+            <div class="fw-bold mb-2">{{ dia }}</div>
+
+            {% set data_str = '%04d-%02d-%02d' | format(ano_atual, mes_atual, dia) %}
+            {% if data_str in entregas_por_data %}
+            {% for venda in entregas_por_data[data_str] %}
+            <div class="calendar-event {% if venda.status == 'ENTREGUE' %}entregue{% elif venda.data_entrega < hoje %}atrasado{% endif %}"
+                 data-bs-toggle="modal"
+                 data-bs-target="#entregaModal"
+                 data-venda-id="{{ venda.id }}"
+                 data-cliente="{{ venda.cliente_obj.nome }}"
+                 data-valor="{{ venda.valor_total }}"
+                 data-status="{{ venda.status }}">
+                <i class="bi bi-box me-1"></i>
+                {{ venda.cliente_obj.nome[:15] }}{% if venda.cliente_obj.nome|length > 15 %}...{% endif %}
+                <br><small>R$ {{ venda.valor_total }}</small>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        {% if dia % 7 == 0 or dia == 31 %}</div>{% endif %}
+        {% if dia == 31 %}{% break %}{% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mt-4">
+        <div class="col text-center">
+            <a href="{{ url_for('entregas.hoje') }}" class="btn btn-primary me-2">
+                <i class="bi bi-calendar-day me-2"></i>
+                Entregas Hoje
+            </a>
+            <a href="{{ url_for('entregas.atrasadas') }}" class="btn btn-danger me-2">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Entregas Atrasadas
+            </a>
+            <a href="{{ url_for('entregas.listar') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-list me-2"></i>
+                Ver Todas
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalhes da Entrega -->
+<div class="modal fade" id="entregaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--mimo-gradient); color: white;">
+                <h5 class="modal-title">
+                    <i class="bi bi-truck me-2"></i>
+                    Detalhes da Entrega
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="fw-bold">Cliente:</label>
+                    <p id="modal-cliente" class="mb-0"></p>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Valor:</label>
+                    <p id="modal-valor" class="mb-0 text-success"></p>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Status:</label>
+                    <p id="modal-status" class="mb-0"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <a id="modal-editar" href="#" class="btn btn-primary">
+                    <i class="bi bi-pencil me-2"></i>
+                    Atualizar Status
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Configurar modal de entrega
+    $('#entregaModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const vendaId = button.data('venda-id');
+        const cliente = button.data('cliente');
+        const valor = button.data('valor');
+        const status = button.data('status');
+        
+        $('#modal-cliente').text(cliente);
+        $('#modal-valor').text('R$ ' + parseFloat(valor).toLocaleString('pt-BR', {minimumFractionDigits: 2}));
+        
+        let statusBadge = '';
+        if (status === 'ENTREGUE') {
+            statusBadge = '<span class="badge bg-success">Entregue</span>';
+        } else if (status === 'PENDENTE') {
+            statusBadge = '<span class="badge bg-warning">Pendente</span>';
+        } else {
+            statusBadge = '<span class="badge bg-danger">Atrasado</span>';
+        }
+        $('#modal-status').html(statusBadge);
+        
+        $('#modal-editar').attr('href', '/entregas/' + vendaId + '/atualizar');
+    });
+    
+    // Animações
+    $('.calendar-day').each(function(index) {
+        $(this).css('animation-delay', (index * 0.01) + 's');
+    });
+});
+</script>
+{% endblock %}
