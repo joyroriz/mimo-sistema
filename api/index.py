@@ -707,6 +707,35 @@ def health_check():
             'timestamp': datetime.now().isoformat()
         }), 500
 
+@app.route('/init-db')
+def init_db_route():
+    """Rota para forçar inicialização do banco de dados"""
+    try:
+        with app.app_context():
+            print("🔄 Forçando criação de tabelas...")
+            db.create_all()
+            print("✅ Tabelas criadas")
+
+            print("🔄 Executando migração...")
+            migrate_database()
+            print("✅ Migração concluída")
+
+            print("🔄 Inicializando dados...")
+            init_database()
+            print("✅ Dados inicializados")
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Banco de dados inicializado com sucesso',
+            'timestamp': datetime.now().isoformat()
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Erro na inicialização: {str(e)}',
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
 
 
 # ==================== ROTAS PRINCIPAIS ====================
@@ -714,6 +743,23 @@ def health_check():
 @app.route('/')
 def index():
     """Página inicial - redireciona para dashboard ou login"""
+    # Verificar se o banco está inicializado
+    try:
+        with app.app_context():
+            # Tentar fazer uma consulta simples
+            Cliente.query.first()
+    except Exception as e:
+        # Se der erro, tentar inicializar o banco
+        try:
+            with app.app_context():
+                print("🔄 Inicializando banco automaticamente...")
+                db.create_all()
+                migrate_database()
+                init_database()
+                print("✅ Banco inicializado automaticamente")
+        except Exception as init_error:
+            print(f"❌ Erro na inicialização automática: {init_error}")
+
     if 'logged_in' not in session or not session['logged_in']:
         return redirect(url_for('login'))
     return redirect(url_for('dashboard'))
@@ -5448,6 +5494,14 @@ if __name__ == '__main__':
                 print("🔄 Criando tabelas...")
                 db.create_all()
                 print("✅ Tabelas criadas")
+
+                print("🔄 Executando migração...")
+                migrate_database()  # Migrar banco existente
+                print("✅ Migração concluída")
+
+                print("🔄 Inicializando dados...")
+                init_database()
+                print("✅ Dados inicializados")
 
                 print("✅ Banco de dados pronto")
 
