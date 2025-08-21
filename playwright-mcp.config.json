@@ -1,0 +1,62 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "isolated": false,
+    "userDataDir": "./playwright-data/user-data",
+    "launchOptions": {
+      "channel": "chrome",
+      "headless": false,
+      "executablePath": null,
+      "args": [
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor",
+        "--disable-dev-shm-usage",
+        "--no-sandbox",
+        "--disable-setuid-sandbox"
+      ]
+    },
+    "contextOptions": {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "locale": "pt-BR",
+      "timezoneId": "America/Sao_Paulo",
+      "permissions": ["geolocation", "notifications"],
+      "ignoreHTTPSErrors": true,
+      "acceptDownloads": true,
+      "recordVideo": {
+        "dir": "./playwright-data/videos/"
+      },
+      "recordHar": {
+        "path": "./playwright-data/har/session.har"
+      }
+    }
+  },
+  "server": {
+    "port": 8931,
+    "host": "localhost"
+  },
+  "capabilities": [
+    "tabs",
+    "install",
+    "pdf",
+    "vision"
+  ],
+  "outputDir": "./playwright-data/output",
+  "network": {
+    "allowedOrigins": [
+      "http://localhost:8080",
+      "http://127.0.0.1:8080",
+      "https://mimo-sistema.vercel.app",
+      "https://*.vercel.app"
+    ],
+    "blockedOrigins": [
+      "https://www.google-analytics.com",
+      "https://googletagmanager.com",
+      "https://facebook.com",
+      "https://twitter.com"
+    ]
+  },
+  "imageResponses": "allow"
+}

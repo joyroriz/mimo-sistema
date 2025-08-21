@@ -54,10 +54,54 @@ LOGIN_CREDENTIALS = {
     'password': 'Mimo2025'
 }
 
+# Função para garantir que o banco está inicializado
+def ensure_database_initialized():
+    """Garante que o banco de dados está inicializado"""
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        try:
+            # Tentar fazer uma consulta simples
+            with app.app_context():
+                db.session.execute(db.text('SELECT 1 FROM clientes LIMIT 1'))
+            return True
+        except Exception as e:
+            print(f"🔄 Tentativa {attempt + 1}/{max_attempts} - Banco não inicializado: {e}")
+            # Se der erro, inicializar o banco
+            try:
+                with app.app_context():
+                    print("🔄 Forçando inicialização do banco...")
+
+                    # Primeiro, tentar criar as tabelas
+                    db.create_all()
+                    print("✅ Tabelas criadas")
+
+                    # Executar migrações
+                    migrate_database()
+                    print("✅ Migrações executadas")
+
+                    # Inicializar dados
+                    init_database()
+                    print("✅ Dados inicializados")
+
+                    # Testar novamente
+                    db.session.execute(db.text('SELECT 1 FROM clientes LIMIT 1'))
+                    print("✅ Banco inicializado e testado com sucesso")
+                    return True
+
+            except Exception as init_error:
+                print(f"❌ Erro na inicialização (tentativa {attempt + 1}): {init_error}")
+                if attempt == max_attempts - 1:
+                    print("❌ Falha após todas as tentativas")
+                    return False
+    return False
+
 # Decorador para proteger rotas
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Garantir que o banco está inicializado
+        ensure_database_initialized()
+
         if 'logged_in' not in session or not session['logged_in']:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
@@ -661,6 +705,9 @@ print("✅ Template base criado")
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Página de login"""
+    # Garantir que o banco está inicializado
+    ensure_database_initialized()
+
     if session.get('logged_in'):
         return redirect(url_for('dashboard'))
 
@@ -743,22 +790,8 @@ def init_db_route():
 @app.route('/')
 def index():
     """Página inicial - redireciona para dashboard ou login"""
-    # Verificar se o banco está inicializado
-    try:
-        with app.app_context():
-            # Tentar fazer uma consulta simples
-            Cliente.query.first()
-    except Exception as e:
-        # Se der erro, tentar inicializar o banco
-        try:
-            with app.app_context():
-                print("🔄 Inicializando banco automaticamente...")
-                db.create_all()
-                migrate_database()
-                init_database()
-                print("✅ Banco inicializado automaticamente")
-        except Exception as init_error:
-            print(f"❌ Erro na inicialização automática: {init_error}")
+    # Garantir que o banco está inicializado
+    ensure_database_initialized()
 
     if 'logged_in' not in session or not session['logged_in']:
         return redirect(url_for('login'))
@@ -5519,6 +5552,14 @@ if __name__ == '__main__':
 
 print("🍓 Sistema MIMO Completo carregado com sucesso!")
 print("=" * 60)
+
+# Inicialização global para Vercel
+try:
+    print("🔄 Inicialização global para Vercel...")
+    ensure_database_initialized()
+    print("✅ Inicialização global concluída")
+except Exception as e:
+    print(f"⚠️ Aviso na inicialização global: {e}")
 
 # Exportar app para o Vercel
 if __name__ == '__main__':
