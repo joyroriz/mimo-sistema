@@ -694,7 +694,7 @@ def health_check():
     """Verificação de saúde da aplicação"""
     try:
         with app.app_context():
-            db.engine.execute('SELECT 1')
+            db.session.execute(db.text('SELECT 1'))
         return jsonify({
             'status': 'healthy',
             'message': 'Sistema MIMO funcionando corretamente',
