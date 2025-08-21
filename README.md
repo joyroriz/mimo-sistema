@@ -8,3 +8,5 @@ Sistema completo de gestão com módulos de:
  
 ## 🚀 Deploy 
 Veja DEPLOY.md para instruções completas. 
+teste
+✅ Teste de configuração - Sistema funcionando!
