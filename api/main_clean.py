@@ -237,13 +237,22 @@ def dashboard():
 def clientes():
     """Página de gestão de clientes"""
     try:
-        return render_template('clientes/listar.html',
-                             titulo='Gestão de Clientes',
-                             clientes=[])  # Lista vazia por enquanto
-    except Exception as e:
         return render_template('em_desenvolvimento.html',
-                             modulo='Clientes',
-                             erro=str(e))
+                             modulo='Gestão de Clientes',
+                             descricao='Módulo de gestão de clientes em desenvolvimento',
+                             funcionalidades=[
+                                 'Cadastro de clientes',
+                                 'Listagem e busca',
+                                 'Histórico de compras',
+                                 'Relatórios'
+                             ])
+    except Exception as e:
+        return jsonify({
+            'error': 'Template error',
+            'module': 'Clientes',
+            'message': str(e),
+            'status': 'em_desenvolvimento'
+        })
 
 @app.route('/clientes/novo')
 def clientes_novo():
@@ -261,13 +270,22 @@ def clientes_novo():
 def produtos():
     """Página de gestão de produtos"""
     try:
-        return render_template('produtos/listar.html',
-                             titulo='Gestão de Produtos',
-                             produtos=[])  # Lista vazia por enquanto
-    except Exception as e:
         return render_template('em_desenvolvimento.html',
-                             modulo='Produtos',
-                             erro=str(e))
+                             modulo='Gestão de Produtos',
+                             descricao='Módulo de gestão de produtos em desenvolvimento',
+                             funcionalidades=[
+                                 'Cadastro de produtos',
+                                 'Controle de estoque',
+                                 'Preços e promoções',
+                                 'Relatórios de vendas'
+                             ])
+    except Exception as e:
+        return jsonify({
+            'error': 'Template error',
+            'module': 'Produtos',
+            'message': str(e),
+            'status': 'em_desenvolvimento'
+        })
 
 @app.route('/produtos/novo')
 def produtos_novo():
@@ -285,13 +303,22 @@ def produtos_novo():
 def vendas():
     """Página de gestão de vendas"""
     try:
-        return render_template('vendas/listar.html',
-                             titulo='Gestão de Vendas',
-                             vendas=[])  # Lista vazia por enquanto
-    except Exception as e:
         return render_template('em_desenvolvimento.html',
-                             modulo='Vendas',
-                             erro=str(e))
+                             modulo='Gestão de Vendas',
+                             descricao='Módulo de gestão de vendas em desenvolvimento',
+                             funcionalidades=[
+                                 'Registro de vendas',
+                                 'Dashboard de vendas',
+                                 'Comissões',
+                                 'Relatórios financeiros'
+                             ])
+    except Exception as e:
+        return jsonify({
+            'error': 'Template error',
+            'module': 'Vendas',
+            'message': str(e),
+            'status': 'em_desenvolvimento'
+        })
 
 @app.route('/vendas/nova')
 def vendas_nova():
@@ -309,13 +336,22 @@ def vendas_nova():
 def entregas():
     """Página de gestão de entregas"""
     try:
-        return render_template('entregas/listar.html',
-                             titulo='Gestão de Entregas',
-                             entregas=[])  # Lista vazia por enquanto
-    except Exception as e:
         return render_template('em_desenvolvimento.html',
-                             modulo='Entregas',
-                             erro=str(e))
+                             modulo='Gestão de Entregas',
+                             descricao='Módulo de gestão de entregas em desenvolvimento',
+                             funcionalidades=[
+                                 'Controle de entregas',
+                                 'Rastreamento',
+                                 'Calendário de entregas',
+                                 'Relatórios logísticos'
+                             ])
+    except Exception as e:
+        return jsonify({
+            'error': 'Template error',
+            'module': 'Entregas',
+            'message': str(e),
+            'status': 'em_desenvolvimento'
+        })
 
 # ============================================================================
 # TRATAMENTO DE ERROS
