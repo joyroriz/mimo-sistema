@@ -1,7 +1,9 @@
-# Ignorar arquivos problemáticos
+# Ignorar TODOS os arquivos problemáticos
 api/index.py
 api/app_novo.py
 api/main.py
+api/debug.py
+api/health_simple.py
 *.db
 *.sqlite
 *.sqlite3
@@ -27,3 +29,5 @@ coverage.xml
 .mypy_cache/
 .pytest_cache/
 .hypothesis/
+test_*.py
+*_backup.py

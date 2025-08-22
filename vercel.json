@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/debug.py",
+      "src": "api/app.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "api/debug.py"
+      "dest": "api/app.py"
     }
   ],
   "env": {
@@ -17,8 +17,11 @@
     "PYTHONPATH": "."
   },
   "functions": {
-    "api/debug.py": {
+    "api/app.py": {
       "maxDuration": 30
     }
+  },
+  "github": {
+    "silent": false
   }
 }
