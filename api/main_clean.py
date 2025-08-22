@@ -19,6 +19,15 @@ app = Flask(__name__,
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mimo-sistema-2025-production')
 app.config['ENV'] = 'production'
 
+# Filtros personalizados para templates
+@app.template_filter('currency')
+def currency_filter(value):
+    """Filtro para formatar valores monetários"""
+    try:
+        return f"R$ {float(value):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    except (ValueError, TypeError):
+        return "R$ 0,00"
+
 @app.route('/health')
 def health_check():
     """Health check principal do sistema"""
@@ -38,10 +47,19 @@ def health_check():
 def index():
     """Página inicial do sistema - Interface Web"""
     try:
+        # Dados de exemplo para o dashboard
+        stats = {
+            'total_clientes': 150,
+            'produtos_ativos': 89,
+            'vendas_mes': 45,
+            'receita_mes': 25750.80
+        }
+
         return render_template('dashboard_final.html',
                              sistema_nome='Sistema MIMO',
                              versao='PRODUCTION-1.0.0',
-                             timestamp=datetime.now().strftime('%d/%m/%Y %H:%M'))
+                             timestamp=datetime.now().strftime('%d/%m/%Y %H:%M'),
+                             stats=stats)
     except Exception as e:
         # Fallback para JSON se template não existir
         return jsonify({
@@ -133,10 +151,19 @@ def api_info():
 def dashboard():
     """Dashboard principal do sistema"""
     try:
+        # Dados de exemplo para o dashboard
+        stats = {
+            'total_clientes': 150,
+            'produtos_ativos': 89,
+            'vendas_mes': 45,
+            'receita_mes': 25750.80
+        }
+
         return render_template('dashboard_final.html',
                              sistema_nome='Sistema MIMO',
                              versao='PRODUCTION-1.0.0',
-                             timestamp=datetime.now().strftime('%d/%m/%Y %H:%M'))
+                             timestamp=datetime.now().strftime('%d/%m/%Y %H:%M'),
+                             stats=stats)
     except Exception as e:
         return render_template('em_desenvolvimento.html',
                              erro=str(e))
