@@ -76,11 +76,19 @@ def ensure_database_initialized():
 
                 for table_name in required_tables:
                     try:
-                        # Compatibilidade SQLAlchemy 1.4 e 2.0
-                        try:
-                            result = db.session.execute(db.text(f"SELECT 1 FROM {table_name} LIMIT 1"))
-                        except AttributeError:
-                            result = db.session.execute(f"SELECT 1 FROM {table_name} LIMIT 1")
+                        # Usar ORM para verificar tabelas - mais compatível
+                        if table_name == 'clientes':
+                            Cliente.query.first()
+                        elif table_name == 'produtos':
+                            Produto.query.first()
+                        elif table_name == 'vendas':
+                            Venda.query.first()
+                        elif table_name == 'itens_venda':
+                            ItemVenda.query.first()
+                        elif table_name == 'observacoes_entrega':
+                            ObservacaoEntrega.query.first()
+                        elif table_name == 'interacoes_cliente':
+                            InteracaoCliente.query.first()
                         logger.info(f"✅ [{timestamp}] Tabela '{table_name}' verificada com sucesso")
                     except Exception as table_error:
                         logger.warning(f"❌ [{timestamp}] Tabela '{table_name}' não encontrada ou com erro: {table_error}")
@@ -425,16 +433,20 @@ def migrate_database():
     try:
         print("🔄 Verificando migração do banco...")
 
-        # Verificar coluna produtos_interesse
+        # Verificar coluna produtos_interesse usando ORM
         try:
-            db.session.execute(db.text('SELECT produtos_interesse FROM interacoes_cliente LIMIT 1'))
-            print("✅ Coluna produtos_interesse já existe")
+            # Tentar acessar a coluna através do modelo
+            test_interacao = InteracaoCliente.query.first()
+            if test_interacao and hasattr(test_interacao, 'produtos_interesse'):
+                print("✅ Coluna produtos_interesse já existe")
+            else:
+                raise AttributeError("Coluna não existe")
         except:
-            # Coluna não existe, tentar adicionar
+            # Coluna não existe, tentar adicionar usando SQL direto
             try:
                 print("🔄 Adicionando coluna produtos_interesse...")
-                db.session.execute(db.text('ALTER TABLE interacoes_cliente ADD COLUMN produtos_interesse TEXT'))
-                db.session.commit()
+                # Usar connection direta para ALTER TABLE
+                db.engine.execute('ALTER TABLE interacoes_cliente ADD COLUMN produtos_interesse TEXT')
                 print("✅ Coluna produtos_interesse adicionada")
             except Exception as alter_error:
                 print(f"⚠️ Erro ao adicionar coluna produtos_interesse: {alter_error}")
@@ -936,51 +948,66 @@ def logout():
 
 @app.route('/health')
 def health_check():
-    """Verificação detalhada de saúde da aplicação com diagnósticos completos"""
+    """Verificação de saúde simplificada - compatível com SQLAlchemy 1.4 + Flask-SQLAlchemy 2.5"""
     timestamp = datetime.now().isoformat()
     logger.info(f"🏥 [{timestamp}] Health check solicitado")
 
-    health_data = {
-        'timestamp': timestamp,
-        'service': 'Sistema MIMO',
-        'version': '1.0.0',
-        'environment': 'production' if not app.debug else 'development'
-    }
-
-    # Teste básico primeiro - versão ultra-compatível
     try:
         with app.app_context():
-            # Teste simples de conectividade usando apenas ORM
+            # Importar versões para diagnóstico
+            from sqlalchemy import __version__ as sqlalchemy_version
+            import flask_sqlalchemy
+            flask_sqlalchemy_version = flask_sqlalchemy.__version__
+
+            logger.info(f"📦 [{timestamp}] SQLAlchemy: {sqlalchemy_version}, Flask-SQLAlchemy: {flask_sqlalchemy_version}")
+
+            # Teste básico usando apenas ORM - sem db.text() ou execute()
             try:
-                # Tentar usar uma consulta ORM simples primeiro
-                from sqlalchemy import __version__ as sqlalchemy_version
-                logger.info(f"📦 [{timestamp}] SQLAlchemy version: {sqlalchemy_version}")
+                # Garantir que as tabelas existem
+                db.create_all()
 
-                # Teste básico usando ORM que funciona em todas as versões
-                test_query = db.session.query(db.func.count()).select_from(db.text('(SELECT 1) as test'))
-                test_query.scalar()
-                logger.info(f"✅ [{timestamp}] Conectividade básica OK via ORM")
+                # Teste simples com ORM
+                cliente_count = Cliente.query.count()
+                logger.info(f"✅ [{timestamp}] Database OK - {cliente_count} clientes")
 
-            except Exception as orm_error:
-                logger.warning(f"⚠️ [{timestamp}] ORM test failed: {orm_error}")
-                # Fallback para teste ainda mais básico
+                return jsonify({
+                    'status': 'healthy',
+                    'message': 'Sistema MIMO funcionando corretamente',
+                    'timestamp': timestamp,
+                    'service': 'Sistema MIMO',
+                    'version': '1.0.0',
+                    'environment': 'production' if not app.debug else 'development',
+                    'database': {
+                        'status': 'connected',
+                        'client_count': cliente_count
+                    },
+                    'versions': {
+                        'sqlalchemy': sqlalchemy_version,
+                        'flask_sqlalchemy': flask_sqlalchemy_version
+                    }
+                }), 200
+
+            except Exception as db_error:
+                logger.error(f"❌ [{timestamp}] Database error: {db_error}")
+
+                # Tentar inicializar o banco se der erro
                 try:
-                    # Usar engine diretamente se disponível
-                    if hasattr(db.engine, 'execute'):
-                        db.engine.execute('SELECT 1')
-                    else:
-                        # SQLAlchemy 2.0+ - usar connection
-                        with db.engine.connect() as conn:
-                            conn.execute(db.text('SELECT 1'))
-                    logger.info(f"✅ [{timestamp}] Conectividade básica OK via engine")
-                except Exception as engine_error:
-                    logger.error(f"❌ [{timestamp}] Engine test failed: {engine_error}")
-                    # Último fallback - apenas verificar se o banco existe
-                    try:
-                        db.create_all()  # Isso sempre funciona
-                        logger.info(f"✅ [{timestamp}] Database structure OK")
-                    except Exception as final_error:
-                        raise Exception(f"All connectivity tests failed: {final_error}")
+                    ensure_database_initialized()
+                    return jsonify({
+                        'status': 'healthy',
+                        'message': 'Sistema inicializado com sucesso',
+                        'timestamp': timestamp,
+                        'database': {
+                            'status': 'initialized'
+                        }
+                    }), 200
+                except Exception as init_error:
+                    return jsonify({
+                        'status': 'unhealthy',
+                        'message': f'Erro no sistema: {str(db_error)}',
+                        'timestamp': timestamp,
+                        'init_error': str(init_error)
+                    }), 500
 
             # Executar inicialização automática durante health check
             db_status = ensure_database_initialized()

@@ -1,6 +1,6 @@
 # Dependências do Sistema MIMO Completo
 Flask==2.3.3
-Flask-SQLAlchemy==3.0.5
+Flask-SQLAlchemy==2.5.1
 Flask-Login==0.6.3
 Werkzeug==2.3.7
 Jinja2==3.1.2
