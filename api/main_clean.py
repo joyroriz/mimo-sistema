@@ -14,6 +14,8 @@ import json
 # Importar módulos do sistema
 from .database import db
 from .models import Cliente, Produto, Venda, Entrega
+from .models_expandidos import ClienteExpandido, ProdutoExpandido, CRMProspect, KanbanEntrega, Usuario
+from .analytics import MIMOAnalytics
 from .seed_data import criar_dados_exemplo
 
 # Configurar caminhos absolutos para Vercel
@@ -64,7 +66,11 @@ def index():
             criar_dados_exemplo()
             stats = db.get_stats()
 
-        # Usar dados reais do banco de dados
+        # Obter KPIs avançados do analytics
+        kpis = MIMOAnalytics.obter_kpis_dashboard()
+
+        # Combinar dados básicos com KPIs avançados
+        stats.update(kpis)
 
         # Verificar se template existe
         template_path = os.path.join(app.template_folder, 'dashboard_final.html')
@@ -324,6 +330,159 @@ def api_stats():
             'error': str(e)
         }), 500
 
+@app.route('/api/kpis', methods=['GET'])
+def api_kpis():
+    """API: KPIs avançados do dashboard"""
+    try:
+        kpis = MIMOAnalytics.obter_kpis_dashboard()
+        return jsonify({
+            'success': True,
+            'data': kpis
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/crm/prospects', methods=['GET'])
+def api_crm_prospects():
+    """API: Listar prospects do CRM por estágio"""
+    try:
+        pipeline = CRMProspect.listar_por_estagio()
+        return jsonify({
+            'success': True,
+            'data': pipeline
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/crm/prospects', methods=['POST'])
+def api_crm_criar_prospect():
+    """API: Criar novo prospect"""
+    try:
+        dados = request.get_json()
+        prospect_id = CRMProspect.criar(dados)
+
+        if prospect_id:
+            return jsonify({
+                'success': True,
+                'data': {'id': prospect_id},
+                'message': 'Prospect criado com sucesso'
+            }), 201
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Erro ao criar prospect'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/crm/prospects/<int:prospect_id>/mover', methods=['POST'])
+def api_crm_mover_prospect(prospect_id):
+    """API: Mover prospect para novo estágio"""
+    try:
+        dados = request.get_json()
+        novo_estagio = dados.get('estagio')
+
+        if CRMProspect.mover_estagio(prospect_id, novo_estagio):
+            return jsonify({
+                'success': True,
+                'message': 'Prospect movido com sucesso'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Erro ao mover prospect'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/kanban/entregas', methods=['GET'])
+def api_kanban_entregas():
+    """API: Obter entregas organizadas para Kanban"""
+    try:
+        kanban = KanbanEntrega.obter_kanban()
+        return jsonify({
+            'success': True,
+            'data': kanban
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/kanban/entregas/<int:entrega_id>/mover', methods=['POST'])
+def api_kanban_mover_entrega(entrega_id):
+    """API: Mover entrega no Kanban"""
+    try:
+        dados = request.get_json()
+        novo_status = dados.get('status')
+        observacao = dados.get('observacao')
+
+        if KanbanEntrega.mover_status(entrega_id, novo_status, observacao):
+            return jsonify({
+                'success': True,
+                'message': 'Entrega movida com sucesso'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Erro ao mover entrega'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/clientes/buscar', methods=['GET'])
+def api_clientes_buscar_inteligente():
+    """API: Busca inteligente de clientes"""
+    try:
+        termo = request.args.get('q', '')
+        if not termo:
+            return jsonify({
+                'success': False,
+                'error': 'Termo de busca é obrigatório'
+            }), 400
+
+        clientes = ClienteExpandido.buscar_inteligente(termo)
+        return jsonify({
+            'success': True,
+            'data': clientes
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/produtos/estoque', methods=['GET'])
+def api_produtos_com_estoque():
+    """API: Listar produtos com status de estoque"""
+    try:
+        produtos = ProdutoExpandido.listar_com_status_estoque()
+        return jsonify({
+            'success': True,
+            'data': produtos
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 # ============================================================================
 # ROTAS DO FRONTEND - INTERFACE WEB
 # ============================================================================
@@ -427,23 +586,28 @@ def vendas_nova():
 
 @app.route('/entregas')
 def entregas():
-    """Página de gestão de entregas"""
+    """Página Kanban de gestão de entregas"""
     try:
-        return render_template('em_desenvolvimento.html',
-                             modulo='Gestão de Entregas',
-                             descricao='Módulo de gestão de entregas em desenvolvimento',
-                             funcionalidades=[
-                                 'Controle de entregas',
-                                 'Rastreamento',
-                                 'Calendário de entregas',
-                                 'Relatórios logísticos'
-                             ])
+        return render_template('kanban_entregas.html')
     except Exception as e:
         return jsonify({
             'error': 'Template error',
             'module': 'Entregas',
             'message': str(e),
-            'status': 'em_desenvolvimento'
+            'status': 'erro'
+        })
+
+@app.route('/crm')
+def crm():
+    """Página CRM Pipeline"""
+    try:
+        return render_template('crm_pipeline.html')
+    except Exception as e:
+        return jsonify({
+            'error': 'Template error',
+            'module': 'CRM',
+            'message': str(e),
+            'status': 'erro'
         })
 
 # ============================================================================

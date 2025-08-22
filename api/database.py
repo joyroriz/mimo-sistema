@@ -40,13 +40,14 @@ class MIMODatabase:
         cursor = conn.cursor()
         
         try:
-            # Tabela de Clientes
+            # Tabela de Clientes (Expandida)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS clientes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     nome TEXT NOT NULL,
                     email TEXT UNIQUE,
                     telefone TEXT,
+                    whatsapp TEXT,
                     endereco TEXT,
                     cidade TEXT,
                     estado TEXT,
@@ -55,12 +56,16 @@ class MIMODatabase:
                     data_nascimento DATE,
                     observacoes TEXT,
                     ativo BOOLEAN DEFAULT 1,
+                    tipo_cliente TEXT DEFAULT 'pessoa_fisica',
+                    origem TEXT DEFAULT 'loja',
+                    valor_total_compras DECIMAL(10,2) DEFAULT 0,
+                    ultima_compra DATE,
                     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
             
-            # Tabela de Produtos
+            # Tabela de Produtos (Expandida)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS produtos (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,12 +74,17 @@ class MIMODatabase:
                     categoria TEXT,
                     preco DECIMAL(10,2) NOT NULL,
                     custo DECIMAL(10,2),
-                    estoque_atual INTEGER DEFAULT 0,
-                    estoque_minimo INTEGER DEFAULT 0,
+                    margem_lucro DECIMAL(5,2),
+                    estoque_atual DECIMAL(10,3) DEFAULT 0,
+                    estoque_minimo DECIMAL(10,3) DEFAULT 0,
+                    estoque_maximo DECIMAL(10,3) DEFAULT 0,
+                    unidade_medida TEXT DEFAULT 'UN',
                     codigo_barras TEXT,
                     sku TEXT UNIQUE,
                     peso DECIMAL(8,3),
                     dimensoes TEXT,
+                    fornecedor TEXT,
+                    tempo_preparo INTEGER DEFAULT 0,
                     ativo BOOLEAN DEFAULT 1,
                     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -114,7 +124,7 @@ class MIMODatabase:
                 )
             ''')
             
-            # Tabela de Entregas
+            # Tabela de Entregas (Expandida para Kanban)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS entregas (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,14 +132,72 @@ class MIMODatabase:
                     endereco_entrega TEXT NOT NULL,
                     data_prevista DATE,
                     data_entrega DATE,
-                    status TEXT DEFAULT 'pendente',
+                    status TEXT DEFAULT 'em_producao',
                     transportadora TEXT,
                     codigo_rastreamento TEXT,
                     valor_frete DECIMAL(10,2) DEFAULT 0,
                     observacoes TEXT,
                     responsavel TEXT,
+                    tempo_preparo_estimado INTEGER DEFAULT 30,
+                    prioridade TEXT DEFAULT 'normal',
+                    data_status_mudanca TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (venda_id) REFERENCES vendas (id)
+                )
+            ''')
+
+            # Tabela de CRM - Pipeline de Vendas
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS crm_prospects (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nome TEXT NOT NULL,
+                    email TEXT,
+                    telefone TEXT,
+                    whatsapp TEXT,
+                    empresa TEXT,
+                    cargo TEXT,
+                    origem TEXT,
+                    estagio TEXT DEFAULT 'prospect',
+                    valor_estimado DECIMAL(10,2) DEFAULT 0,
+                    probabilidade INTEGER DEFAULT 25,
+                    data_contato DATE,
+                    proxima_acao TEXT,
+                    data_proxima_acao DATE,
+                    observacoes TEXT,
+                    responsavel TEXT,
+                    convertido_cliente_id INTEGER,
+                    ativo BOOLEAN DEFAULT 1,
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (convertido_cliente_id) REFERENCES clientes (id)
+                )
+            ''')
+
+            # Tabela de Interações CRM
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS crm_interacoes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    prospect_id INTEGER NOT NULL,
+                    tipo_interacao TEXT NOT NULL,
+                    descricao TEXT,
+                    resultado TEXT,
+                    data_interacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    responsavel TEXT,
+                    FOREIGN KEY (prospect_id) REFERENCES crm_prospects (id)
+                )
+            ''')
+
+            # Tabela de Usuários (Sistema de Login)
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nome TEXT NOT NULL,
+                    email TEXT UNIQUE NOT NULL,
+                    senha_hash TEXT NOT NULL,
+                    nivel_acesso TEXT DEFAULT 'operador',
+                    ativo BOOLEAN DEFAULT 1,
+                    ultimo_login TIMESTAMP,
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
             

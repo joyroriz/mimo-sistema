@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban de Entregas - Sistema MIMO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --mimo-gradient: linear-gradient(135deg, #FF8E63 0%, #FF7EB0 50%, #63A4FF 100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #FCFBF8 0%, #f8f9fa 100%);
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .kanban-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 20px 0;
+            min-height: 70vh;
+        }
+        
+        .kanban-column {
+            min-width: 280px;
+            max-width: 300px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .kanban-header {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .status-em_producao { background: #dc3545; }
+        .status-aguardando { background: #fd7e14; }
+        .status-em_preparo { background: #ffc107; color: #000; }
+        .status-pronto_entrega { background: #0dcaf0; }
+        .status-saiu_entrega { background: #6f42c1; }
+        .status-entregue { background: #198754; }
+        
+        .kanban-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: move;
+            transition: all 0.3s ease;
+            border-left: 4px solid #ddd;
+        }
+        
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .kanban-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .prioridade-alta { border-left-color: #dc3545; }
+        .prioridade-normal { border-left-color: #0dcaf0; }
+        .prioridade-baixa { border-left-color: #198754; }
+        
+        .card-header {
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .card-cliente {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+        
+        .card-produtos {
+            font-size: 0.8em;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75em;
+            color: #6c757d;
+        }
+        
+        .tempo-badge {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7em;
+        }
+        
+        .mimo-gradient-text {
+            background: var(--mimo-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+        
+        .auto-refresh {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .drop-zone {
+            min-height: 100px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #0dcaf0;
+            background: rgba(13, 202, 240, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg" style="background: var(--mimo-gradient);">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold" href="/">
+                <i class="bi bi-heart-fill me-2"></i>MIMO
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="/">Dashboard</a>
+                <a class="nav-link text-white" href="/clientes">Clientes</a>
+                <a class="nav-link text-white" href="/produtos">Produtos</a>
+                <a class="nav-link text-white" href="/vendas">Vendas</a>
+                <a class="nav-link text-white active" href="/entregas">Entregas</a>
+                <a class="nav-link text-white" href="/crm">CRM</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mimo-gradient-text">
+                <i class="bi bi-kanban me-2"></i>Kanban de Entregas
+            </h1>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" onclick="atualizarKanban()">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+                </button>
+                <button class="btn btn-outline-success btn-sm" onclick="exportarRelatorio()">
+                    <i class="bi bi-download me-1"></i>Relatório
+                </button>
+            </div>
+        </div>
+        
+        <div class="auto-refresh">
+            <small class="text-muted">
+                <i class="bi bi-clock me-1"></i>
+                Atualização automática: <span id="countdown">30</span>s
+            </small>
+        </div>
+        
+        <div class="kanban-container" id="kanban-container">
+            <!-- Colunas serão carregadas via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal para observações -->
+    <div class="modal fade" id="observacaoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar Observação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" id="observacaoTexto" rows="3" placeholder="Digite sua observação..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarObservacao()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let kanbanData = {};
+        let currentEntregaId = null;
+        let currentNovoStatus = null;
+        let countdownTimer = 30;
+        
+        const statusConfig = {
+            'em_producao': { nome: 'Em Produção', cor: '#dc3545' },
+            'aguardando': { nome: 'Aguardando', cor: '#fd7e14' },
+            'em_preparo': { nome: 'Em Preparo', cor: '#ffc107' },
+            'pronto_entrega': { nome: 'Pronto para Entrega', cor: '#0dcaf0' },
+            'saiu_entrega': { nome: 'Saiu para Entrega', cor: '#6f42c1' },
+            'entregue': { nome: 'Entregue', cor: '#198754' }
+        };
+        
+        // Carregar dados do Kanban
+        async function carregarKanban() {
+            try {
+                const response = await fetch('/api/kanban/entregas');
+                const result = await response.json();
+                
+                if (result.success) {
+                    kanbanData = result.data;
+                    renderizarKanban();
+                } else {
+                    console.error('Erro ao carregar Kanban:', result.error);
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+            }
+        }
+        
+        // Renderizar Kanban
+        function renderizarKanban() {
+            const container = document.getElementById('kanban-container');
+            container.innerHTML = '';
+            
+            Object.keys(statusConfig).forEach(status => {
+                const column = criarColuna(status, kanbanData[status] || []);
+                container.appendChild(column);
+            });
+            
+            configurarDragAndDrop();
+        }
+        
+        // Criar coluna do Kanban
+        function criarColuna(status, entregas) {
+            const config = statusConfig[status];
+            const column = document.createElement('div');
+            column.className = 'kanban-column';
+            column.dataset.status = status;
+            
+            column.innerHTML = `
+                <div class="kanban-header status-${status}">
+                    ${config.nome}
+                    <span class="badge bg-light text-dark ms-2">${entregas.length}</span>
+                </div>
+                <div class="kanban-cards" id="cards-${status}">
+                    ${entregas.map(entrega => criarCard(entrega)).join('')}
+                </div>
+                ${entregas.length === 0 ? '<div class="drop-zone">Arraste entregas aqui</div>' : ''}
+            `;
+            
+            return column;
+        }
+        
+        // Criar card de entrega
+        function criarCard(entrega) {
+            const tempoDecorrido = calcularTempoDecorrido(entrega.data_criacao);
+            const prioridadeClass = `prioridade-${entrega.prioridade || 'normal'}`;
+            
+            return `
+                <div class="kanban-card ${prioridadeClass}" 
+                     draggable="true" 
+                     data-entrega-id="${entrega.id}"
+                     data-status="${entrega.status}">
+                    <div class="card-header">
+                        #${entrega.numero_venda || entrega.id}
+                        <i class="bi bi-grip-vertical float-end text-muted"></i>
+                    </div>
+                    <div class="card-cliente">
+                        <i class="bi bi-person me-1"></i>
+                        ${entrega.cliente_nome || 'Cliente não informado'}
+                    </div>
+                    <div class="card-produtos">
+                        <i class="bi bi-box me-1"></i>
+                        ${entrega.produtos || 'Produtos não informados'}
+                    </div>
+                    <div class="card-footer">
+                        <span class="tempo-badge">${tempoDecorrido}</span>
+                        <small>${entrega.responsavel || 'Sem responsável'}</small>
+                    </div>
+                    ${entrega.observacoes ? `<div class="mt-2"><small class="text-muted"><i class="bi bi-chat-dots me-1"></i>Com observações</small></div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Calcular tempo decorrido
+        function calcularTempoDecorrido(dataInicio) {
+            const inicio = new Date(dataInicio);
+            const agora = new Date();
+            const diffHoras = Math.floor((agora - inicio) / (1000 * 60 * 60));
+            
+            if (diffHoras < 1) return 'Agora';
+            if (diffHoras < 24) return `${diffHoras}h`;
+            
+            const diffDias = Math.floor(diffHoras / 24);
+            return `${diffDias}d`;
+        }
+        
+        // Configurar Drag and Drop
+        function configurarDragAndDrop() {
+            const cards = document.querySelectorAll('.kanban-card');
+            const columns = document.querySelectorAll('.kanban-column');
+            
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+            
+            columns.forEach(column => {
+                column.addEventListener('dragover', handleDragOver);
+                column.addEventListener('drop', handleDrop);
+                column.addEventListener('dragenter', handleDragEnter);
+                column.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+        
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.entregaId);
+            e.target.classList.add('dragging');
+        }
+        
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            const entregaId = e.dataTransfer.getData('text/plain');
+            const novoStatus = e.currentTarget.dataset.status;
+            const cardElement = document.querySelector(`[data-entrega-id="${entregaId}"]`);
+            const statusAtual = cardElement.dataset.status;
+            
+            if (statusAtual !== novoStatus) {
+                currentEntregaId = entregaId;
+                currentNovoStatus = novoStatus;
+                
+                // Mostrar modal para observação
+                const modal = new bootstrap.Modal(document.getElementById('observacaoModal'));
+                modal.show();
+            }
+        }
+        
+        // Salvar observação e mover entrega
+        async function salvarObservacao() {
+            const observacao = document.getElementById('observacaoTexto').value;
+            
+            try {
+                const response = await fetch(`/api/kanban/entregas/${currentEntregaId}/mover`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: currentNovoStatus,
+                        observacao: observacao
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('observacaoModal'));
+                    modal.hide();
+                    
+                    // Limpar campo
+                    document.getElementById('observacaoTexto').value = '';
+                    
+                    // Recarregar Kanban
+                    await carregarKanban();
+                    
+                    // Mostrar notificação
+                    mostrarNotificacao('Entrega movida com sucesso!', 'success');
+                } else {
+                    mostrarNotificacao('Erro ao mover entrega: ' + result.error, 'error');
+                }
+            } catch (error) {
+                mostrarNotificacao('Erro na requisição: ' + error.message, 'error');
+            }
+        }
+        
+        // Mostrar notificação
+        function mostrarNotificacao(mensagem, tipo) {
+            // Implementar sistema de notificações
+            console.log(`${tipo.toUpperCase()}: ${mensagem}`);
+        }
+        
+        // Atualizar Kanban manualmente
+        function atualizarKanban() {
+            carregarKanban();
+            countdownTimer = 30;
+        }
+        
+        // Exportar relatório
+        function exportarRelatorio() {
+            window.open('/api/relatorios/entregas', '_blank');
+        }
+        
+        // Countdown para atualização automática
+        function iniciarCountdown() {
+            setInterval(() => {
+                countdownTimer--;
+                document.getElementById('countdown').textContent = countdownTimer;
+                
+                if (countdownTimer <= 0) {
+                    carregarKanban();
+                    countdownTimer = 30;
+                }
+            }, 1000);
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarKanban();
+            iniciarCountdown();
+        });
+    </script>
+</body>
+</html>

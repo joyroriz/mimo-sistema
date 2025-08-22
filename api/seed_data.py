@@ -7,6 +7,7 @@ Data: 2025-08-22
 """
 
 from .models import Cliente, Produto, Venda, Entrega
+from .models_expandidos import CRMProspect, KanbanEntrega, Usuario
 from .database import db
 
 def criar_dados_exemplo():
@@ -199,8 +200,73 @@ def criar_dados_exemplo():
             entrega_id = Entrega.criar(entrega_data)
             print(f"✅ Entrega criada: ID {entrega_id}")
         
-        print("🎉 Dados de exemplo criados com sucesso!")
-        
+        # PROSPECTS CRM DE EXEMPLO
+        prospects_exemplo = [
+            {
+                'nome': 'Carlos Eduardo Mendes',
+                'email': 'carlos.mendes@empresa.com',
+                'telefone': '(11) 99999-0001',
+                'whatsapp': '(11) 99999-0001',
+                'empresa': 'Tech Solutions Ltda',
+                'cargo': 'Gerente de Compras',
+                'origem': 'indicacao',
+                'valor_estimado': 500.00,
+                'observacoes': 'Interessado em pedidos corporativos semanais',
+                'responsavel': 'Sistema MIMO'
+            },
+            {
+                'nome': 'Fernanda Costa Silva',
+                'email': 'fernanda@startup.com',
+                'telefone': '(21) 88888-0002',
+                'whatsapp': '(21) 88888-0002',
+                'empresa': 'StartupX',
+                'cargo': 'CEO',
+                'origem': 'redes_sociais',
+                'valor_estimado': 800.00,
+                'observacoes': 'Quer implementar açaí como benefício para funcionários',
+                'responsavel': 'Sistema MIMO'
+            },
+            {
+                'nome': 'Roberto Santos Lima',
+                'email': 'roberto.lima@gmail.com',
+                'telefone': '(11) 77777-0003',
+                'whatsapp': '(11) 77777-0003',
+                'empresa': 'Freelancer',
+                'cargo': 'Personal Trainer',
+                'origem': 'site',
+                'valor_estimado': 200.00,
+                'observacoes': 'Quer revender produtos para seus clientes',
+                'responsavel': 'Sistema MIMO'
+            }
+        ]
+
+        prospect_ids = []
+        for prospect_data in prospects_exemplo:
+            prospect_id = CRMProspect.criar(prospect_data)
+            prospect_ids.append(prospect_id)
+            print(f"✅ Prospect criado: {prospect_data['nome']}")
+
+        # Mover alguns prospects para estágios diferentes
+        if len(prospect_ids) >= 3:
+            CRMProspect.mover_estagio(prospect_ids[1], 'contato')
+            CRMProspect.mover_estagio(prospect_ids[2], 'negociacao')
+            print("✅ Prospects movidos para diferentes estágios")
+
+        # Adicionar interações aos prospects
+        for i, prospect_id in enumerate(prospect_ids):
+            CRMProspect.adicionar_interacao(
+                prospect_id,
+                'ligacao',
+                f'Primeira ligação de contato - prospect {i+1}',
+                'Interessado, agendar reunião',
+                'Sistema MIMO'
+            )
+
+        # CRIAR USUÁRIO ADMINISTRADOR
+        Usuario.criar_usuario_admin()
+
+        print("🎉 Dados de exemplo expandidos criados com sucesso!")
+
         # Mostrar estatísticas
         stats = db.get_stats()
         print(f"📊 Estatísticas finais:")
@@ -208,7 +274,9 @@ def criar_dados_exemplo():
         print(f"   - Produtos: {stats['total_produtos']}")
         print(f"   - Vendas: {stats['vendas_mes']}")
         print(f"   - Receita: R$ {stats['receita_mes']:.2f}")
-        
+        print(f"   - Prospects CRM: {len(prospect_ids)}")
+        print(f"   - Entregas: {len(venda_ids)}")
+
     except Exception as e:
         print(f"❌ Erro ao criar dados de exemplo: {e}")
 
