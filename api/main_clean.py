@@ -10,10 +10,15 @@ from flask import Flask, jsonify, render_template, request, redirect, url_for, f
 from datetime import datetime
 import os
 
-# Criar aplicação Flask com templates e static
+# Configurar caminhos absolutos para Vercel
+current_dir = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.join(os.path.dirname(current_dir), 'templates')
+static_dir = os.path.join(os.path.dirname(current_dir), 'static')
+
+# Criar aplicação Flask com caminhos absolutos
 app = Flask(__name__,
-           template_folder='../templates',
-           static_folder='../static')
+           template_folder=template_dir,
+           static_folder=static_dir)
 
 # Configuração da aplicação
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mimo-sistema-2025-production')
@@ -47,6 +52,9 @@ def health_check():
 def index():
     """Página inicial do sistema - Interface Web"""
     try:
+        # Debug: verificar caminhos
+        import traceback
+
         # Dados de exemplo para o dashboard
         stats = {
             'total_clientes': 150,
@@ -55,31 +63,49 @@ def index():
             'receita_mes': 25750.80
         }
 
+        # Verificar se template existe
+        template_path = os.path.join(app.template_folder, 'dashboard_final.html')
+
         return render_template('dashboard_final.html',
                              sistema_nome='Sistema MIMO',
                              versao='PRODUCTION-1.0.0',
                              timestamp=datetime.now().strftime('%d/%m/%Y %H:%M'),
                              stats=stats)
     except Exception as e:
-        # Fallback para JSON se template não existir
+        # Debug detalhado
+        import traceback
+        error_details = {
+            'error': str(e),
+            'traceback': traceback.format_exc(),
+            'template_folder': app.template_folder,
+            'static_folder': app.static_folder,
+            'template_exists': os.path.exists(os.path.join(app.template_folder, 'dashboard_final.html')) if app.template_folder else False,
+            'current_dir': os.getcwd(),
+            'files_in_template_dir': []
+        }
+
+        # Listar arquivos no diretório de templates se existir
+        try:
+            if app.template_folder and os.path.exists(app.template_folder):
+                error_details['files_in_template_dir'] = os.listdir(app.template_folder)
+        except:
+            pass
+
+        # Fallback para JSON com debug
         return jsonify({
             'name': 'Sistema MIMO',
             'description': 'Sistema de Gestão Empresarial',
-            'status': 'online',
+            'status': 'error',
             'version': 'PRODUCTION-1.0.0',
             'timestamp': datetime.now().isoformat(),
+            'debug': error_details,
             'endpoints': {
                 'health': '/health',
                 'status': '/status',
                 'info': '/info',
-                'api': '/api',
-                'dashboard': '/dashboard',
-                'clientes': '/clientes',
-                'produtos': '/produtos',
-                'vendas': '/vendas'
+                'api': '/api'
             },
-            'message': 'Bem-vindo ao Sistema MIMO',
-            'note': f'Template error: {str(e)}'
+            'message': 'Template error - showing debug info'
         })
 
 @app.route('/status')
@@ -142,6 +168,45 @@ def api_info():
         'authentication': 'not_required',
         'rate_limiting': 'not_configured'
     })
+
+@app.route('/debug')
+def debug_info():
+    """Debug da configuração do sistema"""
+    debug_data = {
+        'flask_config': {
+            'template_folder': app.template_folder,
+            'static_folder': app.static_folder,
+            'secret_key_set': bool(app.config.get('SECRET_KEY')),
+            'env': app.config.get('ENV')
+        },
+        'paths': {
+            'current_dir': os.getcwd(),
+            'script_dir': os.path.dirname(os.path.abspath(__file__)),
+            'template_dir_exists': os.path.exists(app.template_folder) if app.template_folder else False,
+            'static_dir_exists': os.path.exists(app.static_folder) if app.static_folder else False
+        },
+        'files': {},
+        'timestamp': datetime.now().isoformat()
+    }
+
+    # Listar arquivos nos diretórios
+    try:
+        if app.template_folder and os.path.exists(app.template_folder):
+            debug_data['files']['templates'] = os.listdir(app.template_folder)
+        else:
+            debug_data['files']['templates'] = 'Directory not found'
+    except Exception as e:
+        debug_data['files']['templates'] = f'Error: {str(e)}'
+
+    try:
+        if app.static_folder and os.path.exists(app.static_folder):
+            debug_data['files']['static'] = os.listdir(app.static_folder)
+        else:
+            debug_data['files']['static'] = 'Directory not found'
+    except Exception as e:
+        debug_data['files']['static'] = f'Error: {str(e)}'
+
+    return jsonify(debug_data)
 
 # ============================================================================
 # ROTAS DO FRONTEND - INTERFACE WEB
