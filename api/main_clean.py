@@ -9,6 +9,12 @@ Data: 2025-08-22
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 from datetime import datetime
 import os
+import json
+
+# Importar módulos do sistema
+from .database import db
+from .models import Cliente, Produto, Venda, Entrega
+from .seed_data import criar_dados_exemplo
 
 # Configurar caminhos absolutos para Vercel
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -52,16 +58,13 @@ def health_check():
 def index():
     """Página inicial do sistema - Interface Web"""
     try:
-        # Debug: verificar caminhos
-        import traceback
+        # Inicializar dados de exemplo se necessário
+        stats = db.get_stats()
+        if stats['total_clientes'] == 0:
+            criar_dados_exemplo()
+            stats = db.get_stats()
 
-        # Dados de exemplo para o dashboard
-        stats = {
-            'total_clientes': 150,
-            'total_produtos': 89,
-            'vendas_mes': 45,
-            'receita_mes': 25750.80
-        }
+        # Usar dados reais do banco de dados
 
         # Verificar se template existe
         template_path = os.path.join(app.template_folder, 'dashboard_final.html')
@@ -209,6 +212,119 @@ def debug_info():
     return jsonify(debug_data)
 
 # ============================================================================
+# ROTAS DA API - ENDPOINTS REST
+# ============================================================================
+
+@app.route('/api/clientes', methods=['GET'])
+def api_clientes_listar():
+    """API: Listar clientes"""
+    try:
+        clientes = Cliente.listar()
+        return jsonify({
+            'success': True,
+            'data': clientes,
+            'total': len(clientes)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/clientes', methods=['POST'])
+def api_clientes_criar():
+    """API: Criar novo cliente"""
+    try:
+        dados = request.get_json()
+        cliente_id = Cliente.criar(dados)
+
+        if cliente_id:
+            return jsonify({
+                'success': True,
+                'data': {'id': cliente_id},
+                'message': 'Cliente criado com sucesso'
+            }), 201
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Erro ao criar cliente'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/clientes/<int:cliente_id>', methods=['GET'])
+def api_clientes_buscar(cliente_id):
+    """API: Buscar cliente por ID"""
+    try:
+        cliente = Cliente.buscar_por_id(cliente_id)
+
+        if cliente:
+            return jsonify({
+                'success': True,
+                'data': cliente
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Cliente não encontrado'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/produtos', methods=['GET'])
+def api_produtos_listar():
+    """API: Listar produtos"""
+    try:
+        produtos = Produto.listar()
+        return jsonify({
+            'success': True,
+            'data': produtos,
+            'total': len(produtos)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/vendas', methods=['GET'])
+def api_vendas_listar():
+    """API: Listar vendas"""
+    try:
+        vendas = Venda.listar()
+        return jsonify({
+            'success': True,
+            'data': vendas,
+            'total': len(vendas)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/stats', methods=['GET'])
+def api_stats():
+    """API: Estatísticas do sistema"""
+    try:
+        stats = db.get_stats()
+        return jsonify({
+            'success': True,
+            'data': stats
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# ============================================================================
 # ROTAS DO FRONTEND - INTERFACE WEB
 # ============================================================================
 
@@ -216,13 +332,8 @@ def debug_info():
 def dashboard():
     """Dashboard principal do sistema"""
     try:
-        # Dados de exemplo para o dashboard
-        stats = {
-            'total_clientes': 150,
-            'total_produtos': 89,
-            'vendas_mes': 45,
-            'receita_mes': 25750.80
-        }
+        # Usar dados reais do banco de dados
+        stats = db.get_stats()
 
         return render_template('dashboard_final.html',
                              sistema_nome='Sistema MIMO',
@@ -237,21 +348,15 @@ def dashboard():
 def clientes():
     """Página de gestão de clientes"""
     try:
-        return render_template('modulo_simples.html',
-                             modulo='Gestão de Clientes',
-                             descricao='Módulo de gestão de clientes em desenvolvimento',
-                             funcionalidades=[
-                                 'Cadastro de clientes',
-                                 'Listagem e busca',
-                                 'Histórico de compras',
-                                 'Relatórios'
-                             ])
+        clientes_lista = Cliente.listar()
+        return render_template('clientes_lista.html',
+                             clientes=clientes_lista)
     except Exception as e:
         return jsonify({
             'error': 'Template error',
             'module': 'Clientes',
             'message': str(e),
-            'status': 'em_desenvolvimento'
+            'status': 'erro'
         })
 
 @app.route('/clientes/novo')
@@ -270,21 +375,15 @@ def clientes_novo():
 def produtos():
     """Página de gestão de produtos"""
     try:
-        return render_template('modulo_simples.html',
-                             modulo='Gestão de Produtos',
-                             descricao='Módulo de gestão de produtos em desenvolvimento',
-                             funcionalidades=[
-                                 'Cadastro de produtos',
-                                 'Controle de estoque',
-                                 'Preços e promoções',
-                                 'Relatórios de vendas'
-                             ])
+        produtos_lista = Produto.listar()
+        return render_template('produtos_lista.html',
+                             produtos=produtos_lista)
     except Exception as e:
         return jsonify({
             'error': 'Template error',
             'module': 'Produtos',
             'message': str(e),
-            'status': 'em_desenvolvimento'
+            'status': 'erro'
         })
 
 @app.route('/produtos/novo')
@@ -303,15 +402,9 @@ def produtos_novo():
 def vendas():
     """Página de gestão de vendas"""
     try:
-        return render_template('em_desenvolvimento.html',
-                             modulo='Gestão de Vendas',
-                             descricao='Módulo de gestão de vendas em desenvolvimento',
-                             funcionalidades=[
-                                 'Registro de vendas',
-                                 'Dashboard de vendas',
-                                 'Comissões',
-                                 'Relatórios financeiros'
-                             ])
+        vendas_lista = Venda.listar()
+        return render_template('vendas_lista.html',
+                             vendas=vendas_lista)
     except Exception as e:
         return jsonify({
             'error': 'Template error',
