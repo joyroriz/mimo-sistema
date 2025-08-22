@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Sistema MIMO - Versão Final para Novo Projeto Vercel
-Arquivo principal limpo, sem SQLAlchemy, pronto para deploy
+Sistema MIMO - Versão Final com Frontend Completo
+Aplicação Flask com interface web e API
 Data: 2025-08-22
 """
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 from datetime import datetime
 import os
 
-# Criar aplicação Flask
-app = Flask(__name__)
+# Criar aplicação Flask com templates e static
+app = Flask(__name__,
+           template_folder='../templates',
+           static_folder='../static')
+
+# Configuração da aplicação
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mimo-sistema-2025-production')
+app.config['ENV'] = 'production'
 
 @app.route('/health')
 def health_check():
@@ -30,21 +36,33 @@ def health_check():
 
 @app.route('/')
 def index():
-    """Página inicial do sistema"""
-    return jsonify({
-        'name': 'Sistema MIMO',
-        'description': 'Sistema de Gestão Empresarial',
-        'status': 'online',
-        'version': 'PRODUCTION-1.0.0',
-        'timestamp': datetime.now().isoformat(),
-        'endpoints': {
-            'health': '/health',
-            'status': '/status',
-            'info': '/info',
-            'api': '/api'
-        },
-        'message': 'Bem-vindo ao Sistema MIMO'
-    })
+    """Página inicial do sistema - Interface Web"""
+    try:
+        return render_template('dashboard_final.html',
+                             sistema_nome='Sistema MIMO',
+                             versao='PRODUCTION-1.0.0',
+                             timestamp=datetime.now().strftime('%d/%m/%Y %H:%M'))
+    except Exception as e:
+        # Fallback para JSON se template não existir
+        return jsonify({
+            'name': 'Sistema MIMO',
+            'description': 'Sistema de Gestão Empresarial',
+            'status': 'online',
+            'version': 'PRODUCTION-1.0.0',
+            'timestamp': datetime.now().isoformat(),
+            'endpoints': {
+                'health': '/health',
+                'status': '/status',
+                'info': '/info',
+                'api': '/api',
+                'dashboard': '/dashboard',
+                'clientes': '/clientes',
+                'produtos': '/produtos',
+                'vendas': '/vendas'
+            },
+            'message': 'Bem-vindo ao Sistema MIMO',
+            'note': f'Template error: {str(e)}'
+        })
 
 @app.route('/status')
 def status():
@@ -107,34 +125,148 @@ def api_info():
         'rate_limiting': 'not_configured'
     })
 
-# Tratamento de erros
+# ============================================================================
+# ROTAS DO FRONTEND - INTERFACE WEB
+# ============================================================================
+
+@app.route('/dashboard')
+def dashboard():
+    """Dashboard principal do sistema"""
+    try:
+        return render_template('dashboard_final.html',
+                             sistema_nome='Sistema MIMO',
+                             versao='PRODUCTION-1.0.0',
+                             timestamp=datetime.now().strftime('%d/%m/%Y %H:%M'))
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             erro=str(e))
+
+@app.route('/clientes')
+def clientes():
+    """Página de gestão de clientes"""
+    try:
+        return render_template('clientes/listar.html',
+                             titulo='Gestão de Clientes',
+                             clientes=[])  # Lista vazia por enquanto
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo='Clientes',
+                             erro=str(e))
+
+@app.route('/clientes/novo')
+def clientes_novo():
+    """Formulário para novo cliente"""
+    try:
+        return render_template('clientes/form.html',
+                             titulo='Novo Cliente',
+                             acao='Cadastrar')
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo='Novo Cliente',
+                             erro=str(e))
+
+@app.route('/produtos')
+def produtos():
+    """Página de gestão de produtos"""
+    try:
+        return render_template('produtos/listar.html',
+                             titulo='Gestão de Produtos',
+                             produtos=[])  # Lista vazia por enquanto
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo='Produtos',
+                             erro=str(e))
+
+@app.route('/produtos/novo')
+def produtos_novo():
+    """Formulário para novo produto"""
+    try:
+        return render_template('produtos/form.html',
+                             titulo='Novo Produto',
+                             acao='Cadastrar')
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo='Novo Produto',
+                             erro=str(e))
+
+@app.route('/vendas')
+def vendas():
+    """Página de gestão de vendas"""
+    try:
+        return render_template('vendas/listar.html',
+                             titulo='Gestão de Vendas',
+                             vendas=[])  # Lista vazia por enquanto
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo='Vendas',
+                             erro=str(e))
+
+@app.route('/vendas/nova')
+def vendas_nova():
+    """Formulário para nova venda"""
+    try:
+        return render_template('vendas/form.html',
+                             titulo='Nova Venda',
+                             acao='Registrar')
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo='Nova Venda',
+                             erro=str(e))
+
+@app.route('/entregas')
+def entregas():
+    """Página de gestão de entregas"""
+    try:
+        return render_template('entregas/listar.html',
+                             titulo='Gestão de Entregas',
+                             entregas=[])  # Lista vazia por enquanto
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo='Entregas',
+                             erro=str(e))
+
+# ============================================================================
+# TRATAMENTO DE ERROS
+# ============================================================================
+
 @app.errorhandler(404)
 def not_found(error):
     """Handler para páginas não encontradas"""
-    return jsonify({
-        'error': 'Not Found',
-        'message': 'The requested endpoint was not found',
-        'status_code': 404,
-        'timestamp': datetime.now().isoformat(),
-        'available_endpoints': [
-            '/',
-            '/health',
-            '/status',
-            '/info',
-            '/api'
-        ]
-    }), 404
+    # Tentar renderizar página 404 personalizada
+    try:
+        return render_template('404.html'), 404
+    except:
+        # Fallback para JSON
+        return jsonify({
+            'error': 'Not Found',
+            'message': 'The requested page was not found',
+            'status_code': 404,
+            'timestamp': datetime.now().isoformat(),
+            'available_pages': [
+                '/',
+                '/dashboard',
+                '/clientes',
+                '/produtos',
+                '/vendas',
+                '/entregas'
+            ]
+        }), 404
 
 @app.errorhandler(500)
 def internal_error(error):
     """Handler para erros internos"""
-    return jsonify({
-        'error': 'Internal Server Error',
-        'message': 'An internal server error occurred',
-        'status_code': 500,
-        'timestamp': datetime.now().isoformat(),
-        'contact': 'Check logs for more details'
-    }), 500
+    # Tentar renderizar página 500 personalizada
+    try:
+        return render_template('500.html'), 500
+    except:
+        # Fallback para JSON
+        return jsonify({
+            'error': 'Internal Server Error',
+            'message': 'An internal server error occurred',
+            'status_code': 500,
+            'timestamp': datetime.now().isoformat(),
+            'contact': 'Check logs for more details'
+        }), 500
 
 # Configuração para Vercel
 if __name__ == '__main__':
