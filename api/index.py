@@ -6024,7 +6024,8 @@ print("=" * 60)
 # Inicialização global para Vercel
 try:
     print("🔄 Inicialização global para Vercel...")
-    ensure_database_initialized()
+    with app.app_context():
+        ensure_database_initialized()
     print("✅ Inicialização global concluída")
 except Exception as e:
     print(f"⚠️ Aviso na inicialização global: {e}")
