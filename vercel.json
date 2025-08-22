@@ -2,22 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/health_simple.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "api/health_simple.py"
+      "dest": "api/index.py"
     }
   ],
   "env": {
     "FLASK_ENV": "production",
-    "PYTHONPATH": "."
+    "PYTHONPATH": ".",
+    "DATABASE_URL": "sqlite:////tmp/mimo_completo.db"
   },
   "functions": {
-    "api/health_simple.py": {
+    "api/index.py": {
       "maxDuration": 30
     }
   }

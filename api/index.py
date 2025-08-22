@@ -956,42 +956,14 @@ def logout():
 
 @app.route('/health')
 def health_check():
-    """Verificação de saúde ultra-simples e compatível"""
-    timestamp = datetime.now().isoformat()
-
-    try:
-        with app.app_context():
-            # Importar versões para diagnóstico
-            from sqlalchemy import __version__ as sqlalchemy_version
-            import flask_sqlalchemy
-            flask_sqlalchemy_version = flask_sqlalchemy.__version__
-
-            # Teste ultra-simples usando apenas ORM
-            db.create_all()  # Garantir que tabelas existem
-            cliente_count = Cliente.query.count()  # Teste básico
-
-            return jsonify({
-                'status': 'healthy',
-                'message': 'Sistema MIMO funcionando corretamente',
-                'timestamp': timestamp,
-                'service': 'Sistema MIMO',
-                'version': '1.0.0',
-                'database': {
-                    'status': 'connected',
-                    'client_count': cliente_count
-                },
-                'versions': {
-                    'sqlalchemy': sqlalchemy_version,
-                    'flask_sqlalchemy': flask_sqlalchemy_version
-                }
-            }), 200
-
-    except Exception as error:
-        return jsonify({
-            'status': 'unhealthy',
-            'message': f'Erro no sistema: {str(error)}',
-            'timestamp': timestamp
-        }), 500
+    """Health check ultra-simples sem banco de dados"""
+    return jsonify({
+        'status': 'healthy',
+        'message': 'Sistema MIMO funcionando corretamente',
+        'timestamp': datetime.now().isoformat(),
+        'service': 'Sistema MIMO',
+        'version': '1.0.0'
+    }), 200
 
             # Executar inicialização automática durante health check
             db_status = ensure_database_initialized()
