@@ -1,6 +1,6 @@
 {
   "name": "mimo-sistema-tests",
-  "version": "1.0.0",
+  "version": "2.0.0-CACHE-BUSTER-FORCE-REBUILD",
   "description": "Automação de testes para o Sistema MIMO usando Playwright MCP",
   "main": "index.js",
   "scripts": {
