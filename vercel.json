@@ -14,7 +14,8 @@
   ],
   "env": {
     "FLASK_ENV": "production",
-    "PYTHONPATH": "."
+    "PYTHONPATH": ".",
+    "CACHE_BUSTER": "FINAL-5.0.0-20250822"
   },
   "functions": {
     "api/index.py": {
@@ -23,5 +24,7 @@
   },
   "github": {
     "silent": false
-  }
+  },
+  "cleanUrls": true,
+  "trailingSlash": false
 }

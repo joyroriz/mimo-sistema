@@ -1,9 +1,9 @@
-# Ignorar TODOS os arquivos problemáticos
-api/index.py
+# Ignorar TODOS os arquivos problemáticos EXCETO o index.py corrigido
 api/app_novo.py
 api/main.py
 api/debug.py
 api/health_simple.py
+api/app.py
 *.db
 *.sqlite
 *.sqlite3
@@ -31,3 +31,5 @@ coverage.xml
 .hypothesis/
 test_*.py
 *_backup.py
+# Forçar rebuild
+.vercel/
