@@ -242,12 +242,11 @@ class KanbanEntrega:
     """Modelo para gestão Kanban de entregas"""
     
     STATUS_KANBAN = {
-        'em_producao': {'nome': 'Em Produção', 'cor': '#dc3545', 'ordem': 1},
-        'aguardando': {'nome': 'Aguardando', 'cor': '#fd7e14', 'ordem': 2},
-        'em_preparo': {'nome': 'Em Preparo', 'cor': '#ffc107', 'ordem': 3},
-        'pronto_entrega': {'nome': 'Pronto para Entrega', 'cor': '#0dcaf0', 'ordem': 4},
-        'saiu_entrega': {'nome': 'Saiu para Entrega', 'cor': '#6f42c1', 'ordem': 5},
-        'entregue': {'nome': 'Entregue', 'cor': '#198754', 'ordem': 6}
+        'em_producao': {'nome': 'Em Produção', 'cor': '#dc3545', 'ordem': 1, 'icone': 'bi-gear-fill'},
+        'produzido': {'nome': 'Produzido', 'cor': '#fd7e14', 'ordem': 2, 'icone': 'bi-check-circle-fill'},
+        'aguardando_entrega': {'nome': 'Aguardando Entrega', 'cor': '#ffc107', 'ordem': 3, 'icone': 'bi-clock-fill'},
+        'saiu_entrega': {'nome': 'Saiu para Entrega', 'cor': '#6f42c1', 'ordem': 4, 'icone': 'bi-truck'},
+        'entregue': {'nome': 'Entregue', 'cor': '#198754', 'ordem': 5, 'icone': 'bi-check2-all'}
     }
     
     @staticmethod
@@ -304,20 +303,100 @@ class KanbanEntrega:
         return success
     
     @staticmethod
-    def adicionar_observacao(entrega_id: int, observacao: str):
+    def adicionar_observacao(entrega_id: int, observacao: str, responsavel: str = None):
         """Adicionar observação à entrega"""
         query_atual = "SELECT observacoes FROM entregas WHERE id = ?"
         result = db.execute_query(query_atual, (entrega_id,))
-        
+
         if result:
             obs_atual = result[0]['observacoes'] or ""
-            timestamp = datetime.now().strftime("%d/%m %H:%M")
-            nova_obs = f"{obs_atual}\n[{timestamp}] {observacao}".strip()
-            
+            timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
+            resp_info = f" - {responsavel}" if responsavel else ""
+            nova_obs = f"{obs_atual}\n[{timestamp}{resp_info}] {observacao}".strip()
+
             db.execute_update(
                 "UPDATE entregas SET observacoes = ? WHERE id = ?",
                 (nova_obs, entrega_id)
             )
+
+            # Registrar no histórico
+            KanbanEntrega.registrar_historico(entrega_id, 'Observação Adicionada', observacao, responsavel)
+
+    @staticmethod
+    def registrar_historico(entrega_id: int, acao: str, descricao: str, responsavel: str = None):
+        """Registrar mudança no histórico da entrega"""
+        try:
+            # Criar tabela de histórico se não existir
+            db.execute_update('''
+                CREATE TABLE IF NOT EXISTS entregas_historico (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    entrega_id INTEGER NOT NULL,
+                    acao TEXT NOT NULL,
+                    descricao TEXT,
+                    responsavel TEXT,
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (entrega_id) REFERENCES entregas (id)
+                )
+            ''')
+
+            # Inserir registro
+            query = '''
+                INSERT INTO entregas_historico (entrega_id, acao, descricao, responsavel)
+                VALUES (?, ?, ?, ?)
+            '''
+            db.execute_insert(query, (entrega_id, acao, descricao, responsavel))
+        except Exception as e:
+            print(f"Erro ao registrar histórico: {e}")
+
+    @staticmethod
+    def obter_historico(entrega_id: int) -> List[Dict]:
+        """Obter histórico de mudanças da entrega"""
+        try:
+            query = '''
+                SELECT acao, descricao, responsavel, data_criacao
+                FROM entregas_historico
+                WHERE entrega_id = ?
+                ORDER BY data_criacao DESC
+            '''
+            return db.execute_query(query, (entrega_id,))
+        except:
+            return []
+
+    @staticmethod
+    def mover_status_avancado(entrega_id: int, novo_status: str, responsavel: str = None,
+                             observacao: str = None, data_entrega: str = None) -> bool:
+        """Mover entrega para novo status com funcionalidades avançadas"""
+        if novo_status not in KanbanEntrega.STATUS_KANBAN:
+            return False
+
+        # Atualizar status
+        query = '''
+            UPDATE entregas
+            SET status = ?, responsavel = ?, data_status_mudanca = CURRENT_TIMESTAMP
+            WHERE id = ?
+        '''
+        success = db.execute_update(query, (novo_status, responsavel, entrega_id)) > 0
+
+        if success:
+            # Se entregue, marcar data de entrega
+            if novo_status == 'entregue':
+                data_final = data_entrega or datetime.now().isoformat()
+                db.execute_update(
+                    "UPDATE entregas SET data_entrega = ? WHERE id = ?",
+                    (data_final, entrega_id)
+                )
+
+            # Registrar no histórico
+            status_info = KanbanEntrega.STATUS_KANBAN[novo_status]
+            acao = f"Status alterado para: {status_info['nome']}"
+            descricao = observacao or f"Entrega movida para {status_info['nome']}"
+            KanbanEntrega.registrar_historico(entrega_id, acao, descricao, responsavel)
+
+            # Adicionar observação se fornecida
+            if observacao:
+                KanbanEntrega.adicionar_observacao(entrega_id, observacao, responsavel)
+
+        return success
 
 class Usuario:
     """Modelo para sistema de login e usuários"""

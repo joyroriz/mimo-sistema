@@ -161,17 +161,77 @@
     </nav>
 
     <div class="container-fluid mt-4">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Entregas</li>
+            </ol>
+        </nav>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mimo-gradient-text">
-                <i class="bi bi-kanban me-2"></i>Kanban de Entregas
+                <i class="bi bi-kanban me-2"></i>Controle de Produção e Entregas
             </h1>
             <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary btn-sm" onclick="atualizarKanban()">
+                <button class="btn btn-outline-primary btn-sm" onclick="atualizarKanban()" title="Atualizar dados">
                     <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
                 </button>
-                <button class="btn btn-outline-success btn-sm" onclick="exportarRelatorio()">
+                <button class="btn btn-outline-success btn-sm" onclick="exportarRelatorio()" title="Exportar relatório">
                     <i class="bi bi-download me-1"></i>Relatório
                 </button>
+                <button class="btn btn-outline-info btn-sm" onclick="toggleFiltros()" title="Mostrar/ocultar filtros">
+                    <i class="bi bi-funnel me-1"></i>Filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- Painel de Filtros -->
+        <div class="card mb-4" id="painelFiltros" style="display: none;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros Avançados</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select form-select-sm" id="filtroStatus">
+                            <option value="">Todos os status</option>
+                            <option value="em_producao">Em Produção</option>
+                            <option value="produzido">Produzido</option>
+                            <option value="aguardando_entrega">Aguardando Entrega</option>
+                            <option value="saiu_entrega">Saiu para Entrega</option>
+                            <option value="entregue">Entregue</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Responsável</label>
+                        <select class="form-select form-select-sm" id="filtroResponsavel">
+                            <option value="">Todos os responsáveis</option>
+                            <option value="Sistema MIMO">Sistema MIMO</option>
+                            <option value="Maria Produção">Maria Produção</option>
+                            <option value="João Entrega">João Entrega</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Data Início</label>
+                        <input type="date" class="form-control form-control-sm" id="filtroDataInicio">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Data Fim</label>
+                        <input type="date" class="form-control form-control-sm" id="filtroDataFim">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-sm me-2" onclick="aplicarFiltros()">
+                            <i class="bi bi-search me-1"></i>Aplicar Filtros
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="limparFiltros()">
+                            <i class="bi bi-x-circle me-1"></i>Limpar
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -196,11 +256,124 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <textarea class="form-control" id="observacaoTexto" rows="3" placeholder="Digite sua observação..."></textarea>
+                    <div class="mb-3">
+                        <label class="form-label">Responsável</label>
+                        <select class="form-select" id="responsavelObservacao">
+                            <option value="Sistema MIMO">Sistema MIMO</option>
+                            <option value="Maria Produção">Maria Produção</option>
+                            <option value="João Entrega">João Entrega</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observação</label>
+                        <textarea class="form-control" id="observacaoTexto" rows="3" placeholder="Digite sua observação..."></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="salvarObservacao()">Salvar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarObservacao()">
+                        <i class="bi bi-save me-1"></i>Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação para Produzido -->
+    <div class="modal fade" id="produzidoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle text-success me-2"></i>Marcar como Produzido
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Confirma que este pedido foi produzido e está pronto para entrega?
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Responsável pela Produção</label>
+                        <select class="form-select" id="responsavelProducao">
+                            <option value="Maria Produção">Maria Produção</option>
+                            <option value="Sistema MIMO">Sistema MIMO</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observações da Produção (opcional)</label>
+                        <textarea class="form-control" id="observacaoProducao" rows="2" placeholder="Ex: Produto conforme especificação, embalado adequadamente..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="confirmarProduzido()">
+                        <i class="bi bi-check-circle me-1"></i>Confirmar Produção
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação para Entregue -->
+    <div class="modal fade" id="entregueModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check2-all text-primary me-2"></i>Marcar como Entregue
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Confirma que este pedido foi entregue ao cliente?
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Responsável pela Entrega</label>
+                        <select class="form-select" id="responsavelEntrega">
+                            <option value="João Entrega">João Entrega</option>
+                            <option value="Sistema MIMO">Sistema MIMO</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data/Hora da Entrega</label>
+                        <input type="datetime-local" class="form-control" id="dataHoraEntrega">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observações da Entrega (opcional)</label>
+                        <textarea class="form-control" id="observacaoEntrega" rows="2" placeholder="Ex: Entregue em mãos, cliente satisfeito..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmarEntregue()">
+                        <i class="bi bi-check2-all me-1"></i>Confirmar Entrega
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Histórico -->
+    <div class="modal fade" id="historicoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-clock-history me-2"></i>Histórico de Mudanças
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="historicoConteudo">
+                        <!-- Conteúdo será carregado via JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -214,12 +387,11 @@
         let countdownTimer = 30;
         
         const statusConfig = {
-            'em_producao': { nome: 'Em Produção', cor: '#dc3545' },
-            'aguardando': { nome: 'Aguardando', cor: '#fd7e14' },
-            'em_preparo': { nome: 'Em Preparo', cor: '#ffc107' },
-            'pronto_entrega': { nome: 'Pronto para Entrega', cor: '#0dcaf0' },
-            'saiu_entrega': { nome: 'Saiu para Entrega', cor: '#6f42c1' },
-            'entregue': { nome: 'Entregue', cor: '#198754' }
+            'em_producao': { nome: 'Em Produção', cor: '#dc3545', ordem: 1, icone: 'bi-gear-fill' },
+            'produzido': { nome: 'Produzido', cor: '#fd7e14', ordem: 2, icone: 'bi-check-circle-fill' },
+            'aguardando_entrega': { nome: 'Aguardando Entrega', cor: '#ffc107', ordem: 3, icone: 'bi-clock-fill' },
+            'saiu_entrega': { nome: 'Saiu para Entrega', cor: '#6f42c1', ordem: 4, icone: 'bi-truck' },
+            'entregue': { nome: 'Entregue', cor: '#198754', ordem: 5, icone: 'bi-check2-all' }
         };
         
         // Carregar dados do Kanban
@@ -277,29 +449,60 @@
         function criarCard(entrega) {
             const tempoDecorrido = calcularTempoDecorrido(entrega.data_criacao);
             const prioridadeClass = `prioridade-${entrega.prioridade || 'normal'}`;
-            
+            const statusInfo = statusConfig[entrega.status] || statusConfig['em_producao'];
+
             return `
-                <div class="kanban-card ${prioridadeClass}" 
-                     draggable="true" 
+                <div class="kanban-card ${prioridadeClass}"
+                     draggable="true"
                      data-entrega-id="${entrega.id}"
                      data-status="${entrega.status}">
-                    <div class="card-header">
-                        #${entrega.numero_venda || entrega.id}
-                        <i class="bi bi-grip-vertical float-end text-muted"></i>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><strong>#${entrega.numero_venda || entrega.id}</strong></span>
+                        <div class="d-flex gap-1">
+                            <i class="bi ${statusInfo.icone} text-muted" title="${statusInfo.nome}"></i>
+                            <i class="bi bi-grip-vertical text-muted"></i>
+                        </div>
                     </div>
-                    <div class="card-cliente">
+                    <div class="card-cliente mb-2">
                         <i class="bi bi-person me-1"></i>
-                        ${entrega.cliente_nome || 'Cliente não informado'}
+                        <strong>${entrega.cliente_nome || 'Cliente não informado'}</strong>
                     </div>
-                    <div class="card-produtos">
+                    <div class="card-produtos mb-2">
                         <i class="bi bi-box me-1"></i>
-                        ${entrega.produtos || 'Produtos não informados'}
+                        <small>${entrega.produtos || 'Produtos não informados'}</small>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-actions mb-2">
+                        <div class="btn-group w-100" role="group">
+                            ${entrega.status === 'em_producao' ? `
+                                <button class="btn btn-outline-success btn-sm" onclick="marcarProduzido(${entrega.id})" title="Marcar como Produzido">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            ` : ''}
+                            ${entrega.status === 'saiu_entrega' ? `
+                                <button class="btn btn-outline-primary btn-sm" onclick="marcarEntregue(${entrega.id})" title="Marcar como Entregue">
+                                    <i class="bi bi-check2-all"></i>
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-outline-info btn-sm" onclick="adicionarObservacao(${entrega.id})" title="Adicionar Observação">
+                                <i class="bi bi-chat-dots"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="verHistorico(${entrega.id})" title="Ver Histórico">
+                                <i class="bi bi-clock-history"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
                         <span class="tempo-badge">${tempoDecorrido}</span>
-                        <small>${entrega.responsavel || 'Sem responsável'}</small>
+                        <small class="text-muted">${entrega.responsavel || 'Sem responsável'}</small>
                     </div>
-                    ${entrega.observacoes ? `<div class="mt-2"><small class="text-muted"><i class="bi bi-chat-dots me-1"></i>Com observações</small></div>` : ''}
+                    ${entrega.observacoes ? `
+                        <div class="mt-2 p-2 bg-light rounded">
+                            <small class="text-muted">
+                                <i class="bi bi-chat-dots me-1"></i>
+                                ${entrega.observacoes.split('\n').slice(-1)[0].substring(0, 50)}...
+                            </small>
+                        </div>
+                    ` : ''}
                 </div>
             `;
         }
@@ -379,7 +582,60 @@
         // Salvar observação e mover entrega
         async function salvarObservacao() {
             const observacao = document.getElementById('observacaoTexto').value;
-            
+            const responsavel = document.getElementById('responsavelObservacao').value;
+
+            if (!observacao.trim()) {
+                mostrarNotificacao('Por favor, digite uma observação', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/kanban/entregas/${currentEntregaId}/observacao`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        observacao: observacao,
+                        responsavel: responsavel
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('observacaoModal'));
+                    modal.hide();
+
+                    // Limpar campos
+                    document.getElementById('observacaoTexto').value = '';
+
+                    // Recarregar Kanban
+                    await carregarKanban();
+
+                    // Mostrar notificação
+                    mostrarNotificacao('Observação adicionada com sucesso!', 'success');
+                } else {
+                    mostrarNotificacao('Erro ao adicionar observação: ' + result.error, 'error');
+                }
+            } catch (error) {
+                mostrarNotificacao('Erro na requisição: ' + error.message, 'error');
+            }
+        }
+
+        // Marcar como produzido
+        function marcarProduzido(entregaId) {
+            currentEntregaId = entregaId;
+            const modal = new bootstrap.Modal(document.getElementById('produzidoModal'));
+            modal.show();
+        }
+
+        // Confirmar produção
+        async function confirmarProduzido() {
+            const responsavel = document.getElementById('responsavelProducao').value;
+            const observacao = document.getElementById('observacaoProducao').value;
+
             try {
                 const response = await fetch(`/api/kanban/entregas/${currentEntregaId}/mover`, {
                     method: 'POST',
@@ -387,50 +643,276 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        status: currentNovoStatus,
-                        observacao: observacao
+                        status: 'produzido',
+                        responsavel: responsavel,
+                        observacao: observacao || 'Produto marcado como produzido'
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
-                    // Fechar modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('observacaoModal'));
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('produzidoModal'));
                     modal.hide();
-                    
-                    // Limpar campo
-                    document.getElementById('observacaoTexto').value = '';
-                    
-                    // Recarregar Kanban
+
+                    document.getElementById('observacaoProducao').value = '';
+
                     await carregarKanban();
-                    
-                    // Mostrar notificação
-                    mostrarNotificacao('Entrega movida com sucesso!', 'success');
+                    mostrarNotificacao('Pedido marcado como produzido!', 'success');
                 } else {
-                    mostrarNotificacao('Erro ao mover entrega: ' + result.error, 'error');
+                    mostrarNotificacao('Erro ao marcar como produzido: ' + result.error, 'error');
                 }
             } catch (error) {
                 mostrarNotificacao('Erro na requisição: ' + error.message, 'error');
             }
         }
-        
-        // Mostrar notificação
-        function mostrarNotificacao(mensagem, tipo) {
-            // Implementar sistema de notificações
-            console.log(`${tipo.toUpperCase()}: ${mensagem}`);
+
+        // Marcar como entregue
+        function marcarEntregue(entregaId) {
+            currentEntregaId = entregaId;
+
+            // Definir data/hora atual
+            const agora = new Date();
+            agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+            document.getElementById('dataHoraEntrega').value = agora.toISOString().slice(0, 16);
+
+            const modal = new bootstrap.Modal(document.getElementById('entregueModal'));
+            modal.show();
+        }
+
+        // Confirmar entrega
+        async function confirmarEntregue() {
+            const responsavel = document.getElementById('responsavelEntrega').value;
+            const dataHora = document.getElementById('dataHoraEntrega').value;
+            const observacao = document.getElementById('observacaoEntrega').value;
+
+            if (!dataHora) {
+                mostrarNotificacao('Por favor, informe a data/hora da entrega', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/kanban/entregas/${currentEntregaId}/mover`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'entregue',
+                        responsavel: responsavel,
+                        data_entrega: dataHora,
+                        observacao: observacao || 'Pedido entregue ao cliente'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('entregueModal'));
+                    modal.hide();
+
+                    document.getElementById('observacaoEntrega').value = '';
+
+                    await carregarKanban();
+                    mostrarNotificacao('Pedido marcado como entregue!', 'success');
+                } else {
+                    mostrarNotificacao('Erro ao marcar como entregue: ' + result.error, 'error');
+                }
+            } catch (error) {
+                mostrarNotificacao('Erro na requisição: ' + error.message, 'error');
+            }
+        }
+
+        // Adicionar observação
+        function adicionarObservacao(entregaId) {
+            currentEntregaId = entregaId;
+            const modal = new bootstrap.Modal(document.getElementById('observacaoModal'));
+            modal.show();
+        }
+
+        // Ver histórico
+        async function verHistorico(entregaId) {
+            try {
+                const response = await fetch(`/api/kanban/entregas/${entregaId}/historico`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const historico = result.data;
+                    let html = '';
+
+                    if (historico.length === 0) {
+                        html = '<p class="text-muted">Nenhum histórico encontrado.</p>';
+                    } else {
+                        html = '<div class="timeline">';
+                        historico.forEach(item => {
+                            html += `
+                                <div class="timeline-item mb-3">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <i class="bi bi-circle-fill text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-1">${item.acao}</h6>
+                                            <p class="mb-1">${item.descricao}</p>
+                                            <small class="text-muted">
+                                                ${item.responsavel} - ${formatarDataHora(item.data)}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                    }
+
+                    document.getElementById('historicoConteudo').innerHTML = html;
+
+                    const modal = new bootstrap.Modal(document.getElementById('historicoModal'));
+                    modal.show();
+                } else {
+                    mostrarNotificacao('Erro ao carregar histórico: ' + result.error, 'error');
+                }
+            } catch (error) {
+                mostrarNotificacao('Erro na requisição: ' + error.message, 'error');
+            }
+        }
+
+        // Formatação de data/hora
+        function formatarDataHora(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleString('pt-BR');
         }
         
+        // Mostrar notificação toast
+        function mostrarNotificacao(mensagem, tipo) {
+            const toastContainer = document.getElementById('toastContainer') || criarToastContainer();
+
+            const toastId = 'toast-' + Date.now();
+            const iconClass = {
+                'success': 'bi-check-circle-fill text-success',
+                'error': 'bi-x-circle-fill text-danger',
+                'warning': 'bi-exclamation-triangle-fill text-warning',
+                'info': 'bi-info-circle-fill text-info'
+            }[tipo] || 'bi-info-circle-fill text-info';
+
+            const toastHtml = `
+                <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <i class="${iconClass} me-2"></i>
+                        <strong class="me-auto">Sistema MIMO</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${mensagem}
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+            toast.show();
+
+            // Remover toast após ser ocultado
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+
+        function criarToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+            return container;
+        }
+
+        // Toggle filtros
+        function toggleFiltros() {
+            const painel = document.getElementById('painelFiltros');
+            painel.style.display = painel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Aplicar filtros
+        function aplicarFiltros() {
+            const filtros = {
+                status: document.getElementById('filtroStatus').value,
+                responsavel: document.getElementById('filtroResponsavel').value,
+                dataInicio: document.getElementById('filtroDataInicio').value,
+                dataFim: document.getElementById('filtroDataFim').value
+            };
+
+            // Aplicar filtros aos cards visíveis
+            const cards = document.querySelectorAll('.kanban-card');
+            cards.forEach(card => {
+                let mostrar = true;
+
+                // Filtro por status
+                if (filtros.status && card.dataset.status !== filtros.status) {
+                    mostrar = false;
+                }
+
+                // Aplicar visibilidade
+                card.style.display = mostrar ? 'block' : 'none';
+            });
+
+            mostrarNotificacao('Filtros aplicados com sucesso', 'info');
+        }
+
+        // Limpar filtros
+        function limparFiltros() {
+            document.getElementById('filtroStatus').value = '';
+            document.getElementById('filtroResponsavel').value = '';
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+
+            // Mostrar todos os cards
+            const cards = document.querySelectorAll('.kanban-card');
+            cards.forEach(card => {
+                card.style.display = 'block';
+            });
+
+            mostrarNotificacao('Filtros limpos', 'info');
+        }
+
         // Atualizar Kanban manualmente
         function atualizarKanban() {
+            mostrarNotificacao('Atualizando dados...', 'info');
             carregarKanban();
             countdownTimer = 30;
         }
-        
+
         // Exportar relatório
         function exportarRelatorio() {
+            mostrarNotificacao('Gerando relatório...', 'info');
             window.open('/api/relatorios/entregas', '_blank');
         }
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + R para atualizar
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                atualizarKanban();
+            }
+
+            // Ctrl + F para filtros
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                toggleFiltros();
+            }
+
+            // Esc para fechar modais
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal.show');
+                modals.forEach(modal => {
+                    const modalInstance = bootstrap.Modal.getInstance(modal);
+                    if (modalInstance) modalInstance.hide();
+                });
+            }
+        });
         
         // Countdown para atualização automática
         function iniciarCountdown() {

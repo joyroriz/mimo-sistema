@@ -424,13 +424,15 @@ def api_kanban_entregas():
 
 @app.route('/api/kanban/entregas/<int:entrega_id>/mover', methods=['POST'])
 def api_kanban_mover_entrega(entrega_id):
-    """API: Mover entrega no Kanban"""
+    """API: Mover entrega no Kanban com funcionalidades avançadas"""
     try:
         dados = request.get_json()
         novo_status = dados.get('status')
+        responsavel = dados.get('responsavel')
         observacao = dados.get('observacao')
+        data_entrega = dados.get('data_entrega')
 
-        if KanbanEntrega.mover_status(entrega_id, novo_status, observacao):
+        if KanbanEntrega.mover_status_avancado(entrega_id, novo_status, responsavel, observacao, data_entrega):
             return jsonify({
                 'success': True,
                 'message': 'Entrega movida com sucesso'
@@ -440,6 +442,47 @@ def api_kanban_mover_entrega(entrega_id):
                 'success': False,
                 'error': 'Erro ao mover entrega'
             }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/kanban/entregas/<int:entrega_id>/observacao', methods=['POST'])
+def api_kanban_adicionar_observacao(entrega_id):
+    """API: Adicionar observação à entrega"""
+    try:
+        dados = request.get_json()
+        observacao = dados.get('observacao')
+        responsavel = dados.get('responsavel')
+
+        if not observacao:
+            return jsonify({
+                'success': False,
+                'error': 'Observação é obrigatória'
+            }), 400
+
+        KanbanEntrega.adicionar_observacao(entrega_id, observacao, responsavel)
+
+        return jsonify({
+            'success': True,
+            'message': 'Observação adicionada com sucesso'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/kanban/entregas/<int:entrega_id>/historico', methods=['GET'])
+def api_kanban_historico_entrega(entrega_id):
+    """API: Obter histórico de mudanças da entrega"""
+    try:
+        historico = KanbanEntrega.obter_historico(entrega_id)
+        return jsonify({
+            'success': True,
+            'data': historico
+        })
     except Exception as e:
         return jsonify({
             'success': False,
