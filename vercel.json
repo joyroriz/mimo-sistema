@@ -2,23 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "api/app_novo.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "api/app_novo.py"
     }
   ],
   "env": {
     "FLASK_ENV": "production",
     "PYTHONPATH": ".",
-    "DATABASE_URL": "sqlite:////tmp/mimo_completo.db"
+    "DATABASE_URL": "sqlite:////tmp/mimo_novo.db"
   },
   "functions": {
-    "api/index.py": {
+    "api/app_novo.py": {
       "maxDuration": 30
     }
   }
