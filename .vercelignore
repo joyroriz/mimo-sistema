@@ -1,10 +1,11 @@
-# Ignorar TODOS os arquivos problemáticos EXCETO o app_final.py
+# Ignorar arquivos desnecessários para novo projeto Vercel
 api/index.py
 api/app_novo.py
 api/main.py
 api/debug.py
 api/health_simple.py
 api/app.py
+api/app_final.py
 *.db
 *.sqlite
 *.sqlite3
@@ -32,6 +33,17 @@ coverage.xml
 .hypothesis/
 test_*.py
 *_backup.py
-# Forçar rebuild completo
 .vercel/
 .next/
+node_modules/
+# Arquivos de desenvolvimento
+*.md
+*.ps1
+*.js
+e2e/
+tests-examples/
+playwright.config.ts
+package.json
+package-lock.json
+.env
+runtime.txt

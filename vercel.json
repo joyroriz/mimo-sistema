@@ -2,30 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/app_final.py",
+      "src": "api/main_clean.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "api/app_final.py"
+      "dest": "api/main_clean.py"
     }
   ],
   "env": {
     "FLASK_ENV": "production",
-    "PYTHONPATH": ".",
-    "CACHE_BUSTER": "FINAL-7.0.0-20250822-204000",
-    "FORCE_REBUILD": "TRUE"
+    "PYTHONPATH": "."
   },
   "functions": {
-    "api/app_final.py": {
+    "api/main_clean.py": {
       "maxDuration": 30
     }
-  },
-  "github": {
-    "silent": false
-  },
-  "cleanUrls": true,
-  "trailingSlash": false
+  }
 }
