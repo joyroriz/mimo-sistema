@@ -50,7 +50,7 @@ def index():
         # Dados de exemplo para o dashboard
         stats = {
             'total_clientes': 150,
-            'produtos_ativos': 89,
+            'total_produtos': 89,
             'vendas_mes': 45,
             'receita_mes': 25750.80
         }
@@ -154,7 +154,7 @@ def dashboard():
         # Dados de exemplo para o dashboard
         stats = {
             'total_clientes': 150,
-            'produtos_ativos': 89,
+            'total_produtos': 89,
             'vendas_mes': 45,
             'receita_mes': 25750.80
         }
