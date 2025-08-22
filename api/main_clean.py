@@ -237,7 +237,7 @@ def dashboard():
 def clientes():
     """Página de gestão de clientes"""
     try:
-        return render_template('em_desenvolvimento.html',
+        return render_template('modulo_simples.html',
                              modulo='Gestão de Clientes',
                              descricao='Módulo de gestão de clientes em desenvolvimento',
                              funcionalidades=[
@@ -270,7 +270,7 @@ def clientes_novo():
 def produtos():
     """Página de gestão de produtos"""
     try:
-        return render_template('em_desenvolvimento.html',
+        return render_template('modulo_simples.html',
                              modulo='Gestão de Produtos',
                              descricao='Módulo de gestão de produtos em desenvolvimento',
                              funcionalidades=[
