@@ -1,4 +1,5 @@
-# Ignorar TODOS os arquivos problemáticos EXCETO o index.py corrigido
+# Ignorar TODOS os arquivos problemáticos EXCETO o app_final.py
+api/index.py
 api/app_novo.py
 api/main.py
 api/debug.py
@@ -31,5 +32,6 @@ coverage.xml
 .hypothesis/
 test_*.py
 *_backup.py
-# Forçar rebuild
+# Forçar rebuild completo
 .vercel/
+.next/

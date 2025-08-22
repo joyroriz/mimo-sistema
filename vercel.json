@@ -2,23 +2,24 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "api/app_final.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "api/app_final.py"
     }
   ],
   "env": {
     "FLASK_ENV": "production",
     "PYTHONPATH": ".",
-    "CACHE_BUSTER": "FINAL-5.0.0-20250822"
+    "CACHE_BUSTER": "FINAL-7.0.0-20250822-204000",
+    "FORCE_REBUILD": "TRUE"
   },
   "functions": {
-    "api/index.py": {
+    "api/app_final.py": {
       "maxDuration": 30
     }
   },
