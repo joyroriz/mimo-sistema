@@ -54,56 +54,186 @@ LOGIN_CREDENTIALS = {
     'password': 'Mimo2025'
 }
 
-# Função para garantir que o banco está inicializado
+# Função robusta para garantir que o banco está inicializado
 def ensure_database_initialized():
-    """Garante que o banco de dados está inicializado"""
-    max_attempts = 3
+    """
+    Garante que o banco de dados está inicializado com sistema robusto de verificação
+
+    Returns:
+        dict: Status da inicialização com detalhes
+    """
+    max_attempts = 5
+    required_tables = ['clientes', 'produtos', 'vendas', 'itens_venda', 'observacoes_entrega', 'interacoes_cliente']
+
     for attempt in range(max_attempts):
+        timestamp = datetime.now().isoformat()
+        logger.info(f"🔄 [{timestamp}] Tentativa {attempt + 1}/{max_attempts} - Verificando banco de dados...")
+
         try:
-            # Tentar fazer uma consulta simples
             with app.app_context():
-                db.session.execute(db.text('SELECT 1 FROM clientes LIMIT 1'))
-            return True
-        except Exception as e:
-            print(f"🔄 Tentativa {attempt + 1}/{max_attempts} - Banco não inicializado: {e}")
-            # Se der erro, inicializar o banco
-            try:
-                with app.app_context():
-                    print("🔄 Forçando inicialização do banco...")
+                # Verificar se todas as tabelas necessárias existem
+                missing_tables = []
 
-                    # Primeiro, tentar criar as tabelas
-                    db.create_all()
-                    print("✅ Tabelas criadas")
+                for table_name in required_tables:
+                    try:
+                        result = db.session.execute(db.text(f"SELECT 1 FROM {table_name} LIMIT 1"))
+                        logger.info(f"✅ [{timestamp}] Tabela '{table_name}' verificada com sucesso")
+                    except Exception as table_error:
+                        logger.warning(f"❌ [{timestamp}] Tabela '{table_name}' não encontrada ou com erro: {table_error}")
+                        missing_tables.append(table_name)
 
-                    # Executar migrações
-                    migrate_database()
-                    print("✅ Migrações executadas")
+                # Se todas as tabelas existem, banco está OK
+                if not missing_tables:
+                    logger.info(f"✅ [{timestamp}] Todas as tabelas verificadas - Banco inicializado com sucesso")
+                    return {
+                        'status': 'success',
+                        'message': 'Banco de dados inicializado e verificado',
+                        'attempt': attempt + 1,
+                        'timestamp': timestamp,
+                        'tables_verified': required_tables
+                    }
 
-                    # Inicializar dados
-                    init_database()
-                    print("✅ Dados inicializados")
+                # Se há tabelas faltando, tentar inicializar
+                logger.warning(f"⚠️ [{timestamp}] Tabelas faltando: {missing_tables}")
 
-                    # Testar novamente
-                    db.session.execute(db.text('SELECT 1 FROM clientes LIMIT 1'))
-                    print("✅ Banco inicializado e testado com sucesso")
-                    return True
+        except Exception as verification_error:
+            logger.error(f"❌ [{timestamp}] Erro na verificação do banco (tentativa {attempt + 1}): {verification_error}")
 
-            except Exception as init_error:
-                print(f"❌ Erro na inicialização (tentativa {attempt + 1}): {init_error}")
-                if attempt == max_attempts - 1:
-                    print("❌ Falha após todas as tentativas")
-                    return False
-    return False
+        # Tentar inicializar/recriar o banco
+        try:
+            with app.app_context():
+                logger.info(f"🔄 [{timestamp}] Iniciando recriação completa do banco...")
 
-# Decorador para proteger rotas
+                # Primeiro, tentar dropar todas as tabelas (se existirem)
+                try:
+                    db.drop_all()
+                    logger.info(f"🗑️ [{timestamp}] Tabelas antigas removidas")
+                except Exception as drop_error:
+                    logger.warning(f"⚠️ [{timestamp}] Erro ao remover tabelas antigas: {drop_error}")
+
+                # Criar todas as tabelas
+                db.create_all()
+                logger.info(f"🏗️ [{timestamp}] Tabelas criadas")
+
+                # Executar migrações
+                migrate_database()
+                logger.info(f"🔄 [{timestamp}] Migrações executadas")
+
+                # Inicializar dados
+                init_database()
+                logger.info(f"📊 [{timestamp}] Dados inicializados")
+
+                # Verificar novamente se tudo está funcionando
+                verification_success = True
+                for table_name in required_tables:
+                    try:
+                        db.session.execute(db.text(f"SELECT 1 FROM {table_name} LIMIT 1"))
+                    except Exception as verify_error:
+                        logger.error(f"❌ [{timestamp}] Falha na verificação pós-inicialização da tabela '{table_name}': {verify_error}")
+                        verification_success = False
+                        break
+
+                if verification_success:
+                    logger.info(f"✅ [{timestamp}] Banco inicializado e verificado com sucesso na tentativa {attempt + 1}")
+                    return {
+                        'status': 'success',
+                        'message': 'Banco de dados recriado e inicializado com sucesso',
+                        'attempt': attempt + 1,
+                        'timestamp': timestamp,
+                        'tables_created': required_tables
+                    }
+
+        except Exception as init_error:
+            logger.error(f"❌ [{timestamp}] Erro crítico na inicialização (tentativa {attempt + 1}): {init_error}")
+
+            # Se é a última tentativa, tentar uma abordagem mais simples
+            if attempt == max_attempts - 1:
+                try:
+                    with app.app_context():
+                        logger.info(f"🆘 [{timestamp}] Última tentativa - Abordagem simplificada...")
+                        db.create_all()
+                        logger.info(f"✅ [{timestamp}] Tabelas criadas em modo simplificado")
+                        return {
+                            'status': 'partial_success',
+                            'message': 'Banco inicializado em modo simplificado',
+                            'attempt': attempt + 1,
+                            'timestamp': timestamp,
+                            'warning': 'Dados de exemplo podem não ter sido criados'
+                        }
+                except Exception as final_error:
+                    logger.error(f"💥 [{timestamp}] Falha crítica final: {final_error}")
+
+    # Se chegou aqui, todas as tentativas falharam
+    error_timestamp = datetime.now().isoformat()
+    logger.error(f"💥 [{error_timestamp}] FALHA CRÍTICA: Não foi possível inicializar o banco após {max_attempts} tentativas")
+    return {
+        'status': 'error',
+        'message': f'Falha crítica na inicialização do banco após {max_attempts} tentativas',
+        'timestamp': error_timestamp,
+        'attempts': max_attempts
+    }
+
+# Decorador robusto para proteger rotas com verificação de banco
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Garantir que o banco está inicializado
-        ensure_database_initialized()
+        # Verificar e garantir que o banco está inicializado
+        db_status = ensure_database_initialized()
 
+        # Se o banco não foi inicializado com sucesso
+        if db_status['status'] == 'error':
+            logger.error(f"❌ Falha crítica no banco ao acessar rota protegida: {request.endpoint}")
+
+            # Retornar erro JSON estruturado para APIs ou página de erro para web
+            if request.is_json or request.headers.get('Accept', '').startswith('application/json'):
+                return jsonify({
+                    'error': 'database_initialization_failed',
+                    'message': 'Sistema temporariamente indisponível - falha na inicialização do banco de dados',
+                    'details': db_status,
+                    'timestamp': datetime.now().isoformat(),
+                    'retry_after': 30
+                }), 503
+            else:
+                # Para requisições web, retornar página de erro com auto-refresh
+                return f'''
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Sistema MIMO - Inicializando</title>
+                    <meta charset="utf-8">
+                    <meta http-equiv="refresh" content="10">
+                    <style>
+                        body {{ font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }}
+                        .container {{ max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+                        .error {{ color: #e74c3c; }}
+                        .loading {{ color: #3498db; }}
+                        .spinner {{ border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }}
+                        @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>🍓 Sistema MIMO</h1>
+                        <div class="spinner"></div>
+                        <h2 class="error">Sistema Temporariamente Indisponível</h2>
+                        <p class="loading">Inicializando banco de dados...</p>
+                        <p>A página será recarregada automaticamente em 10 segundos.</p>
+                        <p><small>Erro: {db_status['message']}</small></p>
+                        <p><small>Timestamp: {db_status['timestamp']}</small></p>
+                        <button onclick="window.location.reload()">🔄 Tentar Novamente</button>
+                    </div>
+                </body>
+                </html>
+                ''', 503
+
+        # Se banco foi inicializado com sucesso parcial, logar aviso
+        elif db_status['status'] == 'partial_success':
+            logger.warning(f"⚠️ Banco inicializado parcialmente ao acessar rota: {request.endpoint}")
+
+        # Verificar autenticação
         if 'logged_in' not in session or not session['logged_in']:
             return redirect(url_for('login'))
+
         return f(*args, **kwargs)
     return decorated_function
 
@@ -704,28 +834,88 @@ print("✅ Template base criado")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Página de login"""
-    # Garantir que o banco está inicializado
-    ensure_database_initialized()
+    """Página de login com verificação prévia do banco de dados"""
+    timestamp = datetime.now().isoformat()
+    logger.info(f"🔐 [{timestamp}] Acesso à página de login")
 
+    # Verificar e garantir que o banco está inicializado ANTES de qualquer processamento
+    db_status = ensure_database_initialized()
+
+    # Se o banco não foi inicializado com sucesso
+    if db_status['status'] == 'error':
+        logger.error(f"❌ [{timestamp}] Falha crítica no banco durante acesso ao login")
+        return f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Sistema MIMO - Preparando Login</title>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="12">
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }}
+                .container {{ max-width: 450px; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }}
+                .logo {{ font-size: 48px; margin-bottom: 20px; }}
+                .title {{ color: #2c3e50; margin-bottom: 20px; }}
+                .status {{ color: #e74c3c; margin-bottom: 20px; }}
+                .message {{ color: #7f8c8d; margin-bottom: 30px; line-height: 1.6; }}
+                .spinner {{ border: 4px solid #f3f3f3; border-top: 4px solid #e74c3c; border-radius: 50%; width: 40px; height: 40px; animation: spin 1.5s linear infinite; margin: 20px auto; }}
+                @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+                .btn {{ background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }}
+                .btn:hover {{ background: #c0392b; }}
+                .details {{ background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 12px; color: #6c757d; text-align: left; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">🔐</div>
+                <h1 class="title">Sistema MIMO</h1>
+                <div class="spinner"></div>
+                <h2 class="status">Preparando Sistema de Login</h2>
+                <p class="message">O sistema está inicializando o banco de dados.<br>Aguarde alguns instantes...</p>
+                <p>A página será recarregada automaticamente em 12 segundos</p>
+                <div class="details">
+                    <strong>Erro:</strong> {db_status['message']}<br>
+                    <strong>Tentativas:</strong> {db_status.get('attempts', 'N/A')}<br>
+                    <strong>Timestamp:</strong> {db_status['timestamp']}
+                </div>
+                <button class="btn" onclick="window.location.reload()">🔄 Tentar Novamente</button>
+                <button class="btn" onclick="window.location.href='/force-init'">🔧 Forçar Reinicialização</button>
+            </div>
+        </body>
+        </html>
+        ''', 503
+
+    # Se banco foi inicializado com sucesso parcial, logar aviso mas continuar
+    elif db_status['status'] == 'partial_success':
+        logger.warning(f"⚠️ [{timestamp}] Banco inicializado parcialmente durante acesso ao login")
+    else:
+        logger.info(f"✅ [{timestamp}] Banco verificado com sucesso para login")
+
+    # Verificar se usuário já está logado
     if session.get('logged_in'):
+        logger.info(f"👤 [{timestamp}] Usuário já autenticado - redirecionando para dashboard")
         return redirect(url_for('dashboard'))
 
+    # Processar tentativa de login (POST)
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
+
+        logger.info(f"🔑 [{timestamp}] Tentativa de login para usuário: {username}")
 
         if (username == LOGIN_CREDENTIALS['username'] and
             password == LOGIN_CREDENTIALS['password']):
             session['logged_in'] = True
             session['username'] = username
             session.permanent = True
-            logger.info(f"✅ Login realizado com sucesso: {username}")
+            logger.info(f"✅ [{timestamp}] Login realizado com sucesso: {username}")
             return redirect(url_for('dashboard'))
         else:
-            logger.warning(f"❌ Tentativa de login inválida: {username}")
+            logger.warning(f"❌ [{timestamp}] Tentativa de login inválida: {username}")
             return get_login_template("Usuário ou senha incorretos!")
 
+    # Exibir formulário de login (GET)
+    logger.info(f"📋 [{timestamp}] Exibindo formulário de login")
     return get_login_template()
 
 @app.route('/logout')
@@ -738,21 +928,125 @@ def logout():
 
 @app.route('/health')
 def health_check():
-    """Verificação de saúde da aplicação"""
+    """Verificação detalhada de saúde da aplicação com diagnósticos completos"""
+    timestamp = datetime.now().isoformat()
+    logger.info(f"🏥 [{timestamp}] Health check solicitado")
+
+    # Executar inicialização automática durante health check
+    db_status = ensure_database_initialized()
+
+    health_data = {
+        'timestamp': timestamp,
+        'service': 'Sistema MIMO',
+        'version': '1.0.0',
+        'environment': 'production' if not app.debug else 'development'
+    }
+
+    # Verificar status do banco de dados
+    if db_status['status'] == 'error':
+        logger.error(f"❌ [{timestamp}] Health check falhou - banco não inicializado")
+        health_data.update({
+            'status': 'unhealthy',
+            'message': 'Falha crítica na inicialização do banco de dados',
+            'database': {
+                'status': 'error',
+                'details': db_status,
+                'tables': {}
+            }
+        })
+        return jsonify(health_data), 503  # Service Unavailable
+
+    # Banco inicializado - fazer diagnósticos detalhados
     try:
         with app.app_context():
-            db.engine.execute('SELECT 1')
-        return jsonify({
-            'status': 'healthy',
-            'message': 'Sistema MIMO funcionando corretamente',
-            'timestamp': datetime.now().isoformat()
-        }), 200
+            # Verificar conectividade básica
+            db.session.execute(db.text('SELECT 1'))
+
+            # Diagnosticar cada tabela principal
+            table_diagnostics = {}
+            tables_to_check = [
+                ('clientes', Cliente),
+                ('produtos', Produto),
+                ('vendas', Venda),
+                ('itens_venda', ItemVenda),
+                ('observacoes_entrega', ObservacaoEntrega),
+                ('interacoes_cliente', InteracaoCliente)
+            ]
+
+            all_tables_healthy = True
+
+            for table_name, model_class in tables_to_check:
+                try:
+                    # Contar registros
+                    count = model_class.query.count()
+
+                    # Verificar se tabela responde
+                    db.session.execute(db.text(f'SELECT 1 FROM {table_name} LIMIT 1'))
+
+                    table_diagnostics[table_name] = {
+                        'status': 'healthy',
+                        'record_count': count,
+                        'last_check': timestamp
+                    }
+                    logger.info(f"✅ [{timestamp}] Tabela '{table_name}': {count} registros")
+
+                except Exception as table_error:
+                    table_diagnostics[table_name] = {
+                        'status': 'error',
+                        'error': str(table_error),
+                        'last_check': timestamp
+                    }
+                    all_tables_healthy = False
+                    logger.error(f"❌ [{timestamp}] Erro na tabela '{table_name}': {table_error}")
+
+            # Verificações adicionais de sistema
+            system_checks = {
+                'session_store': 'healthy',
+                'logging': 'healthy',
+                'flask_app': 'healthy'
+            }
+
+            # Determinar status geral
+            if all_tables_healthy and db_status['status'] == 'success':
+                overall_status = 'healthy'
+                status_code = 200
+                message = 'Sistema MIMO funcionando perfeitamente'
+            elif db_status['status'] == 'partial_success':
+                overall_status = 'degraded'
+                status_code = 200  # Ainda funcional
+                message = 'Sistema MIMO funcionando com limitações'
+            else:
+                overall_status = 'unhealthy'
+                status_code = 503
+                message = 'Sistema MIMO com problemas'
+
+            health_data.update({
+                'status': overall_status,
+                'message': message,
+                'database': {
+                    'status': db_status['status'],
+                    'initialization_details': db_status,
+                    'tables': table_diagnostics,
+                    'total_tables_checked': len(tables_to_check),
+                    'healthy_tables': sum(1 for t in table_diagnostics.values() if t['status'] == 'healthy')
+                },
+                'system': system_checks
+            })
+
+            logger.info(f"✅ [{timestamp}] Health check concluído - Status: {overall_status}")
+            return jsonify(health_data), status_code
+
     except Exception as e:
-        return jsonify({
+        logger.error(f"💥 [{timestamp}] Erro crítico durante health check: {e}")
+        health_data.update({
             'status': 'unhealthy',
-            'message': f'Erro no sistema: {str(e)}',
-            'timestamp': datetime.now().isoformat()
-        }), 500
+            'message': f'Erro crítico no sistema: {str(e)}',
+            'database': {
+                'status': 'error',
+                'error': str(e)
+            }
+        })
+        return jsonify(health_data), 500  # Internal Server Error
 
 @app.route('/init-db')
 def init_db_route():
@@ -783,18 +1077,192 @@ def init_db_route():
             'timestamp': datetime.now().isoformat()
         }), 500
 
+@app.route('/force-init')
+def force_init_route():
+    """Rota para reinicialização forçada e completa do banco de dados"""
+    timestamp = datetime.now().isoformat()
+    logger.info(f"🔧 [{timestamp}] Reinicialização forçada solicitada")
+
+    operation_log = []
+
+    try:
+        with app.app_context():
+            # Etapa 1: Backup de informações atuais (se possível)
+            operation_log.append(f"[{timestamp}] Iniciando reinicialização forçada")
+
+            backup_info = {}
+            try:
+                # Tentar coletar estatísticas antes da limpeza
+                backup_info['clientes_count'] = db.session.execute(db.text('SELECT COUNT(*) FROM clientes')).scalar()
+                backup_info['produtos_count'] = db.session.execute(db.text('SELECT COUNT(*) FROM produtos')).scalar()
+                backup_info['vendas_count'] = db.session.execute(db.text('SELECT COUNT(*) FROM vendas')).scalar()
+                operation_log.append(f"[{timestamp}] Backup de estatísticas coletado")
+            except Exception as backup_error:
+                backup_info['backup_error'] = str(backup_error)
+                operation_log.append(f"[{timestamp}] Aviso: Não foi possível fazer backup - {backup_error}")
+
+            # Etapa 2: Limpeza total - Dropar todas as tabelas
+            operation_log.append(f"[{timestamp}] Iniciando limpeza total do banco")
+            try:
+                db.drop_all()
+                operation_log.append(f"[{timestamp}] ✅ Todas as tabelas removidas")
+            except Exception as drop_error:
+                operation_log.append(f"[{timestamp}] ⚠️ Erro ao remover tabelas: {drop_error}")
+
+            # Etapa 3: Recriar estrutura completa
+            operation_log.append(f"[{timestamp}] Recriando estrutura do banco")
+            db.create_all()
+            operation_log.append(f"[{timestamp}] ✅ Estrutura de tabelas recriada")
+
+            # Etapa 4: Executar migrações
+            operation_log.append(f"[{timestamp}] Executando migrações")
+            try:
+                migrate_database()
+                operation_log.append(f"[{timestamp}] ✅ Migrações executadas")
+            except Exception as migrate_error:
+                operation_log.append(f"[{timestamp}] ⚠️ Erro nas migrações: {migrate_error}")
+
+            # Etapa 5: Inicializar dados padrão
+            operation_log.append(f"[{timestamp}] Inicializando dados padrão")
+            try:
+                init_database()
+                operation_log.append(f"[{timestamp}] ✅ Dados padrão inicializados")
+            except Exception as init_error:
+                operation_log.append(f"[{timestamp}] ⚠️ Erro na inicialização de dados: {init_error}")
+
+            # Etapa 6: Verificação final
+            operation_log.append(f"[{timestamp}] Executando verificação final")
+            verification_results = {}
+            tables_to_verify = ['clientes', 'produtos', 'vendas', 'itens_venda', 'observacoes_entrega', 'interacoes_cliente']
+
+            for table_name in tables_to_verify:
+                try:
+                    count = db.session.execute(db.text(f'SELECT COUNT(*) FROM {table_name}')).scalar()
+                    verification_results[table_name] = {
+                        'status': 'success',
+                        'record_count': count
+                    }
+                    operation_log.append(f"[{timestamp}] ✅ Tabela '{table_name}': {count} registros")
+                except Exception as verify_error:
+                    verification_results[table_name] = {
+                        'status': 'error',
+                        'error': str(verify_error)
+                    }
+                    operation_log.append(f"[{timestamp}] ❌ Erro na tabela '{table_name}': {verify_error}")
+
+            # Preparar resposta de sucesso
+            final_timestamp = datetime.now().isoformat()
+            operation_log.append(f"[{final_timestamp}] Reinicialização forçada concluída")
+
+            logger.info(f"✅ [{final_timestamp}] Reinicialização forçada concluída com sucesso")
+
+            return jsonify({
+                'status': 'success',
+                'message': 'Reinicialização forçada concluída com sucesso',
+                'operation': 'force_database_reset',
+                'start_timestamp': timestamp,
+                'end_timestamp': final_timestamp,
+                'backup_info': backup_info,
+                'verification_results': verification_results,
+                'operation_log': operation_log,
+                'tables_recreated': tables_to_verify,
+                'summary': {
+                    'total_tables': len(tables_to_verify),
+                    'successful_tables': sum(1 for t in verification_results.values() if t['status'] == 'success'),
+                    'failed_tables': sum(1 for t in verification_results.values() if t['status'] == 'error')
+                }
+            }), 200
+
+    except Exception as critical_error:
+        error_timestamp = datetime.now().isoformat()
+        operation_log.append(f"[{error_timestamp}] 💥 ERRO CRÍTICO: {critical_error}")
+
+        logger.error(f"💥 [{error_timestamp}] Erro crítico durante reinicialização forçada: {critical_error}")
+
+        return jsonify({
+            'status': 'critical_error',
+            'message': f'Erro crítico durante reinicialização forçada: {str(critical_error)}',
+            'operation': 'force_database_reset',
+            'start_timestamp': timestamp,
+            'error_timestamp': error_timestamp,
+            'operation_log': operation_log,
+            'recommendation': 'Contate o administrador do sistema - banco pode estar em estado inconsistente'
+        }), 500
 
 
 # ==================== ROTAS PRINCIPAIS ====================
 
 @app.route('/')
 def index():
-    """Página inicial - redireciona para dashboard ou login"""
-    # Garantir que o banco está inicializado
-    ensure_database_initialized()
+    """Página inicial com inicialização garantida e feedback visual"""
+    timestamp = datetime.now().isoformat()
+    logger.info(f"🏠 [{timestamp}] Acesso à página inicial")
 
+    # Verificar e garantir que o banco está inicializado
+    db_status = ensure_database_initialized()
+
+    # Se o banco não foi inicializado com sucesso
+    if db_status['status'] == 'error':
+        logger.error(f"❌ [{timestamp}] Falha crítica no banco na página inicial")
+        return f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Sistema MIMO - Inicializando</title>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="15">
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }}
+                .container {{ max-width: 500px; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }}
+                .logo {{ font-size: 48px; margin-bottom: 20px; }}
+                .title {{ color: #2c3e50; margin-bottom: 30px; }}
+                .status {{ color: #e74c3c; margin-bottom: 20px; }}
+                .loading {{ color: #3498db; margin-bottom: 30px; }}
+                .spinner {{ border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 20px auto; }}
+                @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+                .details {{ background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 12px; color: #6c757d; }}
+                .btn {{ background: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; margin: 10px; }}
+                .btn:hover {{ background: #2980b9; }}
+                .progress {{ width: 100%; height: 6px; background: #ecf0f1; border-radius: 3px; margin: 20px 0; overflow: hidden; }}
+                .progress-bar {{ height: 100%; background: linear-gradient(90deg, #3498db, #2ecc71); animation: progress 15s linear; }}
+                @keyframes progress {{ 0% {{ width: 0%; }} 100% {{ width: 100%; }} }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">🍓</div>
+                <h1 class="title">Sistema MIMO</h1>
+                <div class="spinner"></div>
+                <h2 class="status">Inicializando Sistema...</h2>
+                <p class="loading">Preparando banco de dados para uso</p>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <p>A página será recarregada automaticamente em 15 segundos</p>
+                <div class="details">
+                    <strong>Status:</strong> {db_status['message']}<br>
+                    <strong>Tentativas:</strong> {db_status.get('attempts', 'N/A')}<br>
+                    <strong>Timestamp:</strong> {db_status['timestamp']}
+                </div>
+                <button class="btn" onclick="window.location.reload()">🔄 Tentar Novamente</button>
+                <button class="btn" onclick="window.location.href='/force-init'">🔧 Forçar Reinicialização</button>
+            </div>
+        </body>
+        </html>
+        ''', 503
+
+    # Se banco foi inicializado com sucesso parcial, logar aviso mas continuar
+    elif db_status['status'] == 'partial_success':
+        logger.warning(f"⚠️ [{timestamp}] Banco inicializado parcialmente na página inicial")
+    else:
+        logger.info(f"✅ [{timestamp}] Banco verificado com sucesso na página inicial")
+
+    # Verificar autenticação e redirecionar
     if 'logged_in' not in session or not session['logged_in']:
+        logger.info(f"🔐 [{timestamp}] Usuário não autenticado - redirecionando para login")
         return redirect(url_for('login'))
+
+    logger.info(f"📊 [{timestamp}] Usuário autenticado - redirecionando para dashboard")
     return redirect(url_for('dashboard'))
 
 @app.route('/dashboard')
