@@ -5,13 +5,14 @@
 
 const https = require('https');
 
-console.log('🏥 VERIFICANDO STATUS DO SISTEMA MIMO...');
-console.log('=' * 60);
+console.log('🏥 VERIFICANDO NOVO DEPLOYMENT DO SISTEMA MIMO...');
+console.log('🔗 URL: https://mimo-sistema-final.vercel.app/');
+console.log('='.repeat(60));
 
 function checkHealth() {
     return new Promise((resolve, reject) => {
         const options = {
-            hostname: 'mimo-sistema.vercel.app',
+            hostname: 'mimo-sistema-final.vercel.app',
             port: 443,
             path: '/health',
             method: 'GET',
@@ -48,7 +49,7 @@ function checkHealth() {
 
 async function main() {
     try {
-        console.log('📍 Acessando: https://mimo-sistema.vercel.app/health');
+        console.log('📍 Acessando: https://mimo-sistema-final.vercel.app/health');
         
         const response = await checkHealth();
         
