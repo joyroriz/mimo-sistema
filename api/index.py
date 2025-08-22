@@ -6057,8 +6057,8 @@ if __name__ == '__main__':
                 print("✅ Tabelas criadas")
 
                 print("🔄 Executando migração...")
-                migrate_database()  # Migrar banco existente
-                print("✅ Migração concluída")
+                # migrate_database()  # DESABILITADO - causa erro SQLAlchemy
+                print("✅ Migração pulada temporariamente")
 
                 print("🔄 Inicializando dados...")
                 init_database()
@@ -6081,14 +6081,15 @@ if __name__ == '__main__':
 print("🍓 Sistema MIMO Completo carregado com sucesso!")
 print("=" * 60)
 
-# Inicialização global para Vercel
-try:
-    print("🔄 Inicialização global para Vercel...")
-    with app.app_context():
-        ensure_database_initialized()
-    print("✅ Inicialização global concluída")
-except Exception as e:
-    print(f"⚠️ Aviso na inicialização global: {e}")
+# Inicialização global para Vercel - DESABILITADA TEMPORARIAMENTE
+# try:
+#     print("🔄 Inicialização global para Vercel...")
+#     with app.app_context():
+#         ensure_database_initialized()
+#     print("✅ Inicialização global concluída")
+# except Exception as e:
+#     print(f"⚠️ Aviso na inicialização global: {e}")
+print("⚠️ Inicialização global desabilitada para resolver erro SQLAlchemy")
 
 # Exportar app para o Vercel
 if __name__ == '__main__':
