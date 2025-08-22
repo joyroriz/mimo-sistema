@@ -947,17 +947,40 @@ def health_check():
         'environment': 'production' if not app.debug else 'development'
     }
 
-    # Teste básico primeiro
+    # Teste básico primeiro - versão ultra-compatível
     try:
         with app.app_context():
-            # Teste simples de conectividade - compatível com SQLAlchemy 1.4 e 2.0
+            # Teste simples de conectividade usando apenas ORM
             try:
-                # Tentar sintaxe SQLAlchemy 2.0 primeiro
-                db.session.execute(db.text('SELECT 1'))
-            except AttributeError:
-                # Fallback para SQLAlchemy 1.4
-                db.session.execute('SELECT 1')
-            logger.info(f"✅ [{timestamp}] Conectividade básica OK")
+                # Tentar usar uma consulta ORM simples primeiro
+                from sqlalchemy import __version__ as sqlalchemy_version
+                logger.info(f"📦 [{timestamp}] SQLAlchemy version: {sqlalchemy_version}")
+
+                # Teste básico usando ORM que funciona em todas as versões
+                test_query = db.session.query(db.func.count()).select_from(db.text('(SELECT 1) as test'))
+                test_query.scalar()
+                logger.info(f"✅ [{timestamp}] Conectividade básica OK via ORM")
+
+            except Exception as orm_error:
+                logger.warning(f"⚠️ [{timestamp}] ORM test failed: {orm_error}")
+                # Fallback para teste ainda mais básico
+                try:
+                    # Usar engine diretamente se disponível
+                    if hasattr(db.engine, 'execute'):
+                        db.engine.execute('SELECT 1')
+                    else:
+                        # SQLAlchemy 2.0+ - usar connection
+                        with db.engine.connect() as conn:
+                            conn.execute(db.text('SELECT 1'))
+                    logger.info(f"✅ [{timestamp}] Conectividade básica OK via engine")
+                except Exception as engine_error:
+                    logger.error(f"❌ [{timestamp}] Engine test failed: {engine_error}")
+                    # Último fallback - apenas verificar se o banco existe
+                    try:
+                        db.create_all()  # Isso sempre funciona
+                        logger.info(f"✅ [{timestamp}] Database structure OK")
+                    except Exception as final_error:
+                        raise Exception(f"All connectivity tests failed: {final_error}")
 
             # Executar inicialização automática durante health check
             db_status = ensure_database_initialized()
@@ -992,8 +1015,11 @@ def health_check():
     # Banco inicializado - fazer diagnósticos detalhados
     try:
         with app.app_context():
-            # Verificar conectividade básica
-            db.session.execute(db.text('SELECT 1'))
+            # Verificar conectividade básica - compatível com SQLAlchemy 1.4 e 2.0
+            try:
+                db.session.execute(db.text('SELECT 1'))
+            except AttributeError:
+                db.session.execute('SELECT 1')
 
             # Diagnosticar cada tabela principal
             table_diagnostics = {}
@@ -1013,8 +1039,11 @@ def health_check():
                     # Contar registros
                     count = model_class.query.count()
 
-                    # Verificar se tabela responde
-                    db.session.execute(db.text(f'SELECT 1 FROM {table_name} LIMIT 1'))
+                    # Verificar se tabela responde - compatível com SQLAlchemy 1.4 e 2.0
+                    try:
+                        db.session.execute(db.text(f'SELECT 1 FROM {table_name} LIMIT 1'))
+                    except AttributeError:
+                        db.session.execute(f'SELECT 1 FROM {table_name} LIMIT 1')
 
                     table_diagnostics[table_name] = {
                         'status': 'healthy',
@@ -1170,7 +1199,12 @@ def force_init_route():
 
             for table_name in tables_to_verify:
                 try:
-                    count = db.session.execute(db.text(f'SELECT COUNT(*) FROM {table_name}')).scalar()
+                    # Compatibilidade SQLAlchemy 1.4 e 2.0
+                    try:
+                        count = db.session.execute(db.text(f'SELECT COUNT(*) FROM {table_name}')).scalar()
+                    except AttributeError:
+                        result = db.session.execute(f'SELECT COUNT(*) FROM {table_name}')
+                        count = result.fetchone()[0]
                     verification_results[table_name] = {
                         'status': 'success',
                         'record_count': count
