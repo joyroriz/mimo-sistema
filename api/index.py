@@ -932,9 +932,6 @@ def health_check():
     timestamp = datetime.now().isoformat()
     logger.info(f"🏥 [{timestamp}] Health check solicitado")
 
-    # Executar inicialização automática durante health check
-    db_status = ensure_database_initialized()
-
     health_data = {
         'timestamp': timestamp,
         'service': 'Sistema MIMO',
@@ -942,19 +939,42 @@ def health_check():
         'environment': 'production' if not app.debug else 'development'
     }
 
-    # Verificar status do banco de dados
-    if db_status['status'] == 'error':
-        logger.error(f"❌ [{timestamp}] Health check falhou - banco não inicializado")
+    # Teste básico primeiro
+    try:
+        with app.app_context():
+            # Teste simples de conectividade
+            db.session.execute(db.text('SELECT 1'))
+            logger.info(f"✅ [{timestamp}] Conectividade básica OK")
+
+            # Executar inicialização automática durante health check
+            db_status = ensure_database_initialized()
+
+            # Verificar status do banco de dados
+            if db_status['status'] == 'error':
+                logger.error(f"❌ [{timestamp}] Health check falhou - banco não inicializado")
+                health_data.update({
+                    'status': 'unhealthy',
+                    'message': 'Falha crítica na inicialização do banco de dados',
+                    'database': {
+                        'status': 'error',
+                        'details': db_status,
+                        'tables': {}
+                    }
+                })
+                return jsonify(health_data), 503  # Service Unavailable
+
+    except Exception as basic_error:
+        logger.error(f"❌ [{timestamp}] Erro básico de conectividade: {basic_error}")
         health_data.update({
             'status': 'unhealthy',
-            'message': 'Falha crítica na inicialização do banco de dados',
+            'message': f'Erro básico de conectividade: {str(basic_error)}',
+            'error_type': type(basic_error).__name__,
             'database': {
-                'status': 'error',
-                'details': db_status,
-                'tables': {}
+                'status': 'connection_error',
+                'error': str(basic_error)
             }
         })
-        return jsonify(health_data), 503  # Service Unavailable
+        return jsonify(health_data), 503
 
     # Banco inicializado - fazer diagnósticos detalhados
     try:
