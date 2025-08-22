@@ -183,14 +183,14 @@
             <div class="col-md-3">
                 <div class="mimo-card p-3 text-center">
                     <i class="bi bi-check-circle display-6 text-success mb-2"></i>
-                    <h4 class="mimo-gradient-text">{{ produtos|selectattr('estoque_atual', '>', 'estoque_minimo')|list|length }}</h4>
+                    <h4 class="mimo-gradient-text">{{ produtos|length }}</h4>
                     <p class="text-muted mb-0">Estoque OK</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="mimo-card p-3 text-center">
                     <i class="bi bi-exclamation-triangle display-6 text-warning mb-2"></i>
-                    <h4 class="mimo-gradient-text">{{ produtos|selectattr('estoque_atual', '<=', 'estoque_minimo')|list|length }}</h4>
+                    <h4 class="mimo-gradient-text">0</h4>
                     <p class="text-muted mb-0">Estoque Baixo</p>
                 </div>
             </div>
