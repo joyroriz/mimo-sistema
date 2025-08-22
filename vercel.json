@@ -15,10 +15,5 @@
   "env": {
     "FLASK_ENV": "production",
     "PYTHONPATH": "."
-  },
-  "functions": {
-    "api/main_clean.py": {
-      "maxDuration": 30
-    }
   }
 }
