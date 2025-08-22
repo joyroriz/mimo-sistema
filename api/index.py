@@ -76,7 +76,11 @@ def ensure_database_initialized():
 
                 for table_name in required_tables:
                     try:
-                        result = db.session.execute(db.text(f"SELECT 1 FROM {table_name} LIMIT 1"))
+                        # Compatibilidade SQLAlchemy 1.4 e 2.0
+                        try:
+                            result = db.session.execute(db.text(f"SELECT 1 FROM {table_name} LIMIT 1"))
+                        except AttributeError:
+                            result = db.session.execute(f"SELECT 1 FROM {table_name} LIMIT 1")
                         logger.info(f"✅ [{timestamp}] Tabela '{table_name}' verificada com sucesso")
                     except Exception as table_error:
                         logger.warning(f"❌ [{timestamp}] Tabela '{table_name}' não encontrada ou com erro: {table_error}")
@@ -127,7 +131,11 @@ def ensure_database_initialized():
                 verification_success = True
                 for table_name in required_tables:
                     try:
-                        db.session.execute(db.text(f"SELECT 1 FROM {table_name} LIMIT 1"))
+                        # Compatibilidade SQLAlchemy 1.4 e 2.0
+                        try:
+                            db.session.execute(db.text(f"SELECT 1 FROM {table_name} LIMIT 1"))
+                        except AttributeError:
+                            db.session.execute(f"SELECT 1 FROM {table_name} LIMIT 1")
                     except Exception as verify_error:
                         logger.error(f"❌ [{timestamp}] Falha na verificação pós-inicialização da tabela '{table_name}': {verify_error}")
                         verification_success = False
@@ -942,8 +950,13 @@ def health_check():
     # Teste básico primeiro
     try:
         with app.app_context():
-            # Teste simples de conectividade
-            db.session.execute(db.text('SELECT 1'))
+            # Teste simples de conectividade - compatível com SQLAlchemy 1.4 e 2.0
+            try:
+                # Tentar sintaxe SQLAlchemy 2.0 primeiro
+                db.session.execute(db.text('SELECT 1'))
+            except AttributeError:
+                # Fallback para SQLAlchemy 1.4
+                db.session.execute('SELECT 1')
             logger.info(f"✅ [{timestamp}] Conectividade básica OK")
 
             # Executar inicialização automática durante health check
