@@ -22,155 +22,583 @@ def criar_dados_exemplo():
         return
     
     try:
-        # CLIENTES DE EXEMPLO
-        clientes_exemplo = [
+        # CLIENTES REAIS DO MIMO
+        clientes_reais = [
             {
-                'nome': 'Maria Silva Santos',
-                'email': 'maria.silva@email.com',
-                'telefone': '(11) 99999-1234',
-                'endereco': 'Rua das Flores, 123',
-                'cidade': 'São Paulo',
-                'estado': 'SP',
-                'cep': '01234-567',
-                'cpf_cnpj': '123.456.789-01',
-                'observacoes': 'Cliente VIP, prefere entregas pela manhã'
+                'nome': 'Daniel',
+                'telefone': '(62) 99100-0284',
+                'whatsapp': '(62) 99100-0284',
+                'endereco': 'Av. S-4, Q. 78 L. 01, Loja 02 e 03',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 05/08/2025'
             },
             {
-                'nome': 'João Pedro Oliveira',
-                'email': 'joao.pedro@empresa.com',
-                'telefone': '(11) 88888-5678',
-                'endereco': 'Av. Paulista, 1000',
-                'cidade': 'São Paulo',
-                'estado': 'SP',
-                'cep': '01310-100',
-                'cpf_cnpj': '987.654.321-09',
-                'observacoes': 'Compras corporativas'
+                'nome': 'Pedro Busby',
+                'telefone': '(62) 99100-0284',
+                'whatsapp': '(62) 99100-0284',
+                'endereco': 'R. Pres. Kennedy, 70 - Venetian Palace',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 05/08/2025'
             },
             {
-                'nome': 'Ana Carolina Lima',
-                'email': 'ana.lima@gmail.com',
-                'telefone': '(21) 77777-9012',
-                'endereco': 'Rua Copacabana, 456',
-                'cidade': 'Rio de Janeiro',
-                'estado': 'RJ',
-                'cep': '22070-001',
-                'cpf_cnpj': '456.789.123-45',
-                'observacoes': 'Cliente fidelizada há 2 anos'
+                'nome': 'Maria Geovana Rodrigues',
+                'telefone': '(62) 98148-1996',
+                'whatsapp': '(62) 98148-1996',
+                'endereco': 'Aeroporto',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 02/08/2025'
+            },
+            {
+                'nome': 'Rebecca',
+                'telefone': '(62) 98542-7087',
+                'whatsapp': '(62) 98542-7087',
+                'endereco': 'R. Pres. Kennedy, 70 - Venetian Palace',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 02/08/2025'
+            },
+            {
+                'nome': 'Juliana Salomão',
+                'telefone': '(61) 99978-5681',
+                'whatsapp': '(61) 99978-5681',
+                'endereco': 'Retirada',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 03/08/2025'
+            },
+            {
+                'nome': 'Joy Roriz',
+                'telefone': '(62) 99559-0276',
+                'whatsapp': '(62) 99559-0276',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 05/08/2025'
+            },
+            {
+                'nome': 'Julie Naoum',
+                'telefone': '(62) 98147-9088',
+                'whatsapp': '(62) 98147-9088',
+                'endereco': 'Av. São Francisco, Prédio Naoum, Ap300',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 06/08/2025'
+            },
+            {
+                'nome': 'Flavia Tiaga',
+                'telefone': '(62) 99382-6651',
+                'whatsapp': '(62) 99382-6651',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 06/08/2025'
+            },
+            {
+                'nome': 'Madu',
+                'telefone': '(62) 99361-3181',
+                'whatsapp': '(62) 99361-3181',
+                'endereco': 'R. Dona Barbara, qd7, lt4',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 06/08/2025'
+            },
+            {
+                'nome': 'Júlia Roriz',
+                'telefone': '(62) 99698-4045',
+                'whatsapp': '(62) 99698-4045',
+                'endereco': 'Avenida Doutor José Luiz, qd 60, lote 06',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 05/08/2025'
+            },
+            {
+                'nome': 'João Hajjar',
+                'telefone': '(62) 98181-6816',
+                'whatsapp': '(62) 98181-6816',
+                'endereco': 'Residencial Anaville',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 08/08/2025'
+            },
+            {
+                'nome': 'Miguel Marrula',
+                'telefone': '(62) 99290-3232',
+                'whatsapp': '(62) 99290-3232',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 08/08/2025'
+            },
+            {
+                'nome': 'Ornelinda',
+                'telefone': '(62) 99871-6655',
+                'whatsapp': '(62) 99871-6655',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 06/08/2025'
+            },
+            {
+                'nome': 'Matheus Mota',
+                'telefone': '(62) 99160-4858',
+                'whatsapp': '(62) 99160-4858',
+                'endereco': 'Residencial Sunflower',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 12/08/2025'
+            },
+            {
+                'nome': 'Pedro Diniz',
+                'telefone': '(62) 99542-7997',
+                'whatsapp': '(62) 99542-7997',
+                'endereco': 'Sarto Imóveis',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 13/08/2025'
+            },
+            {
+                'nome': 'Érika Xisto',
+                'telefone': '(62) 99212-3121',
+                'whatsapp': '(62) 99212-3121',
+                'cidade': 'Goiania',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 13/08/2025'
+            },
+            {
+                'nome': 'Josimara',
+                'telefone': '(61) 98103-1812',
+                'whatsapp': '(61) 98103-1812',
+                'cidade': 'Brasília',
+                'estado': 'DF',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 14/08/2025'
+            },
+            {
+                'nome': 'Eliane',
+                'telefone': '(62) 99167-8705',
+                'whatsapp': '(62) 99167-8705',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 15/08/2025'
+            },
+            {
+                'nome': 'Cárita',
+                'telefone': '(62) 98195-7024',
+                'whatsapp': '(62) 98195-7024',
+                'cidade': 'Goiania',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 18/08/2025'
+            },
+            {
+                'nome': 'Maria Eduarda',
+                'telefone': '(62) 99968-6706',
+                'whatsapp': '(62) 99968-6706',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Rayssa Caetano',
+                'telefone': '(62) 99322-0032',
+                'whatsapp': '(62) 99322-0032',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Amanda Kamilla',
+                'telefone': '(62) 99437-3280',
+                'whatsapp': '(62) 99437-3280',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Aline Vilela',
+                'telefone': '(62) 99959-3132',
+                'whatsapp': '(62) 99959-3132',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Virgínia',
+                'telefone': '(62) 99448-2649',
+                'whatsapp': '(62) 99448-2649',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Rafaella',
+                'telefone': '(62) 98247-1235',
+                'whatsapp': '(62) 98247-1235',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Stephane Lorrane',
+                'telefone': '(62) 99311-1613',
+                'whatsapp': '(62) 99311-1613',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Vivian Watanabe',
+                'telefone': '(62) 99412-5012',
+                'whatsapp': '(62) 99412-5012',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
+            },
+            {
+                'nome': 'Rodrine Jardim',
+                'telefone': '(62) 99479-0780',
+                'whatsapp': '(62) 99479-0780',
+                'endereco': 'Distral Sorvetes',
+                'cidade': 'Anápolis',
+                'estado': 'GO',
+                'origem': 'Instagram',
+                'observacoes': 'Cliente desde 19/08/2025'
             }
         ]
-        
+
         cliente_ids = []
-        for cliente_data in clientes_exemplo:
+        for cliente_data in clientes_reais:
             cliente_id = Cliente.criar(cliente_data)
             cliente_ids.append(cliente_id)
             print(f"✅ Cliente criado: {cliente_data['nome']}")
         
-        # PRODUTOS DE EXEMPLO
-        produtos_exemplo = [
+        # PRODUTOS REAIS DO MIMO
+        produtos_reais = [
             {
-                'nome': 'Açaí Premium 500ml',
-                'descricao': 'Açaí natural premium, sem conservantes',
-                'categoria': 'Açaí',
-                'preco': 15.90,
-                'custo': 8.50,
-                'estoque_atual': 50,
-                'estoque_minimo': 10,
-                'sku': 'ACAI-PREM-500',
-                'peso': 0.5,
-                'dimensoes': '10x10x15cm'
-            },
-            {
-                'nome': 'Granola Artesanal 300g',
-                'descricao': 'Granola caseira com frutas secas e mel',
-                'categoria': 'Complementos',
-                'preco': 12.50,
-                'custo': 6.00,
-                'estoque_atual': 30,
+                'nome': 'Fruta desidratada (50g) - Abacaxi com Limão e Hortelã',
+                'descricao': 'Fruta desidratada natural de abacaxi com limão e hortelã',
+                'categoria': 'Frutas Desidratadas',
+                'preco': 26.00,
+                'custo': 13.00,
+                'estoque_atual': 15,
                 'estoque_minimo': 5,
-                'sku': 'GRAN-ART-300',
-                'peso': 0.3,
-                'dimensoes': '15x10x5cm'
+                'unidade_medida': 'UN',
+                'sku': 'FD-ABAC-LIM-50G',
+                'peso': 0.05
             },
             {
-                'nome': 'Smoothie Morango 400ml',
-                'descricao': 'Smoothie natural de morango com iogurte',
-                'categoria': 'Bebidas',
-                'preco': 8.90,
-                'custo': 4.20,
+                'nome': 'Fruta desidratada (50g) - Abacaxi com Pitaya',
+                'descricao': 'Fruta desidratada natural de abacaxi com pitaya',
+                'categoria': 'Frutas Desidratadas',
+                'preco': 28.00,
+                'custo': 14.00,
+                'estoque_atual': 12,
+                'estoque_minimo': 5,
+                'unidade_medida': 'UN',
+                'sku': 'FD-ABAC-PIT-50G',
+                'peso': 0.05
+            },
+            {
+                'nome': 'Fruta desidratada (50g) - Banana com canela',
+                'descricao': 'Fruta desidratada natural de banana com canela',
+                'categoria': 'Frutas Desidratadas',
+                'preco': 20.00,
+                'custo': 10.00,
+                'estoque_atual': 20,
+                'estoque_minimo': 8,
+                'unidade_medida': 'UN',
+                'sku': 'FD-BAN-CAN-50G',
+                'peso': 0.05
+            },
+            {
+                'nome': 'Kit Rolinho de fruta (12un)',
+                'descricao': 'Kit com 12 unidades de rolinho de fruta natural',
+                'categoria': 'Kits',
+                'preco': 45.00,
+                'custo': 22.50,
+                'estoque_atual': 30,
+                'estoque_minimo': 10,
+                'unidade_medida': 'KIT',
+                'sku': 'KIT-ROL-12UN',
+                'peso': 0.15
+            },
+            {
+                'nome': 'Kit Rolinho de fruta com chocolate (12un)',
+                'descricao': 'Kit com 12 unidades de rolinho de fruta com chocolate',
+                'categoria': 'Kits',
+                'preco': 55.00,
+                'custo': 27.50,
                 'estoque_atual': 25,
                 'estoque_minimo': 8,
-                'sku': 'SMOO-MOR-400',
-                'peso': 0.4,
-                'dimensoes': '8x8x12cm'
+                'unidade_medida': 'KIT',
+                'sku': 'KIT-ROL-CHOC-12UN',
+                'peso': 0.18
             },
             {
-                'nome': 'Bowl de Frutas Tropical',
-                'descricao': 'Mix de frutas tropicais frescas',
-                'categoria': 'Bowls',
-                'preco': 18.50,
-                'custo': 9.00,
-                'estoque_atual': 20,
-                'estoque_minimo': 5,
-                'sku': 'BOWL-TROP-MIX',
-                'peso': 0.6,
-                'dimensoes': '20x20x8cm'
+                'nome': 'Barra de chocolate (25g) - Morango com semente de abóbora',
+                'descricao': 'Barra de chocolate artesanal com morango e semente de abóbora',
+                'categoria': 'Chocolates',
+                'preco': 17.00,
+                'custo': 8.50,
+                'estoque_atual': 40,
+                'estoque_minimo': 15,
+                'unidade_medida': 'UN',
+                'sku': 'CHOC-MOR-25G',
+                'peso': 0.025
             },
             {
-                'nome': 'Suco Verde Detox 300ml',
-                'descricao': 'Suco verde com couve, maçã e limão',
-                'categoria': 'Bebidas',
-                'preco': 9.90,
-                'custo': 4.50,
+                'nome': 'Barra de chocolate (25g) - Coco com abacaxi',
+                'descricao': 'Barra de chocolate artesanal com coco e abacaxi',
+                'categoria': 'Chocolates',
+                'preco': 17.00,
+                'custo': 8.50,
                 'estoque_atual': 35,
-                'estoque_minimo': 10,
-                'sku': 'SUCO-VER-300',
-                'peso': 0.3,
-                'dimensoes': '7x7x15cm'
+                'estoque_minimo': 15,
+                'unidade_medida': 'UN',
+                'sku': 'CHOC-COC-25G',
+                'peso': 0.025
+            },
+            {
+                'nome': 'Barra de chocolate (25g) - Damasco com Nozes',
+                'descricao': 'Barra de chocolate artesanal com damasco e nozes',
+                'categoria': 'Chocolates',
+                'preco': 17.00,
+                'custo': 8.50,
+                'estoque_atual': 32,
+                'estoque_minimo': 15,
+                'unidade_medida': 'UN',
+                'sku': 'CHOC-DAM-25G',
+                'peso': 0.025
+            },
+            {
+                'nome': 'Assinatura',
+                'descricao': 'Assinatura mensal de produtos MIMO',
+                'categoria': 'Assinaturas',
+                'preco': 105.00,
+                'custo': 52.50,
+                'estoque_atual': 100,
+                'estoque_minimo': 20,
+                'unidade_medida': 'ASSIN',
+                'sku': 'ASSIN-MENSAL',
+                'peso': 0.5
+            },
+            {
+                'nome': 'Ananás',
+                'descricao': 'Produto especial Ananás',
+                'categoria': 'Especiais',
+                'preco': 85.00,
+                'custo': 42.50,
+                'estoque_atual': 15,
+                'estoque_minimo': 5,
+                'unidade_medida': 'UN',
+                'sku': 'ANANAS-ESP',
+                'peso': 0.3
+            },
+            {
+                'nome': 'Essencia',
+                'descricao': 'Produto Essencia MIMO',
+                'categoria': 'Especiais',
+                'preco': 30.00,
+                'custo': 15.00,
+                'estoque_atual': 25,
+                'estoque_minimo': 8,
+                'unidade_medida': 'UN',
+                'sku': 'ESSENCIA-MIMO',
+                'peso': 0.1
+            },
+            {
+                'nome': 'MIMO',
+                'descricao': 'Produto principal MIMO',
+                'categoria': 'Especiais',
+                'preco': 240.00,
+                'custo': 120.00,
+                'estoque_atual': 10,
+                'estoque_minimo': 3,
+                'unidade_medida': 'UN',
+                'sku': 'MIMO-PRINCIPAL',
+                'peso': 1.0
             }
         ]
-        
+
         produto_ids = []
-        for produto_data in produtos_exemplo:
+        for produto_data in produtos_reais:
             produto_id = Produto.criar(produto_data)
             produto_ids.append(produto_id)
             print(f"✅ Produto criado: {produto_data['nome']}")
         
-        # VENDAS DE EXEMPLO
-        vendas_exemplo = [
+        # VENDAS REAIS DO MIMO (baseadas nos dados fornecidos)
+        vendas_reais = [
             {
-                'cliente_id': cliente_ids[0],
-                'forma_pagamento': 'Cartão de Crédito',
-                'vendedor': 'Sistema MIMO',
-                'observacoes': 'Primeira compra da cliente',
-                'itens': [
-                    {'produto_id': produto_ids[0], 'quantidade': 2, 'preco_unitario': 15.90},
-                    {'produto_id': produto_ids[1], 'quantidade': 1, 'preco_unitario': 12.50}
-                ]
-            },
-            {
-                'cliente_id': cliente_ids[1],
+                'cliente_id': cliente_ids[2],  # Maria Geovana Rodrigues
                 'forma_pagamento': 'PIX',
                 'vendedor': 'Sistema MIMO',
-                'observacoes': 'Pedido corporativo',
+                'data_venda': '2025-08-02',
+                'valor_entrega': 7.00,
+                'desconto': 7.00,
+                'observacoes': 'Primeira compra - 02/08/2025',
                 'itens': [
-                    {'produto_id': produto_ids[2], 'quantidade': 5, 'preco_unitario': 8.90},
-                    {'produto_id': produto_ids[4], 'quantidade': 3, 'preco_unitario': 9.90}
+                    {'produto_id': produto_ids[5], 'quantidade': 4, 'preco_unitario': 17.00}  # Barra chocolate morango
                 ]
             },
             {
-                'cliente_id': cliente_ids[2],
+                'cliente_id': cliente_ids[3],  # Rebecca
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-02',
+                'valor_entrega': 7.00,
+                'desconto': 5.00,
+                'observacoes': 'Pedido variado - 02/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[5], 'quantidade': 1, 'preco_unitario': 17.00},  # Barra morango
+                    {'produto_id': produto_ids[6], 'quantidade': 1, 'preco_unitario': 17.00},  # Barra coco
+                    {'produto_id': produto_ids[7], 'quantidade': 1, 'preco_unitario': 17.00},  # Barra damasco
+                    {'produto_id': produto_ids[3], 'quantidade': 1, 'preco_unitario': 45.00}   # Kit rolinho
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[4],  # Juliana Salomão
                 'forma_pagamento': 'Dinheiro',
                 'vendedor': 'Sistema MIMO',
-                'observacoes': 'Cliente fidelizada',
+                'data_venda': '2025-08-03',
+                'desconto': 10.00,
+                'observacoes': 'Retirada no local - 03/08/2025',
                 'itens': [
-                    {'produto_id': produto_ids[3], 'quantidade': 1, 'preco_unitario': 18.50},
-                    {'produto_id': produto_ids[0], 'quantidade': 1, 'preco_unitario': 15.90}
+                    {'produto_id': produto_ids[3], 'quantidade': 2, 'preco_unitario': 45.00}   # Kit rolinho
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[1],  # Pedro Busby
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-07-30',
+                'valor_entrega': 14.00,
+                'desconto': 50.00,
+                'observacoes': 'Assinatura + Ananás - 30/07/2025',
+                'itens': [
+                    {'produto_id': produto_ids[8], 'quantidade': 2, 'preco_unitario': 105.00},  # Assinatura
+                    {'produto_id': produto_ids[9], 'quantidade': 1, 'preco_unitario': 85.00}    # Ananás
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[5],  # Joy Roriz
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-05',
+                'desconto': 14.00,
+                'observacoes': 'Mix de produtos - 05/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[3], 'quantidade': 1, 'preco_unitario': 45.00},   # Kit rolinho
+                    {'produto_id': produto_ids[5], 'quantidade': 1, 'preco_unitario': 17.00},   # Barra morango
+                    {'produto_id': produto_ids[7], 'quantidade': 1, 'preco_unitario': 17.00}    # Barra damasco
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[6],  # Julie Naoum
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-06',
+                'valor_entrega': 7.00,
+                'desconto': 10.00,
+                'observacoes': 'Frutas desidratadas + kits - 06/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[0], 'quantidade': 1, 'preco_unitario': 26.00},   # Abacaxi limão
+                    {'produto_id': produto_ids[1], 'quantidade': 1, 'preco_unitario': 28.00},   # Abacaxi pitaya
+                    {'produto_id': produto_ids[4], 'quantidade': 1, 'preco_unitario': 55.00},   # Kit chocolate
+                    {'produto_id': produto_ids[3], 'quantidade': 1, 'preco_unitario': 45.00}    # Kit rolinho
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[7],  # Flavia Tiaga
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-06',
+                'observacoes': 'Kit chocolate - 06/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[4], 'quantidade': 1, 'preco_unitario': 55.00}    # Kit chocolate
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[8],  # Madu
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-06',
+                'observacoes': 'Kit + barra - 06/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[4], 'quantidade': 1, 'preco_unitario': 55.00},   # Kit chocolate
+                    {'produto_id': produto_ids[5], 'quantidade': 1, 'preco_unitario': 17.00}    # Barra morango
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[10],  # João Hajjar
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-08',
+                'observacoes': 'Pedido grande variado - 08/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[3], 'quantidade': 1, 'preco_unitario': 45.00},   # Kit rolinho
+                    {'produto_id': produto_ids[5], 'quantidade': 4, 'preco_unitario': 17.00},   # Barra morango
+                    {'produto_id': produto_ids[0], 'quantidade': 1, 'preco_unitario': 26.00},   # Abacaxi limão
+                    {'produto_id': produto_ids[1], 'quantidade': 1, 'preco_unitario': 28.00}    # Abacaxi pitaya
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[11],  # Miguel Marrula
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-08',
+                'observacoes': 'Barras de chocolate - 08/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[5], 'quantidade': 4, 'preco_unitario': 17.00}    # Barra morango
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[13],  # Matheus Mota
+                'forma_pagamento': 'Dinheiro',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-12',
+                'desconto': 5.00,
+                'observacoes': 'Retirada - 12/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[3], 'quantidade': 1, 'preco_unitario': 45.00}    # Kit rolinho
+                ]
+            },
+            {
+                'cliente_id': cliente_ids[14],  # Pedro Diniz
+                'forma_pagamento': 'PIX',
+                'vendedor': 'Sistema MIMO',
+                'data_venda': '2025-08-13',
+                'desconto': 15.00,
+                'observacoes': 'Assinatura - Retirada - 13/08/2025',
+                'itens': [
+                    {'produto_id': produto_ids[8], 'quantidade': 1, 'preco_unitario': 105.00}   # Assinatura
                 ]
             }
         ]
-        
+
         venda_ids = []
-        for venda_data in vendas_exemplo:
+        for venda_data in vendas_reais:
             itens = venda_data.pop('itens')
             venda_id = Venda.criar(venda_data, itens)
             venda_ids.append(venda_id)
@@ -200,48 +628,72 @@ def criar_dados_exemplo():
             entrega_id = Entrega.criar(entrega_data)
             print(f"✅ Entrega criada: ID {entrega_id}")
         
-        # PROSPECTS CRM DE EXEMPLO
-        prospects_exemplo = [
+        # PROSPECTS CRM REAIS (baseados no perfil MIMO)
+        prospects_reais = [
             {
-                'nome': 'Carlos Eduardo Mendes',
-                'email': 'carlos.mendes@empresa.com',
-                'telefone': '(11) 99999-0001',
-                'whatsapp': '(11) 99999-0001',
-                'empresa': 'Tech Solutions Ltda',
-                'cargo': 'Gerente de Compras',
+                'nome': 'Carla Nutricionista',
+                'email': 'carla.nutri@gmail.com',
+                'telefone': '(62) 99888-1234',
+                'whatsapp': '(62) 99888-1234',
+                'empresa': 'Consultório Nutricional',
+                'cargo': 'Nutricionista',
                 'origem': 'indicacao',
-                'valor_estimado': 500.00,
-                'observacoes': 'Interessado em pedidos corporativos semanais',
-                'responsavel': 'Sistema MIMO'
-            },
-            {
-                'nome': 'Fernanda Costa Silva',
-                'email': 'fernanda@startup.com',
-                'telefone': '(21) 88888-0002',
-                'whatsapp': '(21) 88888-0002',
-                'empresa': 'StartupX',
-                'cargo': 'CEO',
-                'origem': 'redes_sociais',
                 'valor_estimado': 800.00,
-                'observacoes': 'Quer implementar açaí como benefício para funcionários',
+                'observacoes': 'Interessada em indicar produtos para pacientes. Quer conhecer linha completa.',
                 'responsavel': 'Sistema MIMO'
             },
             {
-                'nome': 'Roberto Santos Lima',
-                'email': 'roberto.lima@gmail.com',
-                'telefone': '(11) 77777-0003',
-                'whatsapp': '(11) 77777-0003',
-                'empresa': 'Freelancer',
-                'cargo': 'Personal Trainer',
+                'nome': 'Academia Fitness Plus',
+                'email': 'contato@fitnessplus.com',
+                'telefone': '(62) 3333-4567',
+                'whatsapp': '(62) 99333-4567',
+                'empresa': 'Academia Fitness Plus',
+                'cargo': 'Gerente',
+                'origem': 'redes_sociais',
+                'valor_estimado': 1500.00,
+                'observacoes': 'Academia quer oferecer produtos saudáveis no bar. Pedidos semanais.',
+                'responsavel': 'Sistema MIMO'
+            },
+            {
+                'nome': 'Lanchonete Natural Life',
+                'email': 'naturallife@email.com',
+                'telefone': '(62) 99777-8888',
+                'whatsapp': '(62) 99777-8888',
+                'empresa': 'Natural Life Lanchonete',
+                'cargo': 'Proprietário',
                 'origem': 'site',
-                'valor_estimado': 200.00,
-                'observacoes': 'Quer revender produtos para seus clientes',
+                'valor_estimado': 600.00,
+                'observacoes': 'Lanchonete saudável quer revender kits e barras. Localizada no centro.',
+                'responsavel': 'Sistema MIMO'
+            },
+            {
+                'nome': 'Escola Infantil Crescer',
+                'email': 'cantina@escolacrescer.edu.br',
+                'telefone': '(62) 3456-7890',
+                'whatsapp': '(62) 99456-7890',
+                'empresa': 'Escola Infantil Crescer',
+                'cargo': 'Coordenadora Cantina',
+                'origem': 'indicacao',
+                'valor_estimado': 1200.00,
+                'observacoes': 'Escola quer substituir lanches industrializados por opções saudáveis.',
+                'responsavel': 'Sistema MIMO'
+            },
+            {
+                'nome': 'Personal Trainer Lucas',
+                'email': 'lucas.personal@gmail.com',
+                'telefone': '(62) 99123-4567',
+                'whatsapp': '(62) 99123-4567',
+                'empresa': 'Personal Training',
+                'cargo': 'Personal Trainer',
+                'origem': 'redes_sociais',
+                'valor_estimado': 400.00,
+                'observacoes': 'Personal trainer quer indicar produtos para clientes em dieta.',
                 'responsavel': 'Sistema MIMO'
             }
         ]
 
         prospect_ids = []
-        for prospect_data in prospects_exemplo:
+        for prospect_data in prospects_reais:
             prospect_id = CRMProspect.criar(prospect_data)
             prospect_ids.append(prospect_id)
             print(f"✅ Prospect criado: {prospect_data['nome']}")
