@@ -13,7 +13,7 @@ import json
 
 # Importar módulos do sistema
 from .database import db
-from .models import Cliente, Produto, Venda, Entrega
+from .models import Cliente, Produto, Venda, Entrega, ItemVenda
 from .models_expandidos import ClienteExpandido, ProdutoExpandido, CRMProspect, KanbanEntrega, Usuario
 from .analytics import MIMOAnalytics
 from .seed_data import criar_dados_exemplo
