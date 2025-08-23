@@ -558,11 +558,13 @@
         
         // Atualizar estatísticas
         function atualizarEstatisticas() {
+            console.log('Atualizando estatísticas...');
             let totalProspects = 0;
             let valorTotal = 0;
             let convertidos = 0;
-            
+
             Object.values(pipelineData).forEach(prospects => {
+                console.log('Processando grupo de prospects:', prospects);
                 prospects.forEach(prospect => {
                     totalProspects++;
                     valorTotal += parseFloat(prospect.valor_estimado || 0);
@@ -571,13 +573,29 @@
                     }
                 });
             });
-            
+
+            console.log(`Estatísticas calculadas: ${totalProspects} prospects, R$ ${valorTotal}, ${convertidos} convertidos`);
+
             const taxaConversao = totalProspects > 0 ? (convertidos / totalProspects * 100).toFixed(1) : 0;
-            
-            document.getElementById('total-prospects').textContent = totalProspects;
-            document.getElementById('valor-pipeline').textContent = `R$ ${valorTotal.toFixed(2)}`;
-            document.getElementById('taxa-conversao').textContent = `${taxaConversao}%`;
-            document.getElementById('convertidos-mes').textContent = convertidos;
+
+            const totalEl = document.getElementById('total-prospects');
+            const valorEl = document.getElementById('valor-pipeline');
+            const taxaEl = document.getElementById('taxa-conversao');
+            const convertidosEl = document.getElementById('convertidos-mes');
+
+            console.log('Elementos encontrados:', {
+                total: !!totalEl,
+                valor: !!valorEl,
+                taxa: !!taxaEl,
+                convertidos: !!convertidosEl
+            });
+
+            if (totalEl) totalEl.textContent = totalProspects;
+            if (valorEl) valorEl.textContent = `R$ ${valorTotal.toFixed(2)}`;
+            if (taxaEl) taxaEl.textContent = `${taxaConversao}%`;
+            if (convertidosEl) convertidosEl.textContent = convertidos;
+
+            console.log('Estatísticas atualizadas com sucesso');
         }
         
         // Funções auxiliares
