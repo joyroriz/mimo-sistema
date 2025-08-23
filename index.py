@@ -1782,6 +1782,153 @@ def alterar_status_venda(venda_id):
         logger.error(f"Erro ao alterar status da venda: {e}")
         return jsonify({'success': False, 'message': str(e)})
 
+@app.route('/vendas/<int:venda_id>')
+@login_required
+def vendas_detalhes(venda_id):
+    """Visualiza detalhes de uma venda específica"""
+    try:
+        venda = Venda.query.get_or_404(venda_id)
+        cliente = Cliente.query.get(venda.cliente_id)
+        itens = ItemVenda.query.filter_by(venda_id=venda_id).all()
+
+        # Buscar produtos dos itens
+        produtos_info = {}
+        for item in itens:
+            produto = Produto.query.get(item.produto_id)
+            if produto:
+                produtos_info[item.id] = produto
+
+        content = f'''
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mimo-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h3 class="mimo-gradient-text mb-1">
+                                <i class="bi bi-receipt me-2"></i>Venda #{venda.numero_pedido}
+                            </h3>
+                            <p class="text-muted mb-0">Detalhes da venda</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-{'success' if venda.status == 'entregue' else 'warning' if venda.status == 'pendente' else 'info'} fs-6">
+                                {venda.status.title()}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-person me-2"></i>Cliente</h5>
+                            <p class="mb-1"><strong>{cliente.nome if cliente else 'Cliente não encontrado'}</strong></p>
+                            <p class="text-muted mb-0">{cliente.contato if cliente and cliente.contato else 'Sem telefone'}</p>
+                            {f'<p class="text-muted mb-0">{cliente.email}</p>' if cliente and cliente.email else ''}
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-calendar me-2"></i>Informações</h5>
+                            <p class="mb-1"><strong>Data do Pedido:</strong> {venda.data_pedido.strftime('%d/%m/%Y')}</p>
+                            {f'<p class="mb-1"><strong>Data de Entrega:</strong> {venda.data_entrega.strftime("%d/%m/%Y")}</p>' if venda.data_entrega else ''}
+                            <p class="mb-1"><strong>Pagamento:</strong> {venda.forma_pagamento or 'Não informado'}</p>
+                        </div>
+                    </div>
+
+                    <h5><i class="bi bi-cart me-2"></i>Itens da Venda</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Unit.</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+        '''
+
+        valor_total = 0
+        for item in itens:
+            produto = produtos_info.get(item.id)
+            produto_nome = produto.nome if produto else f'Produto ID {item.produto_id}'
+            item_total = item.quantidade * item.preco_unitario
+            valor_total += item_total
+
+            content += f'''
+                                <tr>
+                                    <td>{produto_nome}</td>
+                                    <td>{item.quantidade}</td>
+                                    <td>R$ {item.preco_unitario:.2f}</td>
+                                    <td>R$ {item_total:.2f}</td>
+                                </tr>
+            '''
+
+        # Aplicar desconto se houver
+        valor_com_desconto = valor_total - (venda.desconto or 0)
+
+        content += f'''
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="3">Subtotal</th>
+                                    <th>R$ {valor_total:.2f}</th>
+                                </tr>
+        '''
+
+        if venda.desconto and venda.desconto > 0:
+            content += f'''
+                                <tr>
+                                    <th colspan="3">Desconto</th>
+                                    <th class="text-danger">- R$ {venda.desconto:.2f}</th>
+                                </tr>
+            '''
+
+        content += f'''
+                                <tr class="table-warning">
+                                    <th colspan="3">Total Final</th>
+                                    <th>R$ {valor_com_desconto:.2f}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    {f'<div class="mt-3"><h6>Observações:</h6><p class="text-muted">{venda.observacoes}</p></div>' if venda.observacoes else ''}
+                    {f'<div class="mt-3"><h6>Endereço de Entrega:</h6><p class="text-muted">{venda.endereco_entrega}</p></div>' if venda.endereco_entrega else ''}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="mimo-card">
+                    <h5><i class="bi bi-gear me-2"></i>Ações</h5>
+                    <div class="d-grid gap-2">
+                        <a href="/vendas" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Voltar às Vendas
+                        </a>
+                        <a href="/vendas/{venda_id}/imprimir" class="btn btn-outline-primary">
+                            <i class="bi bi-printer me-2"></i>Imprimir
+                        </a>
+                        {f'<a href="/entregas" class="btn btn-outline-info"><i class="bi bi-truck me-2"></i>Ver Entrega</a>' if venda.status in ['confirmado', 'entregue'] else ''}
+                    </div>
+                </div>
+
+                <div class="mimo-card mt-3">
+                    <h6><i class="bi bi-info-circle me-2"></i>Resumo</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>ID:</strong> {venda.id}</li>
+                        <li><strong>Número:</strong> {venda.numero_pedido}</li>
+                        <li><strong>Status:</strong> {venda.status.title()}</li>
+                        <li><strong>Itens:</strong> {len(itens)}</li>
+                        <li><strong>Valor:</strong> R$ {valor_com_desconto:.2f}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        '''
+
+        return get_mimo_template(f"Venda #{venda.numero_pedido}", content)
+
+    except Exception as e:
+        logger.error(f"Erro ao visualizar venda {venda_id}: {e}")
+        return get_mimo_template("Erro", f'<div class="alert alert-danger">Erro ao carregar venda: {str(e)}</div>')
+
 @app.route('/vendas/nova', methods=['GET', 'POST'])
 @login_required
 def vendas_nova():
@@ -5267,6 +5414,107 @@ def api_produtos():
     except Exception as e:
         logger.error(f"Erro ao buscar produtos: {e}")
         return jsonify([])
+
+@app.route('/api/crm/prospects', methods=['GET'])
+def api_crm_prospects():
+    """API: Listar prospects do CRM por estágio"""
+    try:
+        logger.info("🎯 API CRM: Carregando prospects")
+
+        # Buscar clientes
+        hoje = datetime.now().date()
+        clientes = Cliente.query.filter_by(ativo=True).all()
+
+        # Organizar em colunas do pipeline
+        pipeline = {
+            'prospect': [],
+            'contato': [],
+            'negociacao': [],
+            'cliente': []
+        }
+
+        for cliente in clientes:
+            # Buscar última venda
+            ultima_venda = Venda.query.filter_by(cliente_id=cliente.id).order_by(Venda.data_pedido.desc()).first()
+
+            # Buscar últimas interações
+            ultimas_interacoes = InteracaoCliente.query.filter_by(cliente_id=cliente.id).order_by(
+                InteracaoCliente.data_interacao.desc()
+            ).limit(3).all()
+
+            # Determinar estágio baseado no histórico de vendas
+            if not ultima_venda:
+                # Prospect - nunca comprou
+                estagio = 'prospect'
+                probabilidade = 25
+            else:
+                # Calcular dias desde última venda
+                dias_ultima_venda = (hoje - ultima_venda.data_pedido.date()).days
+
+                if dias_ultima_venda <= 7:
+                    estagio = 'cliente'
+                    probabilidade = 100
+                elif dias_ultima_venda <= 30:
+                    estagio = 'negociacao'
+                    probabilidade = 75
+                elif dias_ultima_venda <= 90:
+                    estagio = 'contato'
+                    probabilidade = 50
+                else:
+                    estagio = 'prospect'
+                    probabilidade = 25
+
+            # Calcular valor estimado baseado no histórico
+            vendas_cliente = Venda.query.filter_by(cliente_id=cliente.id).all()
+            valor_estimado = 0
+            if vendas_cliente:
+                valores = []
+                for venda in vendas_cliente:
+                    itens = ItemVenda.query.filter_by(venda_id=venda.id).all()
+                    valor_venda = sum(item.quantidade * item.preco_unitario for item in itens)
+                    if venda.desconto:
+                        valor_venda -= venda.desconto
+                    valores.append(valor_venda)
+                valor_estimado = sum(valores) / len(valores) if valores else 0
+
+            # Criar objeto do prospect
+            prospect = {
+                'id': cliente.id,
+                'nome': cliente.nome,
+                'email': cliente.email or '',
+                'telefone': cliente.contato or '',
+                'empresa': cliente.nome,  # Usar nome como empresa por enquanto
+                'estagio': estagio,
+                'probabilidade': probabilidade,
+                'valor_estimado': valor_estimado,
+                'data_criacao': cliente.data_cadastro.isoformat() if hasattr(cliente, 'data_cadastro') and cliente.data_cadastro else datetime.now().isoformat(),
+                'observacoes': cliente.observacoes or '',
+                'responsavel': 'Sistema MIMO',
+                'interacoes': [
+                    {
+                        'data': interacao.data_interacao.isoformat(),
+                        'tipo': interacao.tipo,
+                        'descricao': interacao.descricao,
+                        'responsavel': interacao.responsavel
+                    } for interacao in ultimas_interacoes
+                ]
+            }
+
+            pipeline[estagio].append(prospect)
+
+        logger.info(f"🎯 API CRM: Pipeline carregado - {sum(len(prospects) for prospects in pipeline.values())} prospects")
+
+        return jsonify({
+            'success': True,
+            'data': pipeline
+        })
+
+    except Exception as e:
+        logger.error(f"Erro na API CRM prospects: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 @app.route('/crm/registrar-interacao', methods=['POST'])
 def crm_registrar_interacao():
