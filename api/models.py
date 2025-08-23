@@ -270,3 +270,31 @@ class Entrega:
             params = (status, entrega_id)
         
         return db.execute_update(query, params) > 0
+
+class ItemVenda:
+    """Modelo para itens de venda"""
+
+    @staticmethod
+    def listar_por_venda(venda_id: int) -> List[Dict]:
+        """Listar itens de uma venda específica"""
+        query = '''
+            SELECT iv.*, p.nome as produto_nome, p.categoria
+            FROM itens_venda iv
+            JOIN produtos p ON iv.produto_id = p.id
+            WHERE iv.venda_id = ?
+            ORDER BY iv.id
+        '''
+        return db.execute_query(query, (venda_id,))
+
+    @staticmethod
+    def buscar_por_id(item_id: int) -> Optional[Dict]:
+        """Buscar item por ID"""
+        query = '''
+            SELECT iv.*, p.nome as produto_nome, v.numero_venda
+            FROM itens_venda iv
+            JOIN produtos p ON iv.produto_id = p.id
+            JOIN vendas v ON iv.venda_id = v.id
+            WHERE iv.id = ?
+        '''
+        result = db.execute_query(query, (item_id,))
+        return result[0] if result else None
