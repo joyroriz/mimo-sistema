@@ -280,18 +280,36 @@
         document.getElementById('filtroEstoque').addEventListener('change', filtrarProdutos);
 
         function filtrarProdutos() {
-            const busca = document.getElementById('buscaProduto').value.toLowerCase();
-            const categoria = document.getElementById('filtroCategoria').value;
-            const estoque = document.getElementById('filtroEstoque').value;
+            const buscaEl = document.getElementById('buscaProduto');
+            const categoriaEl = document.getElementById('filtroCategoria');
+            const estoqueEl = document.getElementById('filtroEstoque');
+
+            if (!buscaEl || !categoriaEl || !estoqueEl) return;
+
+            const busca = buscaEl.value.toLowerCase();
+            const categoria = categoriaEl.value;
+            const estoque = estoqueEl.value;
             const cards = document.querySelectorAll('.produto-card');
             let visiveisCount = 0;
 
             cards.forEach(card => {
                 const cardContainer = card.closest('.col-md-4');
-                const nome = card.querySelector('.card-title').textContent.toLowerCase();
-                const categoriaCard = card.querySelector('.text-muted.small').textContent;
-                const estoqueText = card.querySelector('.badge').textContent;
-                const estoqueNum = parseInt(estoqueText.match(/\d+/)[0]);
+                if (!cardContainer) return;
+
+                const nomeEl = card.querySelector('.card-title, h5');
+                const categoriaEl = card.querySelector('.text-muted.small');
+                const estoqueEl = card.querySelector('.badge, [title*="Estoque"]');
+
+                if (!nomeEl || !categoriaEl || !estoqueEl) return;
+
+                const nome = nomeEl.textContent.toLowerCase();
+                const categoriaCard = categoriaEl.textContent;
+                const estoqueText = estoqueEl.textContent;
+                const estoqueMatch = estoqueText.match(/\d+/);
+
+                if (!estoqueMatch) return;
+
+                const estoqueNum = parseInt(estoqueMatch[0]);
 
                 // Filtro de busca
                 const matchBusca = nome.includes(busca);
