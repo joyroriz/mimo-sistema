@@ -627,6 +627,43 @@ def vendas_nova():
                              modulo='Nova Venda',
                              erro=str(e))
 
+@app.route('/vendas/<int:venda_id>')
+def vendas_detalhes(venda_id):
+    """Visualiza detalhes de uma venda específica"""
+    try:
+        venda = Venda.query.get_or_404(venda_id)
+        cliente = Cliente.query.get(venda.cliente_id)
+        itens = ItemVenda.query.filter_by(venda_id=venda_id).all()
+
+        # Buscar produtos dos itens
+        produtos_info = {}
+        for item in itens:
+            produto = Produto.query.get(item.produto_id)
+            if produto:
+                produtos_info[item.id] = produto
+
+        # Calcular valores
+        valor_total = 0
+        for item in itens:
+            item_total = item.quantidade * item.preco_unitario
+            valor_total += item_total
+
+        # Aplicar desconto se houver
+        valor_com_desconto = valor_total - (venda.desconto or 0)
+
+        return render_template('venda_detalhes.html',
+                             venda=venda,
+                             cliente=cliente,
+                             itens=itens,
+                             produtos_info=produtos_info,
+                             valor_total=valor_total,
+                             valor_com_desconto=valor_com_desconto)
+
+    except Exception as e:
+        return render_template('em_desenvolvimento.html',
+                             modulo=f'Venda #{venda_id}',
+                             erro=str(e))
+
 @app.route('/entregas')
 def entregas():
     """Página Kanban de gestão de entregas"""
