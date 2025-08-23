@@ -339,15 +339,11 @@
         // Carregar pipeline
         async function carregarPipeline() {
             try {
-                console.log('Carregando pipeline...');
                 const response = await fetch('/api/crm/prospects');
                 const result = await response.json();
 
-                console.log('Resposta da API:', result);
-
                 if (result.success) {
                     pipelineData = result.data;
-                    console.log('Pipeline data carregado:', pipelineData);
                     renderizarPipeline();
                     atualizarEstatisticas();
                 } else {
@@ -360,7 +356,6 @@
         
         // Renderizar pipeline
         function renderizarPipeline() {
-            console.log('Renderizando pipeline...');
             const container = document.getElementById('pipeline-container');
 
             if (!container) {
@@ -371,13 +366,11 @@
             container.innerHTML = '';
 
             Object.keys(estagiosConfig).forEach(estagio => {
-                console.log(`Criando estágio ${estagio} com ${(pipelineData[estagio] || []).length} prospects`);
                 const stage = criarEstagio(estagio, pipelineData[estagio] || []);
                 container.appendChild(stage);
             });
 
             configurarDragAndDrop();
-            console.log('Pipeline renderizado com sucesso');
         }
         
         // Criar estágio
@@ -558,13 +551,11 @@
         
         // Atualizar estatísticas
         function atualizarEstatisticas() {
-            console.log('Atualizando estatísticas...');
             let totalProspects = 0;
             let valorTotal = 0;
             let convertidos = 0;
 
             Object.values(pipelineData).forEach(prospects => {
-                console.log('Processando grupo de prospects:', prospects);
                 prospects.forEach(prospect => {
                     totalProspects++;
                     valorTotal += parseFloat(prospect.valor_estimado || 0);
@@ -574,8 +565,6 @@
                 });
             });
 
-            console.log(`Estatísticas calculadas: ${totalProspects} prospects, R$ ${valorTotal}, ${convertidos} convertidos`);
-
             const taxaConversao = totalProspects > 0 ? (convertidos / totalProspects * 100).toFixed(1) : 0;
 
             const totalEl = document.getElementById('total-prospects');
@@ -583,19 +572,10 @@
             const taxaEl = document.getElementById('taxa-conversao');
             const convertidosEl = document.getElementById('convertidos-mes');
 
-            console.log('Elementos encontrados:', {
-                total: !!totalEl,
-                valor: !!valorEl,
-                taxa: !!taxaEl,
-                convertidos: !!convertidosEl
-            });
-
             if (totalEl) totalEl.textContent = totalProspects;
             if (valorEl) valorEl.textContent = `R$ ${valorTotal.toFixed(2)}`;
             if (taxaEl) taxaEl.textContent = `${taxaConversao}%`;
             if (convertidosEl) convertidosEl.textContent = convertidos;
-
-            console.log('Estatísticas atualizadas com sucesso');
         }
         
         // Funções auxiliares
