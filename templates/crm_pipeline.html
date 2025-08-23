@@ -339,11 +339,15 @@
         // Carregar pipeline
         async function carregarPipeline() {
             try {
+                console.log('Carregando pipeline...');
                 const response = await fetch('/api/crm/prospects');
                 const result = await response.json();
-                
+
+                console.log('Resposta da API:', result);
+
                 if (result.success) {
                     pipelineData = result.data;
+                    console.log('Pipeline data carregado:', pipelineData);
                     renderizarPipeline();
                     atualizarEstatisticas();
                 } else {
@@ -356,15 +360,24 @@
         
         // Renderizar pipeline
         function renderizarPipeline() {
+            console.log('Renderizando pipeline...');
             const container = document.getElementById('pipeline-container');
+
+            if (!container) {
+                console.error('Container pipeline-container não encontrado!');
+                return;
+            }
+
             container.innerHTML = '';
-            
+
             Object.keys(estagiosConfig).forEach(estagio => {
+                console.log(`Criando estágio ${estagio} com ${(pipelineData[estagio] || []).length} prospects`);
                 const stage = criarEstagio(estagio, pipelineData[estagio] || []);
                 container.appendChild(stage);
             });
-            
+
             configurarDragAndDrop();
+            console.log('Pipeline renderizado com sucesso');
         }
         
         // Criar estágio
