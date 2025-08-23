@@ -561,15 +561,38 @@ def clientes():
             'status': 'erro'
         })
 
-@app.route('/clientes/novo')
+@app.route('/clientes/novo', methods=['GET', 'POST'])
 def clientes_novo():
     """Formulário para novo cliente"""
     try:
+        if request.method == 'POST':
+            # Processar dados do formulário
+            dados = {
+                'nome': request.form.get('nome'),
+                'contato': request.form.get('contato'),
+                'email': request.form.get('email'),
+                'endereco': request.form.get('endereco'),
+                'bairro': request.form.get('bairro'),
+                'cidade': request.form.get('cidade'),
+                'observacoes': request.form.get('observacoes')
+            }
+
+            # Criar cliente usando o modelo
+            cliente_id = Cliente.criar(dados)
+
+            if cliente_id:
+                # Redirecionar para lista de clientes
+                return redirect('/clientes')
+            else:
+                return render_template('erro_simples.html',
+                                     modulo='Novo Cliente',
+                                     erro='Erro ao salvar cliente')
+
         return render_template('clientes/form.html',
                              titulo='Novo Cliente',
                              acao='Cadastrar')
     except Exception as e:
-        return render_template('em_desenvolvimento.html',
+        return render_template('erro_simples.html',
                              modulo='Novo Cliente',
                              erro=str(e))
 
@@ -615,15 +638,20 @@ def vendas():
             'status': 'em_desenvolvimento'
         })
 
-@app.route('/vendas/nova')
+@app.route('/vendas/nova', methods=['GET', 'POST'])
 def vendas_nova():
     """Formulário para nova venda"""
     try:
+        if request.method == 'POST':
+            # Por enquanto, apenas redirecionar para lista de vendas
+            # A funcionalidade completa será implementada posteriormente
+            return redirect('/vendas')
+
         return render_template('vendas/form.html',
                              titulo='Nova Venda',
                              acao='Registrar')
     except Exception as e:
-        return render_template('em_desenvolvimento.html',
+        return render_template('erro_simples.html',
                              modulo='Nova Venda',
                              erro=str(e))
 
@@ -634,7 +662,7 @@ def vendas_detalhes(venda_id):
         # Buscar venda usando o modelo correto
         venda = Venda.buscar_por_id(venda_id)
         if not venda:
-            return render_template('em_desenvolvimento.html',
+            return render_template('erro_simples.html',
                                  modulo=f'Venda #{venda_id}',
                                  erro='Venda não encontrada')
 
@@ -662,7 +690,7 @@ def vendas_detalhes(venda_id):
                              valor_com_desconto=valor_com_desconto)
 
     except Exception as e:
-        return render_template('em_desenvolvimento.html',
+        return render_template('erro_simples.html',
                              modulo=f'Venda #{venda_id}',
                              erro=str(e))
 
