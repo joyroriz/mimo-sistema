@@ -1785,7 +1785,7 @@ def alterar_status_venda(venda_id):
 @app.route('/vendas/<int:venda_id>')
 @login_required
 def vendas_detalhes(venda_id):
-    """Visualiza detalhes de uma venda específica"""
+    """Visualiza detalhes de uma venda específica - CORRIGIDO"""
     try:
         venda = Venda.query.get_or_404(venda_id)
         cliente = Cliente.query.get(venda.cliente_id)
