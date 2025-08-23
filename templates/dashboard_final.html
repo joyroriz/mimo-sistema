@@ -33,6 +33,15 @@
             transform: translateY(-5px);
             box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
+
+        .clickable-card:hover {
+            transform: translateY(-8px) !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2) !important;
+        }
+
+        .clickable-card:active {
+            transform: translateY(-2px) !important;
+        }
         
         .mimo-gradient-text {
             background: var(--mimo-gradient);
@@ -85,14 +94,14 @@
         <!-- Cards de Estatísticas -->
         <div class="row mb-5">
             <div class="col-md-3 mb-4">
-                <div class="mimo-card h-100">
+                <div class="mimo-card h-100 clickable-card" onclick="window.location.href='/clientes'" style="cursor: pointer; transition: transform 0.2s;">
                     <div class="card-body text-center p-4">
                         <div class="mb-3">
                             <i class="bi bi-people display-4" style="color: var(--mimo-orange);"></i>
                         </div>
                         <h2 class="mimo-gradient-text">{{ stats.total_clientes }}</h2>
                         <p class="text-muted mb-3">Clientes Ativos</p>
-                        <a href="/clientes" class="btn btn-outline-primary btn-sm">
+                        <a href="/clientes" class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();">
                             <i class="bi bi-arrow-right me-1"></i>Ver Todos
                         </a>
                     </div>
@@ -100,14 +109,14 @@
             </div>
 
             <div class="col-md-3 mb-4">
-                <div class="mimo-card h-100">
+                <div class="mimo-card h-100 clickable-card" onclick="window.location.href='/produtos'" style="cursor: pointer; transition: transform 0.2s;">
                     <div class="card-body text-center p-4">
                         <div class="mb-3">
                             <i class="bi bi-box display-4" style="color: var(--mimo-pink);"></i>
                         </div>
                         <h2 class="mimo-gradient-text">{{ stats.total_produtos }}</h2>
                         <p class="text-muted mb-3">Produtos</p>
-                        <a href="/produtos" class="btn btn-outline-success btn-sm">
+                        <a href="/produtos" class="btn btn-outline-success btn-sm" onclick="event.stopPropagation();">
                             <i class="bi bi-arrow-right me-1"></i>Ver Todos
                         </a>
                     </div>
