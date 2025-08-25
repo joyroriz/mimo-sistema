@@ -146,6 +146,9 @@ class MIMODatabase:
                     prioridade TEXT DEFAULT 'normal',
                     data_status_mudanca TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    status_anterior TEXT NULL,
+                    data_entrega_realizada TIMESTAMP NULL,
+                    pode_desfazer BOOLEAN DEFAULT 0,
                     FOREIGN KEY (venda_id) REFERENCES vendas (id)
                 )
             ''')
@@ -227,6 +230,7 @@ class MIMODatabase:
             self.migrate_origem_venda()
             self.migrate_observacoes_entrega()
             self.migrate_status_producao()
+            self.migrate_desfazer_entrega()
 
         except Exception as e:
             print(f"❌ Erro ao inicializar banco: {e}")
@@ -417,6 +421,41 @@ class MIMODatabase:
 
         except Exception as e:
             print(f"❌ Erro na migração status_producao: {e}")
+            return False
+
+    def migrate_desfazer_entrega(self):
+        """Migração automática para adicionar campos de desfazer entrega"""
+        try:
+            cursor = self.connection.cursor()
+
+            # Verificar se as colunas já existem
+            cursor.execute("PRAGMA table_info(entregas)")
+            columns = [column[1] for column in cursor.fetchall()]
+
+            migrations_needed = []
+
+            if 'status_anterior' not in columns:
+                migrations_needed.append("ALTER TABLE entregas ADD COLUMN status_anterior TEXT NULL")
+
+            if 'data_entrega_realizada' not in columns:
+                migrations_needed.append("ALTER TABLE entregas ADD COLUMN data_entrega_realizada TIMESTAMP NULL")
+
+            if 'pode_desfazer' not in columns:
+                migrations_needed.append("ALTER TABLE entregas ADD COLUMN pode_desfazer BOOLEAN DEFAULT 0")
+
+            if migrations_needed:
+                print("🔄 Adicionando campos de desfazer entrega...")
+                for migration in migrations_needed:
+                    cursor.execute(migration)
+                self.connection.commit()
+                print("✅ Campos de desfazer entrega adicionados com sucesso!")
+                return True
+            else:
+                print("✅ Campos de desfazer entrega já existem")
+                return True
+
+        except Exception as e:
+            print(f"❌ Erro na migração desfazer_entrega: {e}")
             return False
 
 # Instância global do banco

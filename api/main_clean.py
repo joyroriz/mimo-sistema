@@ -914,6 +914,59 @@ def api_itens_producao_venda(venda_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/entregas/<int:entrega_id>/marcar-entregue', methods=['POST'])
+def api_marcar_entregue_com_desfazer(entrega_id):
+    """API para marcar entrega como entregue com possibilidade de desfazer"""
+    try:
+        sucesso = Entrega.marcar_entregue_com_desfazer(entrega_id)
+
+        if sucesso:
+            return jsonify({
+                'success': True,
+                'message': 'Entrega marcada como entregue',
+                'pode_desfazer': True,
+                'tempo_desfazer': 30  # 30 segundos
+            })
+        else:
+            return jsonify({'error': 'Erro ao marcar entrega como entregue'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/entregas/<int:entrega_id>/desfazer', methods=['POST'])
+def api_desfazer_entrega(entrega_id):
+    """API para desfazer entrega"""
+    try:
+        sucesso = Entrega.desfazer_entrega(entrega_id)
+
+        if sucesso:
+            return jsonify({
+                'success': True,
+                'message': 'Entrega desfeita com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Não é possível desfazer esta entrega'}), 400
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/entregas/<int:entrega_id>/confirmar', methods=['POST'])
+def api_confirmar_entrega(entrega_id):
+    """API para confirmar entrega definitivamente"""
+    try:
+        sucesso = Entrega.confirmar_entrega(entrega_id)
+
+        if sucesso:
+            return jsonify({
+                'success': True,
+                'message': 'Entrega confirmada definitivamente'
+            })
+        else:
+            return jsonify({'error': 'Erro ao confirmar entrega'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Configuração para Vercel
 if __name__ == '__main__':
     # Desenvolvimento local

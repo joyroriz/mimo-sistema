@@ -787,17 +787,95 @@
             }
         }
 
-        // Marcar como entregue
-        function marcarEntregue(entregaId) {
-            currentEntregaId = entregaId;
+        // Marcar como entregue com sistema de desfazer
+        async function marcarEntregue(entregaId) {
+            try {
+                const response = await fetch(`/api/entregas/${entregaId}/marcar-entregue`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-            // Definir data/hora atual
-            const agora = new Date();
-            agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
-            document.getElementById('dataHoraEntrega').value = agora.toISOString().slice(0, 16);
+                const result = await response.json();
 
-            const modal = new bootstrap.Modal(document.getElementById('entregueModal'));
-            modal.show();
+                if (response.ok && result.success) {
+                    // Mostrar toast com countdown para desfazer
+                    showToast.countdown(
+                        'Entrega Realizada!',
+                        `Pedido #${entregaId} marcado como entregue. Você tem 30 segundos para desfazer.`,
+                        30,
+                        () => {
+                            // Confirmar entrega automaticamente após 30 segundos
+                            confirmarEntregaDefinitiva(entregaId);
+                        },
+                        {
+                            action: {
+                                text: 'Desfazer',
+                                callback: () => desfazerEntrega(entregaId)
+                            }
+                        }
+                    );
+
+                    // Recarregar kanban
+                    await carregarKanban();
+
+                } else {
+                    showToast.error('Erro', result.error || 'Erro ao marcar entrega');
+                }
+
+            } catch (error) {
+                console.error('Erro ao marcar entrega:', error);
+                showToast.error('Erro', 'Erro de conexão');
+            }
+        }
+
+        // Desfazer entrega
+        async function desfazerEntrega(entregaId) {
+            try {
+                const response = await fetch(`/api/entregas/${entregaId}/desfazer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showToast.warning('Entrega Desfeita', 'A entrega foi cancelada e voltou ao status anterior');
+                    await carregarKanban();
+                } else {
+                    showToast.error('Erro', result.error || 'Erro ao desfazer entrega');
+                }
+
+            } catch (error) {
+                console.error('Erro ao desfazer entrega:', error);
+                showToast.error('Erro', 'Erro de conexão');
+            }
+        }
+
+        // Confirmar entrega definitivamente
+        async function confirmarEntregaDefinitiva(entregaId) {
+            try {
+                const response = await fetch(`/api/entregas/${entregaId}/confirmar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showToast.info('Entrega Confirmada', 'A entrega foi confirmada definitivamente');
+                } else {
+                    console.error('Erro ao confirmar entrega:', result.error);
+                }
+
+            } catch (error) {
+                console.error('Erro ao confirmar entrega:', error);
+            }
         }
 
         // Confirmar entrega

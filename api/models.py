@@ -272,6 +272,64 @@ class Entrega:
         
         return db.execute_update(query, params) > 0
 
+    @staticmethod
+    def marcar_entregue_com_desfazer(entrega_id: int) -> bool:
+        """Marcar entrega como entregue com possibilidade de desfazer"""
+        # Buscar status atual
+        entrega = Entrega.buscar_por_id(entrega_id)
+        if not entrega:
+            return False
+
+        query = '''
+            UPDATE entregas
+            SET status = 'entregue',
+                status_anterior = ?,
+                data_entrega_realizada = CURRENT_TIMESTAMP,
+                pode_desfazer = 1,
+                data_entrega = CURRENT_TIMESTAMP
+            WHERE id = ?
+        '''
+        params = (entrega['status'], entrega_id)
+        return db.execute_update(query, params) > 0
+
+    @staticmethod
+    def desfazer_entrega(entrega_id: int) -> bool:
+        """Desfazer entrega e voltar ao status anterior"""
+        # Buscar entrega
+        entrega = Entrega.buscar_por_id(entrega_id)
+        if not entrega or not entrega.get('pode_desfazer'):
+            return False
+
+        query = '''
+            UPDATE entregas
+            SET status = ?,
+                status_anterior = NULL,
+                data_entrega_realizada = NULL,
+                pode_desfazer = 0,
+                data_entrega = NULL
+            WHERE id = ?
+        '''
+        params = (entrega['status_anterior'], entrega_id)
+        return db.execute_update(query, params) > 0
+
+    @staticmethod
+    def confirmar_entrega(entrega_id: int) -> bool:
+        """Confirmar entrega definitivamente (remove possibilidade de desfazer)"""
+        query = '''
+            UPDATE entregas
+            SET pode_desfazer = 0,
+                status_anterior = NULL
+            WHERE id = ?
+        '''
+        return db.execute_update(query, (entrega_id,)) > 0
+
+    @staticmethod
+    def buscar_por_id(entrega_id: int) -> Optional[Dict]:
+        """Buscar entrega por ID"""
+        query = "SELECT * FROM entregas WHERE id = ?"
+        result = db.execute_query(query, (entrega_id,))
+        return result[0] if result else None
+
 class ItemVenda:
     """Modelo para itens de venda"""
 
