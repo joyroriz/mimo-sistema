@@ -105,6 +105,7 @@ class MIMODatabase:
                     forma_pagamento TEXT,
                     observacoes TEXT,
                     vendedor TEXT,
+                    origem_venda TEXT DEFAULT 'sistema',
                     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (cliente_id) REFERENCES clientes (id)
                 )
@@ -203,7 +204,10 @@ class MIMODatabase:
             
             conn.commit()
             print("✅ Banco de dados inicializado com sucesso!")
-            
+
+            # Executar migrações automáticas
+            self.migrate_origem_venda()
+
         except Exception as e:
             print(f"❌ Erro ao inicializar banco: {e}")
             conn.rollback()
@@ -302,6 +306,28 @@ class MIMODatabase:
         stats['entregas_pendentes'] = result[0]['total'] if result else 0
         
         return stats
+
+    def migrate_origem_venda(self):
+        """Migração automática para adicionar campo origem_venda se não existir"""
+        try:
+            # Verificar se a coluna já existe
+            cursor = self.connection.cursor()
+            cursor.execute("PRAGMA table_info(vendas)")
+            columns = [column[1] for column in cursor.fetchall()]
+
+            if 'origem_venda' not in columns:
+                print("🔄 Adicionando campo origem_venda na tabela vendas...")
+                cursor.execute("ALTER TABLE vendas ADD COLUMN origem_venda TEXT DEFAULT 'sistema'")
+                self.connection.commit()
+                print("✅ Campo origem_venda adicionado com sucesso!")
+                return True
+            else:
+                print("✅ Campo origem_venda já existe na tabela vendas")
+                return True
+
+        except Exception as e:
+            print(f"❌ Erro na migração origem_venda: {e}")
+            return False
 
 # Instância global do banco
 db = MIMODatabase()

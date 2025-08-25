@@ -648,14 +648,50 @@ def vendas_nova():
     """Formulário para nova venda"""
     try:
         if request.method == 'POST':
-            # Por enquanto, apenas redirecionar para lista de vendas
-            # A funcionalidade completa será implementada posteriormente
-            return redirect('/vendas')
+            # Processar dados da venda
+            dados = request.get_json() if request.is_json else request.form.to_dict()
+
+            # Validações básicas
+            if not dados.get('cliente_id'):
+                return jsonify({'error': True, 'message': 'Cliente é obrigatório'}), 400
+
+            if not dados.get('origem_venda'):
+                return jsonify({'error': True, 'message': 'Origem da venda é obrigatória'}), 400
+
+            # Preparar dados da venda
+            dados_venda = {
+                'cliente_id': int(dados.get('cliente_id')),
+                'origem_venda': dados.get('origem_venda'),
+                'forma_pagamento': dados.get('forma_pagamento'),
+                'observacoes': dados.get('observacoes'),
+                'vendedor': 'Sistema',  # Por enquanto fixo
+                'status': 'pendente'
+            }
+
+            # Por enquanto, criar venda sem itens (será implementado depois)
+            itens = []  # Lista vazia de itens
+
+            # Criar venda
+            venda_id = Venda.criar(dados_venda, itens)
+
+            if venda_id:
+                # Buscar dados da venda criada
+                venda = Venda.buscar_por_id(venda_id)
+                return jsonify({
+                    'success': True,
+                    'message': 'Venda registrada com sucesso',
+                    'venda_id': venda_id,
+                    'numero_venda': venda.get('numero_venda') if venda else f'VD{venda_id}'
+                })
+            else:
+                return jsonify({'error': True, 'message': 'Erro ao salvar venda'}), 500
 
         return render_template('vendas/form.html',
                              titulo='Nova Venda',
                              acao='Registrar')
     except Exception as e:
+        if request.method == 'POST':
+            return jsonify({'error': True, 'message': str(e)}), 500
         return render_template('erro_simples.html',
                              modulo='Nova Venda',
                              erro=str(e))

@@ -146,9 +146,9 @@ class Venda:
         
         # Inserir venda
         query_venda = '''
-            INSERT INTO vendas (cliente_id, numero_venda, valor_total, desconto, 
-                              valor_final, status, forma_pagamento, observacoes, vendedor)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO vendas (cliente_id, numero_venda, valor_total, desconto,
+                              valor_final, status, forma_pagamento, observacoes, vendedor, origem_venda)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
         params_venda = (
             dados.get('cliente_id'),
@@ -159,7 +159,8 @@ class Venda:
             dados.get('status', 'pendente'),
             dados.get('forma_pagamento'),
             dados.get('observacoes'),
-            dados.get('vendedor')
+            dados.get('vendedor'),
+            dados.get('origem_venda', 'sistema')
         )
         
         venda_id = db.execute_insert(query_venda, params_venda)
