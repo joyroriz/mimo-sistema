@@ -17,6 +17,15 @@ app = Flask(__name__,
 # Configuração básica
 app.config['SECRET_KEY'] = 'mimo-sistema-2025'
 
+# Filtros personalizados para templates
+@app.template_filter('currency')
+def currency_filter(value):
+    """Filtro para formatar valores monetários"""
+    try:
+        return f"R$ {float(value):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    except (ValueError, TypeError):
+        return "R$ 0,00"
+
 @app.route('/')
 def index():
     """Página inicial"""
@@ -30,7 +39,10 @@ def index():
                                  'total_clientes': 10,
                                  'total_produtos': 25,
                                  'total_vendas': 50,
-                                 'receita_total': 15000.00
+                                 'receita_total': 15000.00,
+                                 'receita_mes': 8500.00,
+                                 'vendas_mes': 25,
+                                 'clientes_mes': 5
                              })
     except Exception as e:
         # Fallback para JSON se template não funcionar
