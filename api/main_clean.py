@@ -611,15 +611,20 @@ def produtos():
             'status': 'erro'
         })
 
-@app.route('/produtos/novo')
+@app.route('/produtos/novo', methods=['GET', 'POST'])
 def produtos_novo():
     """Formulário para novo produto"""
     try:
+        if request.method == 'POST':
+            # Por enquanto, apenas redirecionar para lista de produtos
+            # A funcionalidade completa será implementada posteriormente
+            return redirect('/produtos')
+
         return render_template('produtos/form.html',
                              titulo='Novo Produto',
                              acao='Cadastrar')
     except Exception as e:
-        return render_template('em_desenvolvimento.html',
+        return render_template('erro_simples.html',
                              modulo='Novo Produto',
                              erro=str(e))
 
