@@ -37,14 +37,14 @@
                     <i class="bi bi-search"></i>
                 </button>
                 {% if search %}
-                <a href="{{ url_for('clientes.listar') }}" class="btn btn-outline-secondary ms-2">
+                <a href="/clientes" class="btn btn-outline-secondary ms-2">
                     <i class="bi bi-x"></i>
                 </a>
                 {% endif %}
             </form>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{{ url_for('clientes.aniversariantes') }}" class="btn btn-outline-warning">
+            <a href="/clientes/aniversariantes" class="btn btn-outline-warning">
                 <i class="bi bi-gift me-1"></i>
                 Aniversariantes
             </a>
@@ -168,7 +168,7 @@
                     Comece cadastrando seu primeiro cliente.
                     {% endif %}
                 </p>
-                <a href="{{ url_for('clientes.novo') }}" class="btn btn-primary">
+                <a href="/clientes/novo" class="btn btn-primary">
                     <i class="bi bi-person-plus me-2"></i>
                     Cadastrar Primeiro Cliente
                 </a>

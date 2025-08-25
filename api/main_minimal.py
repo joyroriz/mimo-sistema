@@ -841,7 +841,7 @@ def crm():
 def clientes():
     """Página lista de clientes"""
     try:
-        return render_template('clientes/listar.html')
+        return render_template('clientes/listar_simples.html')
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'clientes'}), 500
 
