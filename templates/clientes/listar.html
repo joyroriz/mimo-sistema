@@ -29,8 +29,8 @@
     <div class="row mb-4">
         <div class="col-md-8">
             <form method="GET" class="d-flex">
-                <input type="text" name="search" class="form-control me-2" 
-                       placeholder="Buscar por nome, telefone ou email..." 
+                <input type="text" id="busca-cliente" name="search" class="form-control me-2"
+                       placeholder="Buscar por nome, telefone ou email..."
                        value="{{ search }}"
                        style="min-width: 300px;">
                 <button type="submit" class="btn btn-outline-primary">
@@ -63,7 +63,7 @@
         <div class="card-body p-0">
             {% if clientes.items %}
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table id="tabela-clientes" class="table table-hover mb-0">
                     <thead>
                         <tr>
                             <th>Nome</th>
@@ -316,6 +316,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-{% endblock %}
-
 {% endblock %}
