@@ -238,6 +238,88 @@ class CRMProspect:
         '''
         return db.execute_insert(query, (prospect_id, tipo, descricao, resultado, responsavel))
 
+    @staticmethod
+    def obter_estatisticas() -> Dict[str, Any]:
+        """Obter estatísticas do pipeline de vendas"""
+        query = '''
+            SELECT
+                estagio,
+                COUNT(*) as total,
+                SUM(valor_estimado) as valor_total,
+                AVG(valor_estimado) as valor_medio
+            FROM crm_prospects
+            WHERE ativo = 1
+            GROUP BY estagio
+        '''
+        stats_por_estagio = db.execute_query(query)
+
+        # Calcular estatísticas gerais
+        query_geral = '''
+            SELECT
+                COUNT(*) as total_prospects,
+                SUM(valor_estimado) as valor_total_pipeline,
+                COUNT(CASE WHEN estagio = 'cliente' THEN 1 END) as total_convertidos,
+                AVG(valor_estimado) as ticket_medio
+            FROM crm_prospects
+            WHERE ativo = 1
+        '''
+        stats_geral = db.execute_query(query_geral)[0] if db.execute_query(query_geral) else {}
+
+        # Taxa de conversão
+        taxa_conversao = 0
+        if stats_geral.get('total_prospects', 0) > 0:
+            taxa_conversao = (stats_geral.get('total_convertidos', 0) / stats_geral.get('total_prospects', 0)) * 100
+
+        return {
+            'por_estagio': {item['estagio']: item for item in stats_por_estagio},
+            'geral': {
+                **stats_geral,
+                'taxa_conversao': round(taxa_conversao, 1)
+            }
+        }
+
+    @staticmethod
+    def buscar_por_id(prospect_id: int) -> Optional[Dict]:
+        """Buscar prospect por ID"""
+        query = "SELECT * FROM crm_prospects WHERE id = ? AND ativo = 1"
+        result = db.execute_query(query, (prospect_id,))
+        return result[0] if result else None
+
+    @staticmethod
+    def atualizar(prospect_id: int, dados: Dict[str, Any]) -> bool:
+        """Atualizar dados do prospect"""
+        query = '''
+            UPDATE crm_prospects
+            SET nome = ?, email = ?, telefone = ?, whatsapp = ?, empresa = ?,
+                cargo = ?, origem = ?, valor_estimado = ?, observacoes = ?,
+                responsavel = ?, data_atualizacao = CURRENT_TIMESTAMP
+            WHERE id = ?
+        '''
+        params = (
+            dados.get('nome'),
+            dados.get('email'),
+            dados.get('telefone'),
+            dados.get('whatsapp'),
+            dados.get('empresa'),
+            dados.get('cargo'),
+            dados.get('origem'),
+            dados.get('valor_estimado', 0),
+            dados.get('observacoes'),
+            dados.get('responsavel'),
+            prospect_id
+        )
+        return db.execute_update(query, params) > 0
+
+    @staticmethod
+    def listar_interacoes(prospect_id: int) -> List[Dict]:
+        """Listar interações de um prospect"""
+        query = '''
+            SELECT * FROM crm_interacoes
+            WHERE prospect_id = ?
+            ORDER BY data_criacao DESC
+        '''
+        return db.execute_query(query, (prospect_id,))
+
 class KanbanEntrega:
     """Modelo para gestão Kanban de entregas"""
     

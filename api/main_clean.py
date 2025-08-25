@@ -1006,6 +1006,95 @@ def api_verificar_duplicatas_cliente():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/crm/prospects', methods=['POST'])
+def api_crm_criar_prospect():
+    """API para criar novo prospect"""
+    try:
+        dados = request.get_json()
+        prospect_id = CRMProspect.criar(dados)
+
+        if prospect_id:
+            return jsonify({
+                'success': True,
+                'prospect_id': prospect_id,
+                'message': 'Prospect criado com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Erro ao criar prospect'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/crm/prospects/<int:prospect_id>/converter', methods=['POST'])
+def api_crm_converter_cliente(prospect_id):
+    """API para converter prospect em cliente"""
+    try:
+        cliente_id = CRMProspect.converter_para_cliente(prospect_id)
+
+        if cliente_id:
+            return jsonify({
+                'success': True,
+                'cliente_id': cliente_id,
+                'message': 'Prospect convertido em cliente com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Erro ao converter prospect'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/crm/prospects/<int:prospect_id>/interacao', methods=['POST'])
+def api_crm_adicionar_interacao(prospect_id):
+    """API para adicionar interação ao prospect"""
+    try:
+        dados = request.get_json()
+
+        interacao_id = CRMProspect.adicionar_interacao(
+            prospect_id,
+            dados.get('tipo'),
+            dados.get('descricao'),
+            dados.get('resultado'),
+            dados.get('responsavel')
+        )
+
+        if interacao_id:
+            return jsonify({
+                'success': True,
+                'interacao_id': interacao_id,
+                'message': 'Interação adicionada com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Erro ao adicionar interação'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/crm/estatisticas')
+def api_crm_estatisticas():
+    """API para obter estatísticas do CRM"""
+    try:
+        stats = CRMProspect.obter_estatisticas()
+        return jsonify(stats)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/crm/prospects/<int:prospect_id>')
+def api_crm_prospect_detalhes(prospect_id):
+    """API para obter detalhes de um prospect"""
+    try:
+        prospect = CRMProspect.buscar_por_id(prospect_id)
+        if prospect:
+            interacoes = CRMProspect.listar_interacoes(prospect_id)
+            return jsonify({
+                'prospect': prospect,
+                'interacoes': interacoes
+            })
+        else:
+            return jsonify({'error': 'Prospect não encontrado'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Configuração para Vercel
 if __name__ == '__main__':
     # Desenvolvimento local

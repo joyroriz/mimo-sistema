@@ -6,6 +6,7 @@
     <title>CRM Pipeline - Sistema MIMO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/css/toast-notifications.css" rel="stylesheet">
     <style>
         :root {
             --mimo-gradient: linear-gradient(135deg, #FF8E63 0%, #FF7EB0 50%, #63A4FF 100%);
@@ -217,6 +218,13 @@
             </div>
             <div class="col-md-3">
                 <div class="stats-card text-center">
+                    <i class="bi bi-graph-up display-6 text-warning mb-2"></i>
+                    <h4 class="mimo-gradient-text" id="taxa-conversao">0%</h4>
+                    <p class="text-muted mb-0">Taxa Conversão</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
                     <i class="bi bi-graph-up display-6 text-info mb-2"></i>
                     <h4 class="mimo-gradient-text" id="taxa-conversao">0%</h4>
                     <p class="text-muted mb-0">Taxa Conversão</p>
@@ -224,9 +232,9 @@
             </div>
             <div class="col-md-3">
                 <div class="stats-card text-center">
-                    <i class="bi bi-check-circle display-6 text-warning mb-2"></i>
-                    <h4 class="mimo-gradient-text" id="convertidos-mes">0</h4>
-                    <p class="text-muted mb-0">Convertidos/Mês</p>
+                    <i class="bi bi-check-circle display-6 text-info mb-2"></i>
+                    <h4 class="mimo-gradient-text" id="ticket-medio">R$ 0</h4>
+                    <p class="text-muted mb-0">Ticket Médio</p>
                 </div>
             </div>
         </div>
@@ -422,17 +430,20 @@
                         ${prospect.telefone ? `<i class="bi bi-telephone me-1"></i>${prospect.telefone}` : ''}
                     </div>
                     <div class="card-actions">
-                        <button class="btn btn-sm btn-outline-primary" onclick="editarProspect(${prospect.id})">
-                            <i class="bi bi-pencil"></i>
+                        <button class="btn btn-sm btn-outline-primary" onclick="verDetalhesProspect(${prospect.id})" title="Ver Detalhes">
+                            <i class="bi bi-eye"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-success" onclick="adicionarInteracao(${prospect.id})">
+                        <button class="btn btn-sm btn-outline-info" onclick="adicionarInteracao(${prospect.id})" title="Adicionar Interação">
                             <i class="bi bi-chat-dots"></i>
                         </button>
                         ${prospect.estagio === 'negociacao' ? `
-                            <button class="btn btn-sm btn-outline-warning" onclick="converterCliente(${prospect.id})">
-                                <i class="bi bi-arrow-right"></i>
+                            <button class="btn btn-sm btn-outline-success" onclick="converterCliente(${prospect.id})" title="Converter em Cliente">
+                                <i class="bi bi-person-check"></i>
                             </button>
                         ` : ''}
+                        <button class="btn btn-sm btn-outline-secondary" onclick="editarProspect(${prospect.id})" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </button>
                     </div>
                 </div>
             `;
@@ -587,22 +598,122 @@
             carregarPipeline();
         }
         
+        // Carregar estatísticas do CRM
+        async function carregarEstatisticas() {
+            try {
+                const response = await fetch('/api/crm/estatisticas');
+                const stats = await response.json();
+
+                // Atualizar estatísticas gerais
+                document.getElementById('total-prospects').textContent = stats.geral.total_prospects || 0;
+                document.getElementById('valor-pipeline').textContent = `R$ ${(stats.geral.valor_total_pipeline || 0).toFixed(2)}`;
+                document.getElementById('taxa-conversao').textContent = `${stats.geral.taxa_conversao || 0}%`;
+                document.getElementById('ticket-medio').textContent = `R$ ${(stats.geral.ticket_medio || 0).toFixed(2)}`;
+
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+            }
+        }
+
+        // Ver detalhes do prospect
+        async function verDetalhesProspect(id) {
+            try {
+                const response = await fetch(`/api/crm/prospects/${id}`);
+                const data = await response.json();
+
+                if (data.prospect) {
+                    // Mostrar modal com detalhes (implementar modal)
+                    showToast.info('Detalhes', `Prospect: ${data.prospect.nome}`);
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar detalhes:', error);
+                showToast.error('Erro', 'Erro ao carregar detalhes do prospect');
+            }
+        }
+
+        // Adicionar interação
+        async function adicionarInteracao(id) {
+            const tipo = prompt('Tipo de interação (ligacao, email, reuniao, whatsapp):');
+            const descricao = prompt('Descrição da interação:');
+            const resultado = prompt('Resultado (opcional):');
+
+            if (tipo && descricao) {
+                try {
+                    const response = await fetch(`/api/crm/prospects/${id}/interacao`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            tipo: tipo,
+                            descricao: descricao,
+                            resultado: resultado,
+                            responsavel: 'Sistema MIMO'
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast.success('Interação Adicionada', 'Interação registrada com sucesso');
+                    } else {
+                        showToast.error('Erro', result.error || 'Erro ao adicionar interação');
+                    }
+
+                } catch (error) {
+                    console.error('Erro ao adicionar interação:', error);
+                    showToast.error('Erro', 'Erro de conexão');
+                }
+            }
+        }
+
+        // Converter prospect em cliente
+        async function converterCliente(id) {
+            if (confirm('Deseja converter este prospect em cliente?')) {
+                try {
+                    const response = await fetch(`/api/crm/prospects/${id}/converter`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast.success('Conversão Realizada', `Prospect convertido em cliente! ID: ${result.cliente_id}`);
+                        await carregarPipeline();
+                        await carregarEstatisticas();
+                    } else {
+                        showToast.error('Erro', result.error || 'Erro ao converter prospect');
+                    }
+
+                } catch (error) {
+                    console.error('Erro ao converter prospect:', error);
+                    showToast.error('Erro', 'Erro de conexão');
+                }
+            }
+        }
+
         function editarProspect(id) {
-            console.log('Editar prospect:', id);
+            showToast.info('Em Desenvolvimento', 'Funcionalidade de edição será implementada em breve');
         }
-        
-        function adicionarInteracao(id) {
-            console.log('Adicionar interação:', id);
+
+        // Atualizar pipeline
+        async function atualizarPipeline() {
+            showToast.info('Atualizando', 'Carregando dados mais recentes...');
+            await carregarPipeline();
+            await carregarEstatisticas();
         }
-        
-        function converterCliente(id) {
-            console.log('Converter para cliente:', id);
-        }
-        
+
         // Inicializar
         document.addEventListener('DOMContentLoaded', () => {
             carregarPipeline();
+            carregarEstatisticas();
         });
     </script>
+
+    <script src="/static/js/toast-notifications.js"></script>
 </body>
 </html>
