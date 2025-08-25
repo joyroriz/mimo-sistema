@@ -6,6 +6,7 @@
     <title>Kanban de Entregas - Sistema MIMO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/css/toast-notifications.css" rel="stylesheet">
     <style>
         :root {
             --mimo-gradient: linear-gradient(135deg, #FF8E63 0%, #FF7EB0 50%, #63A4FF 100%);
@@ -74,6 +75,38 @@
         .prioridade-alta { border-left-color: #dc3545; }
         .prioridade-normal { border-left-color: #0dcaf0; }
         .prioridade-baixa { border-left-color: #198754; }
+
+        /* Observações */
+        .observacoes-preview {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .observacoes-badges .badge {
+            font-size: 0.7rem;
+            margin-left: 2px;
+        }
+
+        .observacao-item {
+            background: white;
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-left: 3px solid #007bff;
+            font-size: 0.8rem;
+        }
+
+        .observacao-item.geral { border-left-color: #007bff; }
+        .observacao-item.producao { border-left-color: #28a745; }
+        .observacao-item.entrega { border-left-color: #ffc107; }
+
+        .observacao-meta {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-top: 2px;
+        }
         
         .card-header {
             font-weight: 600;
@@ -257,6 +290,14 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label class="form-label">Tipo de Observação</label>
+                        <select class="form-select" id="tipoObservacao">
+                            <option value="geral">💬 Geral</option>
+                            <option value="producao">🔧 Produção</option>
+                            <option value="entrega">🚚 Entrega</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Responsável</label>
                         <select class="form-select" id="responsavelObservacao">
                             <option value="Sistema MIMO">Sistema MIMO</option>
@@ -267,6 +308,14 @@
                     <div class="mb-3">
                         <label class="form-label">Observação</label>
                         <textarea class="form-control" id="observacaoTexto" rows="3" placeholder="Digite sua observação..."></textarea>
+                    </div>
+
+                    <!-- Observações existentes -->
+                    <div class="mb-3">
+                        <label class="form-label">Observações Existentes</label>
+                        <div id="observacoesExistentes" class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                            <small class="text-muted">Carregando...</small>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -495,14 +544,21 @@
                         <span class="tempo-badge">${tempoDecorrido}</span>
                         <small class="text-muted">${entrega.responsavel || 'Sem responsável'}</small>
                     </div>
-                    ${entrega.observacoes ? `
-                        <div class="mt-2 p-2 bg-light rounded">
+                    <div class="observacoes-preview mt-2" id="observacoes-${entrega.id}">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
                             <small class="text-muted">
-                                <i class="bi bi-chat-dots me-1"></i>
-                                ${entrega.observacoes.split('\n').slice(-1)[0].substring(0, 50)}...
+                                <i class="bi bi-chat-text me-1"></i>Observações
                             </small>
+                            <div class="observacoes-badges">
+                                <span class="badge bg-primary badge-sm" id="count-geral-${entrega.id}">💬 0</span>
+                                <span class="badge bg-success badge-sm" id="count-producao-${entrega.id}">🔧 0</span>
+                                <span class="badge bg-warning badge-sm" id="count-entrega-${entrega.id}">🚚 0</span>
+                            </div>
                         </div>
-                    ` : ''}
+                        <div class="observacoes-lista" id="lista-obs-${entrega.id}">
+                            <small class="text-muted">Carregando observações...</small>
+                        </div>
+                    </div>
                 </div>
             `;
         }
@@ -579,48 +635,53 @@
             }
         }
         
-        // Salvar observação e mover entrega
+        // Salvar observação
         async function salvarObservacao() {
             const observacao = document.getElementById('observacaoTexto').value;
             const responsavel = document.getElementById('responsavelObservacao').value;
+            const tipo = document.getElementById('tipoObservacao').value;
 
             if (!observacao.trim()) {
-                mostrarNotificacao('Por favor, digite uma observação', 'warning');
+                showToast.warning('Atenção', 'Por favor, digite uma observação');
                 return;
             }
 
             try {
-                const response = await fetch(`/api/kanban/entregas/${currentEntregaId}/observacao`, {
+                const response = await fetch('/api/observacoes', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        entrega_id: currentEntregaId,
+                        tipo_observacao: tipo,
                         observacao: observacao,
-                        responsavel: responsavel
+                        autor: responsavel
                     })
                 });
 
                 const result = await response.json();
 
-                if (result.success) {
+                if (response.ok && result.success) {
                     // Fechar modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('observacaoModal'));
                     modal.hide();
 
                     // Limpar campos
                     document.getElementById('observacaoTexto').value = '';
+                    document.getElementById('tipoObservacao').value = 'geral';
 
-                    // Recarregar Kanban
-                    await carregarKanban();
+                    // Recarregar observações da entrega específica
+                    await carregarObservacoes(currentEntregaId);
 
                     // Mostrar notificação
-                    mostrarNotificacao('Observação adicionada com sucesso!', 'success');
+                    showToast.success('Observação Adicionada', `Observação ${getTipoIcon(tipo)} ${tipo} salva com sucesso!`);
                 } else {
-                    mostrarNotificacao('Erro ao adicionar observação: ' + result.error, 'error');
+                    showToast.error('Erro', result.error || 'Erro ao adicionar observação');
                 }
             } catch (error) {
-                mostrarNotificacao('Erro na requisição: ' + error.message, 'error');
+                console.error('Erro ao salvar observação:', error);
+                showToast.error('Erro', 'Erro de conexão ao salvar observação');
             }
         }
 
@@ -724,10 +785,45 @@
         }
 
         // Adicionar observação
-        function adicionarObservacao(entregaId) {
+        async function adicionarObservacao(entregaId) {
             currentEntregaId = entregaId;
+
+            // Carregar observações existentes no modal
+            await carregarObservacoesModal(entregaId);
+
             const modal = new bootstrap.Modal(document.getElementById('observacaoModal'));
             modal.show();
+        }
+
+        // Carregar observações no modal
+        async function carregarObservacoesModal(entregaId) {
+            try {
+                const response = await fetch(`/api/observacoes/${entregaId}`);
+                const observacoes = await response.json();
+
+                const container = document.getElementById('observacoesExistentes');
+
+                if (observacoes.length === 0) {
+                    container.innerHTML = '<small class="text-muted">Nenhuma observação encontrada</small>';
+                } else {
+                    container.innerHTML = observacoes.map(obs => `
+                        <div class="observacao-item ${obs.tipo_observacao} mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-secondary">${getTipoIcon(obs.tipo_observacao)} ${obs.tipo_observacao}</span>
+                                    <small class="text-muted ms-2">por ${obs.autor}</small>
+                                </div>
+                                <small class="text-muted">${formatarDataHora(obs.data_criacao)}</small>
+                            </div>
+                            <div class="mt-1">${obs.observacao}</div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar observações do modal:', error);
+                document.getElementById('observacoesExistentes').innerHTML = '<small class="text-danger">Erro ao carregar observações</small>';
+            }
         }
 
         // Ver histórico
@@ -927,11 +1023,88 @@
             }, 1000);
         }
         
+        // Carregar observações para uma entrega
+        async function carregarObservacoes(entregaId) {
+            try {
+                const [observacoes, contadores] = await Promise.all([
+                    fetch(`/api/observacoes/${entregaId}`).then(r => r.json()),
+                    fetch(`/api/observacoes/contadores/${entregaId}`).then(r => r.json())
+                ]);
+
+                // Atualizar contadores
+                document.getElementById(`count-geral-${entregaId}`).textContent = `💬 ${contadores.geral || 0}`;
+                document.getElementById(`count-producao-${entregaId}`).textContent = `🔧 ${contadores.producao || 0}`;
+                document.getElementById(`count-entrega-${entregaId}`).textContent = `🚚 ${contadores.entrega || 0}`;
+
+                // Mostrar últimas observações
+                const listaElement = document.getElementById(`lista-obs-${entregaId}`);
+                if (observacoes.length === 0) {
+                    listaElement.innerHTML = '<small class="text-muted">Nenhuma observação</small>';
+                } else {
+                    const ultimasObs = observacoes.slice(0, 2); // Mostrar apenas as 2 últimas
+                    listaElement.innerHTML = ultimasObs.map(obs => `
+                        <div class="observacao-item ${obs.tipo_observacao}">
+                            <div>${obs.observacao}</div>
+                            <div class="observacao-meta">
+                                ${getTipoIcon(obs.tipo_observacao)} ${obs.autor} • ${formatarDataHora(obs.data_criacao)}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    if (observacoes.length > 2) {
+                        listaElement.innerHTML += `<small class="text-muted">+${observacoes.length - 2} observações...</small>`;
+                    }
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar observações:', error);
+                document.getElementById(`lista-obs-${entregaId}`).innerHTML = '<small class="text-danger">Erro ao carregar</small>';
+            }
+        }
+
+        // Carregar observações para todas as entregas visíveis
+        function carregarTodasObservacoes() {
+            const cards = document.querySelectorAll('.kanban-card');
+            cards.forEach(card => {
+                const entregaId = card.dataset.entregaId;
+                if (entregaId) {
+                    carregarObservacoes(entregaId);
+                }
+            });
+        }
+
+        // Funções auxiliares para observações
+        function getTipoIcon(tipo) {
+            const icons = {
+                'geral': '💬',
+                'producao': '🔧',
+                'entrega': '🚚'
+            };
+            return icons[tipo] || '📝';
+        }
+
+        function formatarDataHora(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
         // Inicializar
         document.addEventListener('DOMContentLoaded', () => {
             carregarKanban();
             iniciarCountdown();
+
+            // Carregar observações após carregar kanban
+            setTimeout(() => {
+                carregarTodasObservacoes();
+            }, 1000);
         });
     </script>
+
+    <script src="/static/js/toast-notifications.js"></script>
 </body>
 </html>
