@@ -9,10 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <!-- Toast Notifications CSS -->
-    <link href="{{ url_for('static', filename='css/toast-notifications.css') }}" rel="stylesheet">
+    <!-- Custom CSS será carregado inline se necessário -->
 
     {% block extra_css %}{% endblock %}
 </head>
@@ -20,7 +17,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+            <a class="navbar-brand fw-bold" href="/">
                 <i class="bi bi-graph-up-arrow me-2"></i>
                 Sistema MIMO
             </a>
@@ -32,7 +29,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">
+                        <a class="nav-link" href="/">
                             <i class="bi bi-house-door me-1"></i>Dashboard
                         </a>
                     </li>
@@ -41,26 +38,26 @@
                             <i class="bi bi-person-plus me-1"></i>Cadastros
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('clientes.listar') }}">
+                            <li><a class="dropdown-item" href="/clientes">
                                 <i class="bi bi-people me-2"></i>Clientes
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('produtos.listar') }}">
+                            <li><a class="dropdown-item" href="/produtos">
                                 <i class="bi bi-box me-2"></i>Produtos
                             </a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('vendas.listar') }}">
+                        <a class="nav-link" href="/vendas">
                             <i class="bi bi-cart-check me-1"></i>Vendas
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('entregas.calendario') }}">
+                        <a class="nav-link" href="/entregas">
                             <i class="bi bi-calendar-event me-1"></i>Entregas
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('crm_dashboard') }}">
+                        <a class="nav-link" href="/crm">
                             <i class="bi bi-heart me-1"></i>CRM
                         </a>
                     </li>
@@ -72,14 +69,14 @@
                             <i class="bi bi-gear me-1"></i>Sistema
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ url_for('relatorios_index') }}">
+                            <li><a class="dropdown-item" href="/relatorios">
                                 <i class="bi bi-file-earmark-text me-2"></i>Relatórios
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('backup_criar') }}">
+                            <li><a class="dropdown-item" href="/backup">
                                 <i class="bi bi-cloud-download me-2"></i>Backup
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('ajuda_index') }}">
+                            <li><a class="dropdown-item" href="/ajuda">
                                 <i class="bi bi-question-circle me-2"></i>Ajuda
                             </a></li>
                         </ul>
@@ -135,8 +132,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/pt-br.min.js"></script>
     
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <!-- Custom JS será carregado inline se necessário -->
     
     {% block extra_js %}{% endblock %}
     
