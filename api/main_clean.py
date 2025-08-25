@@ -242,12 +242,30 @@ def api_clientes_criar():
     """API: Criar novo cliente"""
     try:
         dados = request.get_json()
+
+        # Verificar se deve ignorar duplicatas
+        ignorar_duplicata = dados.pop('ignorar_duplicata', False)
+
+        # Se não deve ignorar, verificar duplicatas primeiro
+        if not ignorar_duplicata:
+            nome = dados.get('nome', '').strip()
+            telefone = dados.get('telefone', '').strip()
+
+            if nome or telefone:
+                duplicatas = Cliente.verificar_duplicatas(nome, telefone)
+                if duplicatas:
+                    return jsonify({
+                        'success': False,
+                        'error': 'Cliente similar encontrado',
+                        'duplicatas': duplicatas
+                    }), 409  # Conflict
+
         cliente_id = Cliente.criar(dados)
 
         if cliente_id:
             return jsonify({
                 'success': True,
-                'data': {'id': cliente_id},
+                'cliente_id': cliente_id,
                 'message': 'Cliente criado com sucesso'
             }), 201
         else:
@@ -963,6 +981,27 @@ def api_confirmar_entrega(entrega_id):
             })
         else:
             return jsonify({'error': 'Erro ao confirmar entrega'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clientes/verificar-duplicatas', methods=['POST'])
+def api_verificar_duplicatas_cliente():
+    """API para verificar duplicatas de cliente"""
+    try:
+        dados = request.get_json()
+        nome = dados.get('nome', '').strip()
+        telefone = dados.get('telefone', '').strip()
+
+        if not nome and not telefone:
+            return jsonify({'duplicatas': []})
+
+        duplicatas = Cliente.verificar_duplicatas(nome, telefone)
+
+        return jsonify({
+            'duplicatas': duplicatas,
+            'total': len(duplicatas)
+        })
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

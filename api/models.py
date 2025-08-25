@@ -79,6 +79,43 @@ class Cliente:
         query = "UPDATE clientes SET ativo = 0 WHERE id = ?"
         return db.execute_update(query, (cliente_id,)) > 0
 
+    @staticmethod
+    def verificar_duplicatas(nome: str, telefone: str) -> List[Dict]:
+        """Verificar se existem clientes similares"""
+        duplicatas = []
+
+        if nome:
+            # Buscar por nome similar (usando LIKE)
+            query_nome = '''
+                SELECT id, nome, email, telefone
+                FROM clientes
+                WHERE ativo = 1 AND LOWER(nome) LIKE LOWER(?)
+                LIMIT 5
+            '''
+            nome_like = f"%{nome}%"
+            resultado_nome = db.execute_query(query_nome, (nome_like,))
+            duplicatas.extend(resultado_nome)
+
+        if telefone:
+            # Buscar por telefone similar
+            telefone_limpo = ''.join(filter(str.isdigit, telefone))
+            if len(telefone_limpo) >= 8:  # Pelo menos 8 dígitos
+                query_telefone = '''
+                    SELECT id, nome, email, telefone
+                    FROM clientes
+                    WHERE ativo = 1 AND telefone LIKE ?
+                    LIMIT 5
+                '''
+                telefone_like = f"%{telefone_limpo[-8:]}%"  # Últimos 8 dígitos
+                resultado_telefone = db.execute_query(query_telefone, (telefone_like,))
+
+                # Adicionar apenas se não estiver já na lista
+                for cliente in resultado_telefone:
+                    if not any(d['id'] == cliente['id'] for d in duplicatas):
+                        duplicatas.append(cliente)
+
+        return duplicatas[:5]  # Máximo 5 resultados
+
 class Produto:
     """Modelo para gestão de produtos"""
     

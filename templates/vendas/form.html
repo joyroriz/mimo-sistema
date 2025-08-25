@@ -6,6 +6,7 @@
     <title>{{ titulo }} - Sistema MIMO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/css/toast-notifications.css" rel="stylesheet">
     <style>
         :root {
             --mimo-primary: #6f42c1;
@@ -158,10 +159,15 @@
 
                                 <div class="mb-3">
                                     <label for="cliente_id" class="form-label">Cliente *</label>
-                                    <select class="form-select" id="cliente_id" name="cliente_id" required>
-                                        <option value="">Selecione um cliente...</option>
-                                        <!-- Clientes serão carregados via JavaScript -->
-                                    </select>
+                                    <div class="input-group">
+                                        <select class="form-select" id="cliente_id" name="cliente_id" required>
+                                            <option value="">Selecione um cliente...</option>
+                                            <!-- Clientes serão carregados via JavaScript -->
+                                        </select>
+                                        <button type="button" class="btn btn-outline-primary" onclick="abrirModalNovoCliente()" title="Cadastrar Novo Cliente">
+                                            <i class="bi bi-person-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -234,7 +240,77 @@
         </div>
     </div>
 
+    <!-- Modal para Novo Cliente -->
+    <div class="modal fade" id="novoClienteModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-plus me-2"></i>Cadastrar Novo Cliente
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formNovoCliente">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="novo_nome" class="form-label">Nome Completo *</label>
+                                    <input type="text" class="form-control" id="novo_nome" name="nome" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="novo_email" class="form-label">E-mail</label>
+                                    <input type="email" class="form-control" id="novo_email" name="email">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="novo_telefone" class="form-label">Telefone *</label>
+                                    <input type="tel" class="form-control" id="novo_telefone" name="telefone" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="novo_endereco" class="form-label">Endereço</label>
+                                    <textarea class="form-control" id="novo_endereco" name="endereco" rows="3"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="novo_observacoes" class="form-label">Observações</label>
+                                    <textarea class="form-control" id="novo_observacoes" name="observacoes" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Verificação de Duplicatas -->
+                        <div id="alertaDuplicata" class="alert alert-warning d-none">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Cliente Similar Encontrado!</strong>
+                            <div id="clientesSimilares"></div>
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-sm btn-warning" onclick="ignorarDuplicata()">
+                                    Cadastrar Mesmo Assim
+                                </button>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="cancelarCadastro()">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarNovoCliente()">
+                        <i class="bi bi-save me-1"></i>Salvar Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/toast-notifications.js"></script>
     <script>
         // Carregar clientes ao inicializar página
         document.addEventListener('DOMContentLoaded', function() {
@@ -329,6 +405,142 @@
         setTimeout(() => {
             showToast.info('Nova Venda', 'Preencha os dados para registrar uma nova venda.');
         }, 500);
+
+        // Abrir modal de novo cliente
+        function abrirModalNovoCliente() {
+            // Limpar formulário
+            document.getElementById('formNovoCliente').reset();
+            document.getElementById('alertaDuplicata').classList.add('d-none');
+
+            const modal = new bootstrap.Modal(document.getElementById('novoClienteModal'));
+            modal.show();
+        }
+
+        // Salvar novo cliente
+        async function salvarNovoCliente() {
+            const formData = new FormData(document.getElementById('formNovoCliente'));
+            const dados = Object.fromEntries(formData);
+
+            // Validações básicas
+            if (!dados.nome.trim()) {
+                showToast.warning('Atenção', 'Nome é obrigatório');
+                return;
+            }
+
+            if (!dados.telefone.trim()) {
+                showToast.warning('Atenção', 'Telefone é obrigatório');
+                return;
+            }
+
+            try {
+                // Verificar duplicatas primeiro
+                const duplicatas = await verificarDuplicatas(dados.nome, dados.telefone);
+
+                if (duplicatas.length > 0) {
+                    mostrarAlertaDuplicata(duplicatas);
+                    return;
+                }
+
+                // Salvar cliente
+                await criarCliente(dados);
+
+            } catch (error) {
+                console.error('Erro ao salvar cliente:', error);
+                showToast.error('Erro', 'Erro ao salvar cliente');
+            }
+        }
+
+        // Verificar duplicatas
+        async function verificarDuplicatas(nome, telefone) {
+            try {
+                const response = await fetch('/api/clientes/verificar-duplicatas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nome: nome,
+                        telefone: telefone
+                    })
+                });
+
+                const result = await response.json();
+                return result.duplicatas || [];
+
+            } catch (error) {
+                console.error('Erro ao verificar duplicatas:', error);
+                return [];
+            }
+        }
+
+        // Mostrar alerta de duplicata
+        function mostrarAlertaDuplicata(duplicatas) {
+            const alerta = document.getElementById('alertaDuplicata');
+            const container = document.getElementById('clientesSimilares');
+
+            container.innerHTML = duplicatas.map(cliente => `
+                <div class="border rounded p-2 mt-2">
+                    <strong>${cliente.nome}</strong><br>
+                    <small class="text-muted">
+                        📞 ${cliente.telefone || 'Sem telefone'} |
+                        📧 ${cliente.email || 'Sem email'}
+                    </small>
+                </div>
+            `).join('');
+
+            alerta.classList.remove('d-none');
+        }
+
+        // Ignorar duplicata e criar cliente
+        async function ignorarDuplicata() {
+            const formData = new FormData(document.getElementById('formNovoCliente'));
+            const dados = Object.fromEntries(formData);
+            await criarCliente(dados, true);
+        }
+
+        // Cancelar cadastro
+        function cancelarCadastro() {
+            document.getElementById('alertaDuplicata').classList.add('d-none');
+        }
+
+        // Criar cliente
+        async function criarCliente(dados, ignorarDuplicata = false) {
+            try {
+                const response = await fetch('/api/clientes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...dados,
+                        ignorar_duplicata: ignorarDuplicata
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('novoClienteModal'));
+                    modal.hide();
+
+                    // Recarregar lista de clientes
+                    await carregarClientes();
+
+                    // Selecionar o novo cliente
+                    document.getElementById('cliente_id').value = result.cliente_id;
+
+                    showToast.success('Cliente Cadastrado', `${dados.nome} foi adicionado com sucesso!`);
+
+                } else {
+                    showToast.error('Erro', result.error || 'Erro ao cadastrar cliente');
+                }
+
+            } catch (error) {
+                console.error('Erro ao criar cliente:', error);
+                showToast.error('Erro', 'Erro de conexão');
+            }
+        }
     </script>
 </body>
 </html>
