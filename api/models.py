@@ -299,3 +299,76 @@ class ItemVenda:
         '''
         result = db.execute_query(query, (item_id,))
         return result[0] if result else None
+
+class ObservacaoEntrega:
+    """Modelo para observações de entrega"""
+
+    @staticmethod
+    def criar(dados: Dict[str, Any]) -> int:
+        """Criar nova observação de entrega"""
+        query = '''
+            INSERT INTO observacoes_entrega (entrega_id, tipo_observacao, observacao, autor)
+            VALUES (?, ?, ?, ?)
+        '''
+        params = (
+            dados.get('entrega_id'),
+            dados.get('tipo_observacao', 'geral'),
+            dados.get('observacao'),
+            dados.get('autor', 'Sistema')
+        )
+        return db.execute_insert(query, params)
+
+    @staticmethod
+    def listar_por_entrega(entrega_id: int) -> List[Dict]:
+        """Listar observações de uma entrega específica"""
+        query = '''
+            SELECT * FROM observacoes_entrega
+            WHERE entrega_id = ? AND ativo = 1
+            ORDER BY data_criacao DESC
+        '''
+        return db.execute_query(query, (entrega_id,))
+
+    @staticmethod
+    def listar_por_tipo(entrega_id: int, tipo_observacao: str) -> List[Dict]:
+        """Listar observações de um tipo específico"""
+        query = '''
+            SELECT * FROM observacoes_entrega
+            WHERE entrega_id = ? AND tipo_observacao = ? AND ativo = 1
+            ORDER BY data_criacao DESC
+        '''
+        return db.execute_query(query, (entrega_id, tipo_observacao))
+
+    @staticmethod
+    def atualizar(observacao_id: int, dados: Dict[str, Any]) -> bool:
+        """Atualizar observação existente"""
+        query = '''
+            UPDATE observacoes_entrega
+            SET observacao = ?, data_atualizacao = CURRENT_TIMESTAMP
+            WHERE id = ? AND ativo = 1
+        '''
+        params = (dados.get('observacao'), observacao_id)
+        return db.execute_update(query, params) > 0
+
+    @staticmethod
+    def excluir(observacao_id: int) -> bool:
+        """Desativar observação (soft delete)"""
+        query = "UPDATE observacoes_entrega SET ativo = 0 WHERE id = ?"
+        return db.execute_update(query, (observacao_id,)) > 0
+
+    @staticmethod
+    def contar_por_entrega(entrega_id: int) -> Dict[str, int]:
+        """Contar observações por tipo para uma entrega"""
+        query = '''
+            SELECT tipo_observacao, COUNT(*) as total
+            FROM observacoes_entrega
+            WHERE entrega_id = ? AND ativo = 1
+            GROUP BY tipo_observacao
+        '''
+        resultados = db.execute_query(query, (entrega_id,))
+
+        # Converter para dicionário
+        contadores = {'geral': 0, 'producao': 0, 'entrega': 0}
+        for resultado in resultados:
+            contadores[resultado['tipo_observacao']] = resultado['total']
+
+        return contadores

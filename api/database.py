@@ -188,6 +188,21 @@ class MIMODatabase:
                 )
             ''')
 
+            # Tabela de Observações de Entrega
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS observacoes_entrega (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    entrega_id INTEGER NOT NULL,
+                    tipo_observacao TEXT NOT NULL DEFAULT 'geral',
+                    observacao TEXT NOT NULL,
+                    autor TEXT DEFAULT 'Sistema',
+                    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    ativo BOOLEAN DEFAULT 1,
+                    FOREIGN KEY (entrega_id) REFERENCES entregas (id)
+                )
+            ''')
+
             # Tabela de Usuários (Sistema de Login)
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS usuarios (
@@ -207,6 +222,7 @@ class MIMODatabase:
 
             # Executar migrações automáticas
             self.migrate_origem_venda()
+            self.migrate_observacoes_entrega()
 
         except Exception as e:
             print(f"❌ Erro ao inicializar banco: {e}")
@@ -327,6 +343,41 @@ class MIMODatabase:
 
         except Exception as e:
             print(f"❌ Erro na migração origem_venda: {e}")
+            return False
+
+    def migrate_observacoes_entrega(self):
+        """Migração automática para criar tabela observacoes_entrega se não existir"""
+        try:
+            cursor = self.connection.cursor()
+
+            # Verificar se a tabela já existe
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='observacoes_entrega'")
+            table_exists = cursor.fetchone()
+
+            if not table_exists:
+                print("🔄 Criando tabela observacoes_entrega...")
+                cursor.execute('''
+                    CREATE TABLE observacoes_entrega (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        entrega_id INTEGER NOT NULL,
+                        tipo_observacao TEXT NOT NULL DEFAULT 'geral',
+                        observacao TEXT NOT NULL,
+                        autor TEXT DEFAULT 'Sistema',
+                        data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        ativo BOOLEAN DEFAULT 1,
+                        FOREIGN KEY (entrega_id) REFERENCES entregas (id)
+                    )
+                ''')
+                self.connection.commit()
+                print("✅ Tabela observacoes_entrega criada com sucesso!")
+                return True
+            else:
+                print("✅ Tabela observacoes_entrega já existe")
+                return True
+
+        except Exception as e:
+            print(f"❌ Erro na migração observacoes_entrega: {e}")
             return False
 
 # Instância global do banco

@@ -13,7 +13,7 @@ import json
 
 # Importar módulos do sistema
 from .database import db
-from .models import Cliente, Produto, Venda, Entrega, ItemVenda
+from .models import Cliente, Produto, Venda, Entrega, ItemVenda, ObservacaoEntrega
 from .models_expandidos import ClienteExpandido, ProdutoExpandido, CRMProspect, KanbanEntrega, Usuario
 from .analytics import MIMOAnalytics
 from .seed_data import criar_dados_exemplo
@@ -758,6 +758,16 @@ def toast_test():
                              modulo='Teste Toast',
                              erro=str(e))
 
+@app.route('/observacoes-test')
+def observacoes_test():
+    """Página de teste para Sistema de Observações"""
+    try:
+        return render_template('observacoes-test.html')
+    except Exception as e:
+        return render_template('erro_simples.html',
+                             modulo='Teste Observações',
+                             erro=str(e))
+
 @app.route('/crm')
 def crm():
     """Página CRM Pipeline"""
@@ -813,6 +823,52 @@ def internal_error(error):
             'timestamp': datetime.now().isoformat(),
             'contact': 'Check logs for more details'
         }), 500
+
+@app.route('/api/observacoes/<int:entrega_id>')
+def api_observacoes_entrega(entrega_id):
+    """API para listar observações de uma entrega"""
+    try:
+        observacoes = ObservacaoEntrega.listar_por_entrega(entrega_id)
+        return jsonify(observacoes)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/observacoes', methods=['POST'])
+def api_criar_observacao():
+    """API para criar nova observação"""
+    try:
+        dados = request.get_json()
+
+        # Validações
+        if not dados.get('entrega_id'):
+            return jsonify({'error': 'entrega_id é obrigatório'}), 400
+
+        if not dados.get('observacao'):
+            return jsonify({'error': 'observacao é obrigatória'}), 400
+
+        # Criar observação
+        observacao_id = ObservacaoEntrega.criar(dados)
+
+        if observacao_id:
+            return jsonify({
+                'success': True,
+                'observacao_id': observacao_id,
+                'message': 'Observação criada com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Erro ao criar observação'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/observacoes/contadores/<int:entrega_id>')
+def api_contadores_observacoes(entrega_id):
+    """API para contar observações por tipo"""
+    try:
+        contadores = ObservacaoEntrega.contar_por_entrega(entrega_id)
+        return jsonify(contadores)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # Configuração para Vercel
 if __name__ == '__main__':
