@@ -160,8 +160,36 @@
         </div>
     </div>
 
-    <script src="/static/js/toast-notifications.js"></script>
     <script>
+        // Implementação da função showToast
+        const showToast = {
+            success: function(title, message) { this.show('success', title, message); },
+            error: function(title, message) { this.show('error', title, message); },
+            warning: function(title, message) { this.show('warning', title, message); },
+            info: function(title, message) { this.show('info', title, message); },
+            show: function(type, title, message) {
+                let container = document.getElementById('toast-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'toast-container';
+                    container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 350px;';
+                    document.body.appendChild(container);
+                }
+                const toast = document.createElement('div');
+                const colors = {
+                    success: { bg: '#d4edda', border: '#c3e6cb', text: '#155724' },
+                    error: { bg: '#f8d7da', border: '#f5c6cb', text: '#721c24' },
+                    warning: { bg: '#fff3cd', border: '#ffeaa7', text: '#856404' },
+                    info: { bg: '#d1ecf1', border: '#bee5eb', text: '#0c5460' }
+                };
+                const color = colors[type] || colors.info;
+                toast.style.cssText = `background: ${color.bg}; border: 1px solid ${color.border}; color: ${color.text}; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);`;
+                toast.innerHTML = `<div style="display: flex; align-items: center; justify-content: space-between;"><div><strong>${title}</strong><div style="margin-top: 5px;">${message}</div></div><button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: ${color.text};">×</button></div>`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 5000);
+            }
+        };
+
         // Carregar observações de uma entrega
         async function carregarObservacoes() {
             const entregaId = document.getElementById('entrega_id').value;
@@ -169,10 +197,21 @@
             
             try {
                 const response = await fetch(`/api/observacoes/${entregaId}`);
-                const observacoes = await response.json();
-                
+                const data = await response.json();
+
+                // Verificar se a resposta tem a estrutura esperada
+                let observacoes = [];
+                if (data && data.observacoes && Array.isArray(data.observacoes)) {
+                    observacoes = data.observacoes;
+                } else if (Array.isArray(data)) {
+                    observacoes = data;
+                } else {
+                    console.log('Resposta da API:', data);
+                    observacoes = [];
+                }
+
                 const lista = document.getElementById('lista-observacoes');
-                
+
                 if (observacoes.length === 0) {
                     lista.innerHTML = '<p class="text-muted">Nenhuma observação encontrada</p>';
                     return;
