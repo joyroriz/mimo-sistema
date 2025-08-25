@@ -6,7 +6,7 @@ Versão simplificada para identificar e corrigir problemas no Vercel
 """
 
 from flask import Flask, jsonify, render_template, request
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 # Criar aplicação Flask
@@ -384,6 +384,391 @@ def estatisticas_produtos_interesse():
         ]
     })
 
+# APIs CRUD COMPLETAS
+
+# APIs de Clientes
+@app.route('/api/clientes', methods=['GET'])
+def listar_clientes():
+    """Listar todos os clientes"""
+    return jsonify({
+        'clientes': [
+            {
+                'id': 1,
+                'nome': 'João Silva',
+                'email': 'joao@email.com',
+                'telefone': '(11) 99999-9999',
+                'endereco': 'Rua A, 123',
+                'cidade': 'São Paulo',
+                'data_cadastro': datetime.now().isoformat()
+            },
+            {
+                'id': 2,
+                'nome': 'Maria Santos',
+                'email': 'maria@email.com',
+                'telefone': '(11) 88888-8888',
+                'endereco': 'Rua B, 456',
+                'cidade': 'São Paulo',
+                'data_cadastro': datetime.now().isoformat()
+            },
+            {
+                'id': 3,
+                'nome': 'Pedro Costa',
+                'email': 'pedro@email.com',
+                'telefone': '(11) 77777-7777',
+                'endereco': 'Rua C, 789',
+                'cidade': 'Rio de Janeiro',
+                'data_cadastro': datetime.now().isoformat()
+            }
+        ],
+        'total': 3
+    })
+
+@app.route('/api/clientes', methods=['POST'])
+def criar_cliente():
+    """Criar novo cliente"""
+    try:
+        data = request.get_json()
+        return jsonify({
+            'success': True,
+            'message': 'Cliente criado com sucesso',
+            'cliente': {
+                'id': 4,
+                'nome': data.get('nome'),
+                'email': data.get('email'),
+                'telefone': data.get('telefone'),
+                'endereco': data.get('endereco'),
+                'cidade': data.get('cidade'),
+                'data_cadastro': datetime.now().isoformat()
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/clientes/<int:cliente_id>', methods=['GET'])
+def obter_cliente(cliente_id):
+    """Obter cliente por ID"""
+    return jsonify({
+        'cliente': {
+            'id': cliente_id,
+            'nome': 'João Silva',
+            'email': 'joao@email.com',
+            'telefone': '(11) 99999-9999',
+            'endereco': 'Rua A, 123',
+            'cidade': 'São Paulo',
+            'data_cadastro': datetime.now().isoformat(),
+            'vendas_total': 5,
+            'valor_total': 15000.00
+        }
+    })
+
+@app.route('/api/clientes/<int:cliente_id>', methods=['PUT'])
+def atualizar_cliente(cliente_id):
+    """Atualizar cliente"""
+    try:
+        data = request.get_json()
+        return jsonify({
+            'success': True,
+            'message': 'Cliente atualizado com sucesso',
+            'cliente': {
+                'id': cliente_id,
+                'nome': data.get('nome'),
+                'email': data.get('email'),
+                'telefone': data.get('telefone'),
+                'endereco': data.get('endereco'),
+                'cidade': data.get('cidade')
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/clientes/<int:cliente_id>', methods=['DELETE'])
+def excluir_cliente(cliente_id):
+    """Excluir cliente"""
+    return jsonify({
+        'success': True,
+        'message': f'Cliente {cliente_id} excluído com sucesso'
+    })
+
+# APIs de Produtos
+@app.route('/api/produtos', methods=['GET'])
+def listar_produtos():
+    """Listar todos os produtos"""
+    return jsonify({
+        'produtos': [
+            {
+                'id': 1,
+                'nome': 'Mesa de Escritório',
+                'descricao': 'Mesa de escritório em MDF',
+                'preco': 450.00,
+                'categoria': 'Móveis',
+                'estoque': 15,
+                'ativo': True
+            },
+            {
+                'id': 2,
+                'nome': 'Cadeira Ergonômica',
+                'descricao': 'Cadeira ergonômica com apoio lombar',
+                'preco': 320.00,
+                'categoria': 'Móveis',
+                'estoque': 8,
+                'ativo': True
+            },
+            {
+                'id': 3,
+                'nome': 'Luminária LED',
+                'descricao': 'Luminária LED de mesa',
+                'preco': 85.00,
+                'categoria': 'Iluminação',
+                'estoque': 25,
+                'ativo': True
+            }
+        ],
+        'total': 3
+    })
+
+@app.route('/api/produtos', methods=['POST'])
+def criar_produto():
+    """Criar novo produto"""
+    try:
+        data = request.get_json()
+        return jsonify({
+            'success': True,
+            'message': 'Produto criado com sucesso',
+            'produto': {
+                'id': 4,
+                'nome': data.get('nome'),
+                'descricao': data.get('descricao'),
+                'preco': float(data.get('preco', 0)),
+                'categoria': data.get('categoria'),
+                'estoque': int(data.get('estoque', 0)),
+                'ativo': True
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/produtos/<int:produto_id>', methods=['GET'])
+def obter_produto(produto_id):
+    """Obter produto por ID"""
+    return jsonify({
+        'produto': {
+            'id': produto_id,
+            'nome': 'Mesa de Escritório',
+            'descricao': 'Mesa de escritório em MDF com gavetas',
+            'preco': 450.00,
+            'categoria': 'Móveis',
+            'estoque': 15,
+            'ativo': True,
+            'vendas_total': 25,
+            'receita_total': 11250.00
+        }
+    })
+
+@app.route('/api/produtos/<int:produto_id>', methods=['PUT'])
+def atualizar_produto(produto_id):
+    """Atualizar produto"""
+    try:
+        data = request.get_json()
+        return jsonify({
+            'success': True,
+            'message': 'Produto atualizado com sucesso',
+            'produto': {
+                'id': produto_id,
+                'nome': data.get('nome'),
+                'descricao': data.get('descricao'),
+                'preco': float(data.get('preco', 0)),
+                'categoria': data.get('categoria'),
+                'estoque': int(data.get('estoque', 0)),
+                'ativo': data.get('ativo', True)
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/produtos/<int:produto_id>', methods=['DELETE'])
+def excluir_produto(produto_id):
+    """Excluir produto"""
+    return jsonify({
+        'success': True,
+        'message': f'Produto {produto_id} excluído com sucesso'
+    })
+
+# APIs de Vendas
+@app.route('/api/vendas', methods=['GET'])
+def listar_vendas():
+    """Listar todas as vendas"""
+    return jsonify({
+        'vendas': [
+            {
+                'id': 1,
+                'cliente_id': 1,
+                'cliente_nome': 'João Silva',
+                'data_venda': datetime.now().isoformat(),
+                'valor_total': 770.00,
+                'status': 'confirmada',
+                'origem_venda': 'whatsapp',
+                'itens': [
+                    {'produto_id': 1, 'produto_nome': 'Mesa de Escritório', 'quantidade': 1, 'preco': 450.00},
+                    {'produto_id': 2, 'produto_nome': 'Cadeira Ergonômica', 'quantidade': 1, 'preco': 320.00}
+                ]
+            },
+            {
+                'id': 2,
+                'cliente_id': 2,
+                'cliente_nome': 'Maria Santos',
+                'data_venda': datetime.now().isoformat(),
+                'valor_total': 255.00,
+                'status': 'pendente',
+                'origem_venda': 'instagram',
+                'itens': [
+                    {'produto_id': 3, 'produto_nome': 'Luminária LED', 'quantidade': 3, 'preco': 85.00}
+                ]
+            }
+        ],
+        'total': 2
+    })
+
+@app.route('/api/vendas', methods=['POST'])
+def criar_venda():
+    """Criar nova venda"""
+    try:
+        data = request.get_json()
+        return jsonify({
+            'success': True,
+            'message': 'Venda criada com sucesso',
+            'venda': {
+                'id': 3,
+                'cliente_id': data.get('cliente_id'),
+                'data_venda': datetime.now().isoformat(),
+                'valor_total': float(data.get('valor_total', 0)),
+                'status': 'confirmada',
+                'origem_venda': data.get('origem_venda'),
+                'itens': data.get('itens', [])
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/vendas/<int:venda_id>', methods=['GET'])
+def obter_venda(venda_id):
+    """Obter venda por ID"""
+    return jsonify({
+        'venda': {
+            'id': venda_id,
+            'cliente_id': 1,
+            'cliente_nome': 'João Silva',
+            'data_venda': datetime.now().isoformat(),
+            'valor_total': 770.00,
+            'status': 'confirmada',
+            'origem_venda': 'whatsapp',
+            'observacoes': 'Cliente solicitou entrega urgente',
+            'itens': [
+                {'produto_id': 1, 'produto_nome': 'Mesa de Escritório', 'quantidade': 1, 'preco': 450.00},
+                {'produto_id': 2, 'produto_nome': 'Cadeira Ergonômica', 'quantidade': 1, 'preco': 320.00}
+            ]
+        }
+    })
+
+@app.route('/api/vendas/<int:venda_id>', methods=['PUT'])
+def atualizar_venda(venda_id):
+    """Atualizar venda"""
+    try:
+        data = request.get_json()
+        return jsonify({
+            'success': True,
+            'message': 'Venda atualizada com sucesso',
+            'venda': {
+                'id': venda_id,
+                'status': data.get('status'),
+                'observacoes': data.get('observacoes')
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+# APIs de Entregas e Kanban
+@app.route('/api/entregas', methods=['GET'])
+def listar_entregas():
+    """Listar entregas para Kanban"""
+    return jsonify({
+        'entregas': {
+            'pendente': [
+                {
+                    'id': 1,
+                    'venda_id': 1,
+                    'cliente_nome': 'João Silva',
+                    'valor_total': 770.00,
+                    'data_venda': datetime.now().isoformat(),
+                    'prazo_entrega': (datetime.now() + timedelta(days=7)).isoformat(),
+                    'observacoes_count': 2,
+                    'producao_percentual': 30
+                }
+            ],
+            'producao': [
+                {
+                    'id': 2,
+                    'venda_id': 2,
+                    'cliente_nome': 'Maria Santos',
+                    'valor_total': 255.00,
+                    'data_venda': datetime.now().isoformat(),
+                    'prazo_entrega': (datetime.now() + timedelta(days=5)).isoformat(),
+                    'observacoes_count': 1,
+                    'producao_percentual': 75
+                }
+            ],
+            'pronto': [
+                {
+                    'id': 3,
+                    'venda_id': 3,
+                    'cliente_nome': 'Pedro Costa',
+                    'valor_total': 450.00,
+                    'data_venda': datetime.now().isoformat(),
+                    'prazo_entrega': (datetime.now() + timedelta(days=2)).isoformat(),
+                    'observacoes_count': 0,
+                    'producao_percentual': 100
+                }
+            ],
+            'entregue': []
+        }
+    })
+
+@app.route('/api/entregas/<int:entrega_id>/status', methods=['PUT'])
+def atualizar_status_entrega(entrega_id):
+    """Atualizar status da entrega"""
+    try:
+        data = request.get_json()
+        novo_status = data.get('status')
+        return jsonify({
+            'success': True,
+            'message': f'Entrega {entrega_id} movida para {novo_status}',
+            'entrega_id': entrega_id,
+            'novo_status': novo_status
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@app.route('/api/entregas/<int:entrega_id>/entregar', methods=['POST'])
+def marcar_como_entregue(entrega_id):
+    """Marcar entrega como entregue"""
+    return jsonify({
+        'success': True,
+        'message': 'Entrega marcada como entregue',
+        'entrega_id': entrega_id,
+        'data_entrega': datetime.now().isoformat(),
+        'desfazer_disponivel': True,
+        'tempo_desfazer': 30
+    })
+
+@app.route('/api/entregas/<int:entrega_id>/desfazer', methods=['POST'])
+def desfazer_entrega(entrega_id):
+    """Desfazer entrega (SPRINT 3)"""
+    return jsonify({
+        'success': True,
+        'message': 'Entrega desfeita com sucesso',
+        'entrega_id': entrega_id,
+        'novo_status': 'pronto'
+    })
+
 # Páginas de teste - SPRINT 1
 @app.route('/toast-test')
 def toast_test():
@@ -450,18 +835,79 @@ def crm():
             'error': str(e)
         })
 
+# ROTAS PRINCIPAIS DE NAVEGAÇÃO
+
+@app.route('/clientes')
+def clientes():
+    """Página lista de clientes"""
+    try:
+        return render_template('clientes/listar.html')
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': 'clientes'}), 500
+
+@app.route('/clientes/novo')
+def clientes_novo():
+    """Página novo cliente"""
+    try:
+        return render_template('clientes/form.html')
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': 'clientes/novo'}), 500
+
+@app.route('/clientes/<int:cliente_id>')
+def cliente_detalhes(cliente_id):
+    """Página detalhes do cliente"""
+    try:
+        return render_template('clientes/detalhes.html', cliente_id=cliente_id)
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': f'clientes/{cliente_id}'}), 500
+
+@app.route('/produtos')
+def produtos():
+    """Página lista de produtos"""
+    try:
+        return render_template('produtos/listar.html')
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': 'produtos'}), 500
+
+@app.route('/produtos/novo')
+def produtos_novo():
+    """Página novo produto"""
+    try:
+        return render_template('produtos/form.html')
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': 'produtos/novo'}), 500
+
+@app.route('/produtos/<int:produto_id>')
+def produto_detalhes(produto_id):
+    """Página detalhes do produto"""
+    try:
+        return render_template('produtos/visualizar.html', produto_id=produto_id)
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': f'produtos/{produto_id}'}), 500
+
+@app.route('/vendas')
+def vendas():
+    """Página lista de vendas"""
+    try:
+        return render_template('vendas/listar.html')
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': 'vendas'}), 500
+
 @app.route('/vendas/novo')
 def vendas_novo():
     """Página nova venda"""
     try:
         return render_template('vendas/form.html')
     except Exception as e:
-        return jsonify({
-            'page': 'vendas/novo',
-            'status': 'template_error',
-            'message': 'Página de nova venda',
-            'error': str(e)
-        })
+        return jsonify({'error': str(e), 'page': 'vendas/novo'}), 500
+
+@app.route('/vendas/<int:venda_id>')
+def venda_detalhes(venda_id):
+    """Página detalhes da venda"""
+    try:
+        return render_template('vendas/visualizar.html', venda_id=venda_id)
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': f'vendas/{venda_id}'}), 500
 
 # Tratamento de erros
 @app.errorhandler(404)

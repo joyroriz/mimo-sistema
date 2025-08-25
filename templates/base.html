@@ -163,8 +163,10 @@
         });
     </script>
 
-    <!-- Toast Notifications JavaScript -->
-    <script src="{{ url_for('static', filename='js/toast-notifications.js') }}"></script>
+    <!-- MIMO Universal JavaScript -->
+    <script>
+        {% include 'includes/mimo-universal.js' %}
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

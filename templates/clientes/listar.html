@@ -16,7 +16,7 @@
                     <p class="text-muted mb-0">Cadastre e gerencie seus clientes</p>
                 </div>
                 <div>
-                    <a href="{{ url_for('clientes.novo') }}" class="btn btn-primary btn-lg">
+                    <a href="/clientes/novo" class="btn btn-primary btn-lg">
                         <i class="bi bi-person-plus me-2"></i>
                         Novo Cliente
                     </a>
@@ -235,4 +235,87 @@
     font-size: 1.1rem;
 }
 </style>
+
+{% block extra_js %}
+<script>
+// Carregar clientes automaticamente
+async function carregarClientes() {
+    try {
+        const data = await MimoAPI.get('/api/clientes');
+        const tbody = document.querySelector('#tabela-clientes tbody');
+
+        if (data.clientes && data.clientes.length > 0) {
+            tbody.innerHTML = data.clientes.map(cliente => `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle bg-primary text-white me-3">
+                                ${cliente.nome.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="fw-bold">${cliente.nome}</div>
+                                <small class="text-muted">${cliente.email}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${cliente.telefone}</td>
+                    <td>${cliente.cidade}</td>
+                    <td>${MimoUtils.formatDate(cliente.data_cadastro)}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="/clientes/${cliente.id}" class="btn btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="/clientes/${cliente.id}/editar" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button class="btn btn-outline-danger" data-action="delete"
+                                    data-url="/api/clientes/${cliente.id}"
+                                    data-confirm="Tem certeza que deseja excluir ${cliente.nome}?">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="bi bi-people fs-1 d-block mb-2"></i>
+                        Nenhum cliente cadastrado
+                    </td>
+                </tr>
+            `;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar clientes:', error);
+        showToast.error('Erro', 'Não foi possível carregar os clientes');
+    }
+}
+
+// Buscar clientes
+function buscarClientes() {
+    const termo = document.getElementById('busca-cliente').value.toLowerCase();
+    const linhas = document.querySelectorAll('#tabela-clientes tbody tr');
+
+    linhas.forEach(linha => {
+        const texto = linha.textContent.toLowerCase();
+        linha.style.display = texto.includes(termo) ? '' : 'none';
+    });
+}
+
+// Inicializar página
+document.addEventListener('DOMContentLoaded', function() {
+    carregarClientes();
+
+    // Configurar busca
+    const campoBusca = document.getElementById('busca-cliente');
+    if (campoBusca) {
+        campoBusca.addEventListener('input', buscarClientes);
+    }
+});
+</script>
+{% endblock %}
+
 {% endblock %}
