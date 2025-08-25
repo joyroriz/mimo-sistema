@@ -1,0 +1,257 @@
+/* 🍞 MIMO Toast Notifications System */
+
+:root {
+    --mimo-primary: #6f42c1;
+    --mimo-secondary: #e83e8c;
+    --mimo-success: #20c997;
+    --mimo-warning: #ffc107;
+    --mimo-danger: #dc3545;
+    --mimo-info: #17a2b8;
+    --mimo-light: #f8f9fa;
+    --mimo-dark: #343a40;
+    --mimo-gradient: linear-gradient(135deg, #FF8E63 0%, #FF7EB0 50%, #63A4FF 100%);
+}
+
+/* Container para os toasts */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Base do toast */
+.mimo-toast {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 15px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Toast visível */
+.mimo-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Toast saindo */
+.mimo-toast.hide {
+    opacity: 0;
+    transform: translateX(100%);
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 0;
+}
+
+/* Barra de progresso */
+.mimo-toast::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--mimo-gradient);
+    width: 100%;
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: transform linear;
+}
+
+/* Ícone do toast */
+.mimo-toast .toast-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+}
+
+/* Conteúdo do toast */
+.mimo-toast .toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.mimo-toast .toast-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0 0 4px 0;
+    color: var(--mimo-dark);
+}
+
+.mimo-toast .toast-message {
+    font-size: 13px;
+    margin: 0;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+/* Botão de fechar */
+.mimo-toast .toast-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 12px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mimo-toast .toast-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--mimo-dark);
+}
+
+/* Tipos de toast */
+.mimo-toast.success .toast-icon {
+    background: var(--mimo-success);
+}
+
+.mimo-toast.error .toast-icon {
+    background: var(--mimo-danger);
+}
+
+.mimo-toast.warning .toast-icon {
+    background: var(--mimo-warning);
+}
+
+.mimo-toast.info .toast-icon {
+    background: var(--mimo-info);
+}
+
+.mimo-toast.loading .toast-icon {
+    background: var(--mimo-primary);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Toast com countdown */
+.mimo-toast.countdown .toast-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mimo-toast .countdown-timer {
+    background: var(--mimo-gradient);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 12px;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Botão de ação no toast */
+.mimo-toast .toast-action {
+    background: var(--mimo-gradient);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 12px;
+    transition: all 0.2s ease;
+}
+
+.mimo-toast .toast-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Animações */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .mimo-toast {
+        margin-bottom: 10px;
+        padding: 12px 16px;
+    }
+    
+    .mimo-toast .toast-icon {
+        font-size: 20px;
+        width: 28px;
+        height: 28px;
+        margin-right: 10px;
+    }
+    
+    .mimo-toast .toast-title {
+        font-size: 13px;
+    }
+    
+    .mimo-toast .toast-message {
+        font-size: 12px;
+    }
+}
+
+/* Tema escuro (opcional) */
+@media (prefers-color-scheme: dark) {
+    .mimo-toast {
+        background: rgba(33, 37, 41, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .mimo-toast .toast-title {
+        color: #f8f9fa;
+    }
+    
+    .mimo-toast .toast-message {
+        color: #adb5bd;
+    }
+    
+    .mimo-toast .toast-close {
+        color: #adb5bd;
+    }
+    
+    .mimo-toast .toast-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #f8f9fa;
+    }
+}

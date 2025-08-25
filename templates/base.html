@@ -11,7 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    
+    <!-- Toast Notifications CSS -->
+    <link href="{{ url_for('static', filename='css/toast-notifications.css') }}" rel="stylesheet">
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -160,5 +162,10 @@
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     </script>
+
+    <!-- Toast Notifications JavaScript -->
+    <script src="{{ url_for('static', filename='js/toast-notifications.js') }}"></script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

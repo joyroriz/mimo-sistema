@@ -712,6 +712,16 @@ def entregas():
             'status': 'erro'
         })
 
+@app.route('/toast-test')
+def toast_test():
+    """Página de teste para Toast Notifications"""
+    try:
+        return render_template('toast-test.html')
+    except Exception as e:
+        return render_template('erro_simples.html',
+                             modulo='Teste Toast',
+                             erro=str(e))
+
 @app.route('/crm')
 def crm():
     """Página CRM Pipeline"""
