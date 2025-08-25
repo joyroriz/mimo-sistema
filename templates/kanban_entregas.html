@@ -328,6 +328,49 @@
         </div>
     </div>
 
+    <!-- Modal para Gerenciar Produção -->
+    <div class="modal fade" id="producaoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-gear me-2"></i>Gerenciar Produção
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6>Progresso Geral</h6>
+                            <span id="progresso-geral-texto" class="badge bg-primary">0/0 prontos</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 10px;">
+                            <div class="progress-bar bg-success" id="progresso-geral-bar"
+                                 role="progressbar" style="width: 0%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Itens da Venda</h6>
+                        <div id="lista-itens-producao">
+                            <div class="text-center">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                                <span class="ms-2">Carregando itens...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="marcarTodosProntos()">
+                        <i class="bi bi-check-all me-1"></i>Marcar Todos Prontos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Confirmação para Produzido -->
     <div class="modal fade" id="produzidoModal" tabindex="-1">
         <div class="modal-dialog">
@@ -520,6 +563,19 @@
                         <i class="bi bi-box me-1"></i>
                         <small>${entrega.produtos || 'Produtos não informados'}</small>
                     </div>
+                    <div class="card-producao mb-2" id="producao-${entrega.id}">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">
+                                <i class="bi bi-gear me-1"></i>Produção
+                            </small>
+                            <small class="text-muted" id="progresso-texto-${entrega.id}">0/0 prontos</small>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" id="progresso-bar-${entrega.id}"
+                                 role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-actions mb-2">
                         <div class="btn-group w-100" role="group">
                             ${entrega.status === 'em_producao' ? `
@@ -532,6 +588,9 @@
                                     <i class="bi bi-check2-all"></i>
                                 </button>
                             ` : ''}
+                            <button class="btn btn-outline-success btn-sm" onclick="gerenciarProducao(${entrega.id})" title="Gerenciar Produção">
+                                <i class="bi bi-gear"></i>
+                            </button>
                             <button class="btn btn-outline-info btn-sm" onclick="adicionarObservacao(${entrega.id})" title="Adicionar Observação">
                                 <i class="bi bi-chat-dots"></i>
                             </button>
@@ -1069,8 +1128,166 @@
                 const entregaId = card.dataset.entregaId;
                 if (entregaId) {
                     carregarObservacoes(entregaId);
+                    carregarProgressoProducao(entregaId);
                 }
             });
+        }
+
+        // Carregar progresso de produção para uma entrega
+        async function carregarProgressoProducao(entregaId) {
+            try {
+                // Buscar venda_id da entrega (assumindo que entrega_id = venda_id por simplicidade)
+                const vendaId = entregaId; // Ajustar conforme necessário
+
+                const response = await fetch(`/api/producao/venda/${vendaId}`);
+                const progresso = await response.json();
+
+                // Atualizar barra de progresso no card
+                const progressoTexto = document.getElementById(`progresso-texto-${entregaId}`);
+                const progressoBar = document.getElementById(`progresso-bar-${entregaId}`);
+
+                if (progressoTexto && progressoBar) {
+                    progressoTexto.textContent = `${progresso.itens_prontos}/${progresso.total_itens} prontos`;
+                    progressoBar.style.width = `${progresso.percentual_completo}%`;
+                    progressoBar.setAttribute('aria-valuenow', progresso.percentual_completo);
+
+                    // Mudar cor da barra baseado no progresso
+                    progressoBar.className = 'progress-bar';
+                    if (progresso.percentual_completo === 100) {
+                        progressoBar.classList.add('bg-success');
+                    } else if (progresso.percentual_completo >= 50) {
+                        progressoBar.classList.add('bg-warning');
+                    } else {
+                        progressoBar.classList.add('bg-danger');
+                    }
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar progresso de produção:', error);
+            }
+        }
+
+        // Gerenciar produção
+        async function gerenciarProducao(entregaId) {
+            currentEntregaId = entregaId;
+
+            // Carregar itens de produção no modal
+            await carregarItensProducao(entregaId);
+
+            const modal = new bootstrap.Modal(document.getElementById('producaoModal'));
+            modal.show();
+        }
+
+        // Carregar itens de produção no modal
+        async function carregarItensProducao(entregaId) {
+            try {
+                const vendaId = entregaId; // Ajustar conforme necessário
+
+                const [itens, progresso] = await Promise.all([
+                    fetch(`/api/producao/itens/${vendaId}`).then(r => r.json()),
+                    fetch(`/api/producao/venda/${vendaId}`).then(r => r.json())
+                ]);
+
+                // Atualizar progresso geral
+                document.getElementById('progresso-geral-texto').textContent =
+                    `${progresso.itens_prontos}/${progresso.total_itens} prontos`;
+                document.getElementById('progresso-geral-bar').style.width = `${progresso.percentual_completo}%`;
+
+                // Mostrar lista de itens
+                const container = document.getElementById('lista-itens-producao');
+
+                if (itens.length === 0) {
+                    container.innerHTML = '<p class="text-muted">Nenhum item encontrado</p>';
+                } else {
+                    container.innerHTML = itens.map(item => `
+                        <div class="card mb-2">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">${item.produto_nome}</h6>
+                                        <small class="text-muted">Quantidade: ${item.quantidade}</small>
+                                        ${item.responsavel_producao ? `<br><small class="text-success">Por: ${item.responsavel_producao}</small>` : ''}
+                                        ${item.data_producao ? `<br><small class="text-muted">Em: ${formatarDataHora(item.data_producao)}</small>` : ''}
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="item-${item.id}"
+                                               ${item.status_producao === 'pronto' ? 'checked' : ''}
+                                               onchange="toggleStatusItem(${item.id}, this.checked)">
+                                        <label class="form-check-label" for="item-${item.id}">
+                                            ${item.status_producao === 'pronto' ? '✅ Pronto' : '⏳ A Produzir'}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar itens de produção:', error);
+                document.getElementById('lista-itens-producao').innerHTML =
+                    '<p class="text-danger">Erro ao carregar itens</p>';
+            }
+        }
+
+        // Toggle status de um item
+        async function toggleStatusItem(itemId, pronto) {
+            try {
+                const status = pronto ? 'pronto' : 'a_produzir';
+
+                const response = await fetch(`/api/producao/item/${itemId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        status: status,
+                        responsavel: 'Sistema MIMO'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Atualizar label
+                    const label = document.querySelector(`label[for="item-${itemId}"]`);
+                    if (label) {
+                        label.textContent = pronto ? '✅ Pronto' : '⏳ A Produzir';
+                    }
+
+                    // Recarregar progresso
+                    await carregarItensProducao(currentEntregaId);
+                    await carregarProgressoProducao(currentEntregaId);
+
+                    showToast.success('Status Atualizado', `Item marcado como ${pronto ? 'pronto' : 'a produzir'}`);
+                } else {
+                    showToast.error('Erro', result.error || 'Erro ao atualizar status');
+                    // Reverter checkbox
+                    document.getElementById(`item-${itemId}`).checked = !pronto;
+                }
+
+            } catch (error) {
+                console.error('Erro ao atualizar status do item:', error);
+                showToast.error('Erro', 'Erro de conexão');
+                // Reverter checkbox
+                document.getElementById(`item-${itemId}`).checked = !pronto;
+            }
+        }
+
+        // Marcar todos os itens como prontos
+        async function marcarTodosProntos() {
+            const checkboxes = document.querySelectorAll('#lista-itens-producao input[type="checkbox"]');
+
+            for (const checkbox of checkboxes) {
+                if (!checkbox.checked) {
+                    checkbox.checked = true;
+                    const itemId = checkbox.id.replace('item-', '');
+                    await toggleStatusItem(parseInt(itemId), true);
+                }
+            }
+
+            showToast.success('Produção Completa', 'Todos os itens foram marcados como prontos!');
         }
 
         // Funções auxiliares para observações

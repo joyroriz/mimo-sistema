@@ -120,6 +120,9 @@ class MIMODatabase:
                     quantidade INTEGER NOT NULL,
                     preco_unitario DECIMAL(10,2) NOT NULL,
                     subtotal DECIMAL(10,2) NOT NULL,
+                    status_producao TEXT DEFAULT 'a_produzir',
+                    data_producao TIMESTAMP NULL,
+                    responsavel_producao TEXT NULL,
                     FOREIGN KEY (venda_id) REFERENCES vendas (id),
                     FOREIGN KEY (produto_id) REFERENCES produtos (id)
                 )
@@ -223,6 +226,7 @@ class MIMODatabase:
             # Executar migrações automáticas
             self.migrate_origem_venda()
             self.migrate_observacoes_entrega()
+            self.migrate_status_producao()
 
         except Exception as e:
             print(f"❌ Erro ao inicializar banco: {e}")
@@ -378,6 +382,41 @@ class MIMODatabase:
 
         except Exception as e:
             print(f"❌ Erro na migração observacoes_entrega: {e}")
+            return False
+
+    def migrate_status_producao(self):
+        """Migração automática para adicionar campos de produção na tabela itens_venda"""
+        try:
+            cursor = self.connection.cursor()
+
+            # Verificar se as colunas já existem
+            cursor.execute("PRAGMA table_info(itens_venda)")
+            columns = [column[1] for column in cursor.fetchall()]
+
+            migrations_needed = []
+
+            if 'status_producao' not in columns:
+                migrations_needed.append("ALTER TABLE itens_venda ADD COLUMN status_producao TEXT DEFAULT 'a_produzir'")
+
+            if 'data_producao' not in columns:
+                migrations_needed.append("ALTER TABLE itens_venda ADD COLUMN data_producao TIMESTAMP NULL")
+
+            if 'responsavel_producao' not in columns:
+                migrations_needed.append("ALTER TABLE itens_venda ADD COLUMN responsavel_producao TEXT NULL")
+
+            if migrations_needed:
+                print("🔄 Adicionando campos de produção na tabela itens_venda...")
+                for migration in migrations_needed:
+                    cursor.execute(migration)
+                self.connection.commit()
+                print("✅ Campos de produção adicionados com sucesso!")
+                return True
+            else:
+                print("✅ Campos de produção já existem na tabela itens_venda")
+                return True
+
+        except Exception as e:
+            print(f"❌ Erro na migração status_producao: {e}")
             return False
 
 # Instância global do banco

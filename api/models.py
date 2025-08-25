@@ -300,6 +300,75 @@ class ItemVenda:
         result = db.execute_query(query, (item_id,))
         return result[0] if result else None
 
+    @staticmethod
+    def atualizar_status_producao(item_id: int, status: str, responsavel: str = None) -> bool:
+        """Atualizar status de produção de um item"""
+        if status == 'pronto':
+            query = '''
+                UPDATE itens_venda
+                SET status_producao = ?, data_producao = CURRENT_TIMESTAMP, responsavel_producao = ?
+                WHERE id = ?
+            '''
+            params = (status, responsavel, item_id)
+        else:
+            query = '''
+                UPDATE itens_venda
+                SET status_producao = ?, data_producao = NULL, responsavel_producao = NULL
+                WHERE id = ?
+            '''
+            params = (status, item_id)
+
+        return db.execute_update(query, params) > 0
+
+    @staticmethod
+    def listar_por_venda_com_producao(venda_id: int) -> List[Dict]:
+        """Listar itens de uma venda com informações de produção"""
+        query = '''
+            SELECT iv.*, p.nome as produto_nome, p.categoria,
+                   CASE
+                       WHEN iv.status_producao = 'pronto' THEN 1
+                       ELSE 0
+                   END as item_pronto
+            FROM itens_venda iv
+            JOIN produtos p ON iv.produto_id = p.id
+            WHERE iv.venda_id = ?
+            ORDER BY iv.id
+        '''
+        return db.execute_query(query, (venda_id,))
+
+    @staticmethod
+    def calcular_progresso_producao(venda_id: int) -> Dict[str, Any]:
+        """Calcular progresso de produção de uma venda"""
+        query = '''
+            SELECT
+                COUNT(*) as total_itens,
+                SUM(CASE WHEN status_producao = 'pronto' THEN 1 ELSE 0 END) as itens_prontos
+            FROM itens_venda
+            WHERE venda_id = ?
+        '''
+        result = db.execute_query(query, (venda_id,))
+
+        if result:
+            total = result[0]['total_itens']
+            prontos = result[0]['itens_prontos']
+            percentual = (prontos / total * 100) if total > 0 else 0
+
+            return {
+                'total_itens': total,
+                'itens_prontos': prontos,
+                'itens_pendentes': total - prontos,
+                'percentual_completo': round(percentual, 1),
+                'todos_prontos': prontos == total and total > 0
+            }
+
+        return {
+            'total_itens': 0,
+            'itens_prontos': 0,
+            'itens_pendentes': 0,
+            'percentual_completo': 0,
+            'todos_prontos': False
+        }
+
 class ObservacaoEntrega:
     """Modelo para observações de entrega"""
 

@@ -870,6 +870,50 @@ def api_contadores_observacoes(entrega_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/producao/item/<int:item_id>', methods=['PUT'])
+def api_atualizar_producao_item(item_id):
+    """API para atualizar status de produção de um item"""
+    try:
+        dados = request.get_json()
+
+        status = dados.get('status')
+        responsavel = dados.get('responsavel', 'Sistema')
+
+        if status not in ['a_produzir', 'pronto']:
+            return jsonify({'error': 'Status deve ser "a_produzir" ou "pronto"'}), 400
+
+        sucesso = ItemVenda.atualizar_status_producao(item_id, status, responsavel)
+
+        if sucesso:
+            return jsonify({
+                'success': True,
+                'message': f'Item marcado como {status}',
+                'status': status
+            })
+        else:
+            return jsonify({'error': 'Erro ao atualizar status do item'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/producao/venda/<int:venda_id>')
+def api_progresso_producao_venda(venda_id):
+    """API para obter progresso de produção de uma venda"""
+    try:
+        progresso = ItemVenda.calcular_progresso_producao(venda_id)
+        return jsonify(progresso)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/producao/itens/<int:venda_id>')
+def api_itens_producao_venda(venda_id):
+    """API para listar itens de uma venda com status de produção"""
+    try:
+        itens = ItemVenda.listar_por_venda_com_producao(venda_id)
+        return jsonify(itens)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Configuração para Vercel
 if __name__ == '__main__':
     # Desenvolvimento local
