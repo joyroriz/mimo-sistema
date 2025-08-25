@@ -605,10 +605,10 @@
                 const stats = await response.json();
 
                 // Atualizar estatísticas gerais
-                document.getElementById('total-prospects').textContent = stats.geral.total_prospects || 0;
-                document.getElementById('valor-pipeline').textContent = `R$ ${(stats.geral.valor_total_pipeline || 0).toFixed(2)}`;
-                document.getElementById('taxa-conversao').textContent = `${stats.geral.taxa_conversao || 0}%`;
-                document.getElementById('ticket-medio').textContent = `R$ ${(stats.geral.ticket_medio || 0).toFixed(2)}`;
+                document.getElementById('total-prospects').textContent = stats.total_prospects || 0;
+                document.getElementById('valor-pipeline').textContent = `R$ ${(stats.valor_pipeline || 0).toFixed(2)}`;
+                document.getElementById('taxa-conversao').textContent = `${stats.taxa_conversao || 0}%`;
+                document.getElementById('ticket-medio').textContent = `R$ ${(stats.ticket_medio || 0).toFixed(2)}`;
 
             } catch (error) {
                 console.error('Erro ao carregar estatísticas:', error);
