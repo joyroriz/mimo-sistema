@@ -137,25 +137,13 @@
     {% block extra_js %}{% endblock %}
     
     <script>
-        // Configurar moment.js para português
-        moment.locale('pt-br');
-        
-        // Auto-hide alerts após 5 segundos
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 5000);
-        
-        // Confirmação para ações importantes
-        $('.btn-danger, .btn-warning').click(function(e) {
-            if (!confirm('Tem certeza que deseja realizar esta ação?')) {
-                e.preventDefault();
-            }
-        });
-        
-        // Tooltip para botões
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+        // JavaScript básico para inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar tooltips do Bootstrap
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         });
     </script>
 
