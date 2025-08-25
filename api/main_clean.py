@@ -12,11 +12,24 @@ import os
 import json
 
 # Importar módulos do sistema
-from .database import db
-from .models import Cliente, Produto, Venda, Entrega, ItemVenda, ObservacaoEntrega, ProdutoInteresse
-from .models_expandidos import ClienteExpandido, ProdutoExpandido, CRMProspect, KanbanEntrega, Usuario
-from .analytics import MIMOAnalytics
-from .seed_data import criar_dados_exemplo
+try:
+    # Tentar importação relativa primeiro
+    from .database import db
+    from .models import Cliente, Produto, Venda, Entrega, ItemVenda, ObservacaoEntrega, ProdutoInteresse
+    from .models_expandidos import ClienteExpandido, ProdutoExpandido, CRMProspect, KanbanEntrega, Usuario
+    from .analytics import MIMOAnalytics
+    from .seed_data import criar_dados_exemplo
+except ImportError:
+    # Fallback para importação absoluta
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+    from database import db
+    from models import Cliente, Produto, Venda, Entrega, ItemVenda, ObservacaoEntrega, ProdutoInteresse
+    from models_expandidos import ClienteExpandido, ProdutoExpandido, CRMProspect, KanbanEntrega, Usuario
+    from analytics import MIMOAnalytics
+    from seed_data import criar_dados_exemplo
 
 # Configurar caminhos absolutos para Vercel
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1220,3 +1233,6 @@ else:
     # Produção no Vercel
     app.config['ENV'] = 'production'
     app.config['DEBUG'] = False
+
+# Variável de aplicação para Vercel
+application = app

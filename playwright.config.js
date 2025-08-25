@@ -30,8 +30,8 @@ module.exports = defineConfig({
   
   // Configurações globais para todos os testes
   use: {
-    // URL base para os testes
-    baseURL: process.env.BASE_URL || 'http://localhost:8080',
+    // URL base para os testes - Vercel em produção
+    baseURL: process.env.BASE_URL || 'https://mimo-sistema-final.vercel.app',
     
     // Capturar trace em caso de falha
     trace: 'on-first-retry',
@@ -103,15 +103,15 @@ module.exports = defineConfig({
     },
   ],
 
-  // Servidor de desenvolvimento local
-  webServer: {
-    command: 'python mimo_sistema_completo.py',
-    url: 'http://localhost:8080',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-    stdout: 'ignore',
-    stderr: 'pipe',
-  },
+  // Servidor de desenvolvimento local - Desabilitado para testes em produção
+  // webServer: {
+  //   command: 'python mimo_sistema_completo.py',
+  //   url: 'http://localhost:8080',
+  //   reuseExistingServer: !process.env.CI,
+  //   timeout: 120 * 1000,
+  //   stdout: 'ignore',
+  //   stderr: 'pipe',
+  // },
   
   // Configurações de timeout
   timeout: 30000,
