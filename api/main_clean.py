@@ -13,7 +13,7 @@ import json
 
 # Importar módulos do sistema
 from .database import db
-from .models import Cliente, Produto, Venda, Entrega, ItemVenda, ObservacaoEntrega
+from .models import Cliente, Produto, Venda, Entrega, ItemVenda, ObservacaoEntrega, ProdutoInteresse
 from .models_expandidos import ClienteExpandido, ProdutoExpandido, CRMProspect, KanbanEntrega, Usuario
 from .analytics import MIMOAnalytics
 from .seed_data import criar_dados_exemplo
@@ -1094,6 +1094,123 @@ def api_crm_prospect_detalhes(prospect_id):
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/produtos-interesse/cliente/<int:cliente_id>', methods=['GET'])
+def api_produtos_interesse_cliente(cliente_id):
+    """API para listar produtos de interesse de um cliente"""
+    try:
+        produtos = ProdutoInteresse.listar_por_cliente(cliente_id)
+        return jsonify(produtos)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/produtos-interesse/produto/<int:produto_id>', methods=['GET'])
+def api_clientes_interessados_produto(produto_id):
+    """API para listar clientes interessados em um produto"""
+    try:
+        clientes = ProdutoInteresse.listar_por_produto(produto_id)
+        return jsonify(clientes)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/produtos-interesse', methods=['POST'])
+def api_adicionar_produto_interesse():
+    """API para adicionar produto de interesse"""
+    try:
+        dados = request.get_json()
+
+        cliente_id = dados.get('cliente_id')
+        produto_id = dados.get('produto_id')
+        nivel = dados.get('nivel_interesse', 'medio')
+        observacoes = dados.get('observacoes')
+
+        if not cliente_id or not produto_id:
+            return jsonify({'error': 'cliente_id e produto_id são obrigatórios'}), 400
+
+        interesse_id = ProdutoInteresse.adicionar_interesse(cliente_id, produto_id, nivel, observacoes)
+
+        if interesse_id:
+            return jsonify({
+                'success': True,
+                'interesse_id': interesse_id,
+                'message': 'Produto de interesse adicionado com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Erro ao adicionar produto de interesse'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/produtos-interesse/<int:cliente_id>/<int:produto_id>', methods=['PUT'])
+def api_atualizar_produto_interesse(cliente_id, produto_id):
+    """API para atualizar nível de interesse"""
+    try:
+        dados = request.get_json()
+
+        nivel = dados.get('nivel_interesse')
+        observacoes = dados.get('observacoes')
+
+        if not nivel:
+            return jsonify({'error': 'nivel_interesse é obrigatório'}), 400
+
+        sucesso = ProdutoInteresse.atualizar_nivel(cliente_id, produto_id, nivel, observacoes)
+
+        if sucesso:
+            return jsonify({
+                'success': True,
+                'message': 'Nível de interesse atualizado com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Erro ao atualizar interesse'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/produtos-interesse/<int:cliente_id>/<int:produto_id>', methods=['DELETE'])
+def api_remover_produto_interesse(cliente_id, produto_id):
+    """API para remover produto de interesse"""
+    try:
+        sucesso = ProdutoInteresse.remover_interesse(cliente_id, produto_id)
+
+        if sucesso:
+            return jsonify({
+                'success': True,
+                'message': 'Produto de interesse removido com sucesso'
+            })
+        else:
+            return jsonify({'error': 'Erro ao remover interesse'}), 500
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/produtos-interesse/estatisticas')
+def api_estatisticas_produtos_interesse():
+    """API para obter estatísticas de produtos de interesse"""
+    try:
+        stats = ProdutoInteresse.obter_estatisticas()
+        return jsonify(stats)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/clientes/detalhes')
+def clientes_detalhes():
+    """Página de detalhes do cliente"""
+    try:
+        return render_template('clientes/detalhes.html')
+    except Exception as e:
+        return render_template('erro_simples.html',
+                             modulo='Detalhes Cliente',
+                             erro=str(e))
+
+@app.route('/produtos-interesse-test')
+def produtos_interesse_test():
+    """Página de teste para Sistema de Produtos de Interesse"""
+    try:
+        return render_template('produtos-interesse-test.html')
+    except Exception as e:
+        return render_template('erro_simples.html',
+                             modulo='Teste Produtos Interesse',
+                             erro=str(e))
 
 # Configuração para Vercel
 if __name__ == '__main__':

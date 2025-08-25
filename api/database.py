@@ -231,6 +231,7 @@ class MIMODatabase:
             self.migrate_observacoes_entrega()
             self.migrate_status_producao()
             self.migrate_desfazer_entrega()
+            self.migrate_produtos_interesse()
 
         except Exception as e:
             print(f"❌ Erro ao inicializar banco: {e}")
@@ -456,6 +457,43 @@ class MIMODatabase:
 
         except Exception as e:
             print(f"❌ Erro na migração desfazer_entrega: {e}")
+            return False
+
+    def migrate_produtos_interesse(self):
+        """Migração automática para criar tabela produtos_interesse"""
+        try:
+            cursor = self.connection.cursor()
+
+            # Verificar se a tabela já existe
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='produtos_interesse'")
+            table_exists = cursor.fetchone()
+
+            if not table_exists:
+                print("🔄 Criando tabela produtos_interesse...")
+                cursor.execute('''
+                    CREATE TABLE produtos_interesse (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        cliente_id INTEGER NOT NULL,
+                        produto_id INTEGER NOT NULL,
+                        nivel_interesse TEXT DEFAULT 'medio',
+                        observacoes TEXT,
+                        data_interesse TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        ativo BOOLEAN DEFAULT 1,
+                        FOREIGN KEY (cliente_id) REFERENCES clientes (id),
+                        FOREIGN KEY (produto_id) REFERENCES produtos (id),
+                        UNIQUE(cliente_id, produto_id)
+                    )
+                ''')
+                self.connection.commit()
+                print("✅ Tabela produtos_interesse criada com sucesso!")
+                return True
+            else:
+                print("✅ Tabela produtos_interesse já existe")
+                return True
+
+        except Exception as e:
+            print(f"❌ Erro na migração produtos_interesse: {e}")
             return False
 
 # Instância global do banco

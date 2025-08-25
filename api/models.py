@@ -116,6 +116,116 @@ class Cliente:
 
         return duplicatas[:5]  # Máximo 5 resultados
 
+class ProdutoInteresse:
+    """Modelo para gestão de produtos de interesse dos clientes"""
+
+    NIVEIS_INTERESSE = {
+        'baixo': {'nome': 'Baixo', 'cor': '#6c757d', 'prioridade': 1},
+        'medio': {'nome': 'Médio', 'cor': '#ffc107', 'prioridade': 2},
+        'alto': {'nome': 'Alto', 'cor': '#fd7e14', 'prioridade': 3},
+        'muito_alto': {'nome': 'Muito Alto', 'cor': '#dc3545', 'prioridade': 4}
+    }
+
+    @staticmethod
+    def adicionar_interesse(cliente_id: int, produto_id: int, nivel: str = 'medio', observacoes: str = None) -> int:
+        """Adicionar produto de interesse para um cliente"""
+        query = '''
+            INSERT OR REPLACE INTO produtos_interesse
+            (cliente_id, produto_id, nivel_interesse, observacoes)
+            VALUES (?, ?, ?, ?)
+        '''
+        params = (cliente_id, produto_id, nivel, observacoes)
+        return db.execute_insert(query, params)
+
+    @staticmethod
+    def listar_por_cliente(cliente_id: int) -> List[Dict]:
+        """Listar produtos de interesse de um cliente"""
+        query = '''
+            SELECT pi.*, p.nome as produto_nome, p.categoria, p.preco
+            FROM produtos_interesse pi
+            JOIN produtos p ON pi.produto_id = p.id
+            WHERE pi.cliente_id = ? AND pi.ativo = 1
+            ORDER BY pi.nivel_interesse DESC, pi.data_interesse DESC
+        '''
+        return db.execute_query(query, (cliente_id,))
+
+    @staticmethod
+    def listar_por_produto(produto_id: int) -> List[Dict]:
+        """Listar clientes interessados em um produto"""
+        query = '''
+            SELECT pi.*, c.nome as cliente_nome, c.email, c.telefone
+            FROM produtos_interesse pi
+            JOIN clientes c ON pi.cliente_id = c.id
+            WHERE pi.produto_id = ? AND pi.ativo = 1
+            ORDER BY pi.nivel_interesse DESC, pi.data_interesse DESC
+        '''
+        return db.execute_query(query, (produto_id,))
+
+    @staticmethod
+    def atualizar_nivel(cliente_id: int, produto_id: int, novo_nivel: str, observacoes: str = None) -> bool:
+        """Atualizar nível de interesse"""
+        query = '''
+            UPDATE produtos_interesse
+            SET nivel_interesse = ?, observacoes = ?, data_atualizacao = CURRENT_TIMESTAMP
+            WHERE cliente_id = ? AND produto_id = ?
+        '''
+        params = (novo_nivel, observacoes, cliente_id, produto_id)
+        return db.execute_update(query, params) > 0
+
+    @staticmethod
+    def remover_interesse(cliente_id: int, produto_id: int) -> bool:
+        """Remover interesse (soft delete)"""
+        query = '''
+            UPDATE produtos_interesse
+            SET ativo = 0, data_atualizacao = CURRENT_TIMESTAMP
+            WHERE cliente_id = ? AND produto_id = ?
+        '''
+        return db.execute_update(query, (cliente_id, produto_id)) > 0
+
+    @staticmethod
+    def obter_estatisticas() -> Dict[str, Any]:
+        """Obter estatísticas de produtos de interesse"""
+        query = '''
+            SELECT
+                COUNT(*) as total_interesses,
+                COUNT(DISTINCT cliente_id) as clientes_com_interesse,
+                COUNT(DISTINCT produto_id) as produtos_com_interesse
+            FROM produtos_interesse
+            WHERE ativo = 1
+        '''
+        stats_geral = db.execute_query(query)[0] if db.execute_query(query) else {}
+
+        # Estatísticas por nível
+        query_nivel = '''
+            SELECT
+                nivel_interesse,
+                COUNT(*) as total
+            FROM produtos_interesse
+            WHERE ativo = 1
+            GROUP BY nivel_interesse
+        '''
+        stats_nivel = db.execute_query(query_nivel)
+
+        # Produtos mais desejados
+        query_produtos = '''
+            SELECT
+                p.nome,
+                COUNT(*) as total_interessados
+            FROM produtos_interesse pi
+            JOIN produtos p ON pi.produto_id = p.id
+            WHERE pi.ativo = 1
+            GROUP BY pi.produto_id, p.nome
+            ORDER BY total_interessados DESC
+            LIMIT 5
+        '''
+        produtos_populares = db.execute_query(query_produtos)
+
+        return {
+            'geral': stats_geral,
+            'por_nivel': {item['nivel_interesse']: item['total'] for item in stats_nivel},
+            'produtos_populares': produtos_populares
+        }
+
 class Produto:
     """Modelo para gestão de produtos"""
     
