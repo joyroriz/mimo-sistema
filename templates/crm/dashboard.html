@@ -1,0 +1,766 @@
+{% extends "base.html" %}
+
+{% block title %}CRM - Sistema MIMO{% endblock %}
+
+{% block content %}
+<!-- Cabeçalho MIMO -->
+<div class="row mb-4 mimo-fade-in">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mimo-h1 mb-0">
+                    <i class="bi bi-heart-fill me-3 mimo-text-gold"></i>
+                    CRM MIMO - Relacionamento Premium
+                </h1>
+                <p class="text-muted mb-0 fs-5">Cultive relacionamentos duradouros com excelência</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-mimo-secondary" onclick="alternarVisualizacaoCRM()">
+                    <i class="bi bi-kanban me-2"></i>
+                    <span id="btn-visualizacao-crm">Kanban</span>
+                </button>
+                <a href="/crm/nova-interacao" class="btn btn-mimo-primary btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Nova Interação
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estatísticas CRM MIMO -->
+<div class="row mb-4 g-4">
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #A98C3D; --color-end: #B8954A;">
+            <i class="bi bi-people-fill fs-1 mb-3"></i>
+            <h4 id="total-clientes-ativos">0</h4>
+            <p class="mb-3">Clientes Ativos</p>
+            <small class="opacity-75">Relacionamentos cultivados</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #22C55E; --color-end: #16A34A;">
+            <i class="bi bi-chat-heart-fill fs-1 mb-3"></i>
+            <h4 id="total-interacoes">0</h4>
+            <p class="mb-3">Interações</p>
+            <small class="opacity-75">Conversas registradas</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #F59E0B; --color-end: #D97706;">
+            <i class="bi bi-calendar-heart fs-1 mb-3"></i>
+            <h4 id="interacoes-semana">0</h4>
+            <p class="mb-3">Esta Semana</p>
+            <small class="opacity-75">Atividade recente</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #8B5CF6; --color-end: #7C3AED;">
+            <i class="bi bi-gem fs-1 mb-3"></i>
+            <h4 id="clientes-vip">0</h4>
+            <p class="mb-3">Clientes VIP</p>
+            <small class="opacity-75">Relacionamentos premium</small>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros e Busca MIMO -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-text mimo-bg-gold">
+                <i class="bi bi-search mimo-text-white"></i>
+            </span>
+            <input type="text" id="busca-interacao" class="form-control-mimo"
+                   placeholder="🔍 Buscar por cliente ou descrição...">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select id="filtro-tipo" class="form-control-mimo" onchange="filtrarPorTipo()">
+            <option value="">📋 Todos os tipos</option>
+            <option value="instagram">📸 Instagram</option>
+            <option value="whatsapp">💬 WhatsApp</option>
+            <option value="ligacao">📞 Ligação</option>
+            <option value="email">📧 E-mail</option>
+            <option value="reuniao">🤝 Reunião</option>
+            <option value="visita">🏠 Visita</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="date" id="filtro-data" class="form-control-mimo" onchange="filtrarPorData()"
+               title="Filtrar por data">
+    </div>
+    <div class="col-md-2">
+        <select id="filtro-status" class="form-control-mimo" onchange="filtrarPorStatus()">
+            <option value="">🎯 Todos os status</option>
+            <option value="novo">🆕 Novo Lead</option>
+            <option value="contato">📞 Em Contato</option>
+            <option value="proposta">💰 Proposta</option>
+            <option value="cliente">✅ Cliente</option>
+        </select>
+    </div>
+    <div class="col-md-2 text-end">
+        <button class="btn btn-mimo-secondary" onclick="carregarInteracoes()">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            Atualizar
+        </button>
+    </div>
+</div>
+
+<!-- Kanban CRM MIMO -->
+<div id="kanban-view-crm" class="row g-4 mb-4" style="display: none;">
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Novos Leads
+                </h6>
+                <span id="kanban-crm-novos" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-crm-novos-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-person-plus fs-3 d-block mb-2"></i>
+                    <p>Nenhum lead novo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-telephone me-2"></i>
+                    Em Contato
+                </h6>
+                <span id="kanban-crm-contato" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-crm-contato-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-telephone fs-3 d-block mb-2"></i>
+                    <p>Nenhum contato ativo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-currency-dollar me-2"></i>
+                    Proposta
+                </h6>
+                <span id="kanban-crm-proposta" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-crm-proposta-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-currency-dollar fs-3 d-block mb-2"></i>
+                    <p>Nenhuma proposta</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #22C55E, #16A34A);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Clientes
+                </h6>
+                <span id="kanban-crm-clientes" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-crm-clientes-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
+                    <p>Nenhum cliente</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Interações MIMO -->
+<div id="lista-view-crm" class="row">
+    <div class="col">
+        <div class="mimo-card">
+            <div class="mimo-card-header">
+                <h2 class="mimo-h2 mb-0">
+                    <i class="bi bi-chat-heart me-2"></i>
+                    Histórico de Interações
+                    <span id="total-interacoes-badge" class="badge-mimo badge-mimo-gold ms-2">0</span>
+                </h2>
+            </div>
+            <div class="mimo-card-body p-0">
+                <div class="table-responsive">
+                    <table id="tabela-interacoes" class="table table-mimo mb-0">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th width="160">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-hourglass-split fs-1 d-block mb-3 mimo-text-gold"></i>
+                                    <h5>Carregando interações...</h5>
+                                    <p class="text-muted">Aguarde um momento</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Seção de Ações Rápidas MIMO -->
+<div class="row mt-4">
+    <div class="col">
+        <div class="mimo-card">
+            <div class="mimo-card-header">
+                <h3 class="mimo-h3 mb-0">
+                    <i class="bi bi-lightning-charge me-2 mimo-text-gold"></i>
+                    Ações Rápidas CRM
+                </h3>
+            </div>
+            <div class="mimo-card-body">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <a href="/crm/nova-interacao?tipo=instagram" class="btn btn-mimo-primary w-100 py-3">
+                            <i class="bi bi-instagram d-block fs-1 mb-2"></i>
+                            <span class="fw-bold">Instagram</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/crm/nova-interacao?tipo=whatsapp" class="btn btn-mimo-whatsapp w-100 py-3">
+                            <i class="bi bi-whatsapp d-block fs-1 mb-2"></i>
+                            <span class="fw-bold">WhatsApp</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/crm/nova-interacao?tipo=ligacao" class="btn btn-mimo-primary w-100 py-3">
+                            <i class="bi bi-telephone d-block fs-1 mb-2"></i>
+                            <span class="fw-bold">Ligação</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/crm/nova-interacao?tipo=email" class="btn btn-mimo-primary w-100 py-3">
+                            <i class="bi bi-envelope d-block fs-1 mb-2"></i>
+                            <span class="fw-bold">E-mail</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/crm/nova-interacao?tipo=reuniao" class="btn btn-mimo-primary w-100 py-3">
+                            <i class="bi bi-calendar-event d-block fs-1 mb-2"></i>
+                            <span class="fw-bold">Reunião</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/crm/relatorios" class="btn btn-mimo-secondary w-100 py-3">
+                            <i class="bi bi-graph-up d-block fs-1 mb-2"></i>
+                            <span class="fw-bold">Relatórios</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Variável global para controlar visualização CRM
+let visualizacaoAtualCRM = 'lista'; // 'lista' ou 'kanban'
+
+// Função para alternar visualização CRM
+function alternarVisualizacaoCRM() {
+    const kanbanView = document.getElementById('kanban-view-crm');
+    const listaView = document.getElementById('lista-view-crm');
+    const btnVisualizacao = document.getElementById('btn-visualizacao-crm');
+
+    if (visualizacaoAtualCRM === 'lista') {
+        kanbanView.style.display = 'flex';
+        listaView.style.display = 'none';
+        btnVisualizacao.textContent = 'Lista';
+        visualizacaoAtualCRM = 'kanban';
+        carregarKanbanCRM();
+    } else {
+        kanbanView.style.display = 'none';
+        listaView.style.display = 'block';
+        btnVisualizacao.textContent = 'Kanban';
+        visualizacaoAtualCRM = 'lista';
+        carregarInteracoes();
+    }
+}
+
+// Função para carregar kanban CRM
+function carregarKanbanCRM() {
+    console.log('Carregando kanban CRM...');
+
+    fetch('/api/crm/interacoes')
+        .then(response => response.json())
+        .then(data => {
+            if (data.interacoes && data.interacoes.length > 0) {
+                organizarKanbanCRM(data.interacoes);
+            } else {
+                limparKanbanCRM();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar kanban CRM:', error);
+            limparKanbanCRM();
+        });
+}
+
+// Função para organizar dados no kanban CRM
+function organizarKanbanCRM(interacoes) {
+    // Simular status baseado no tipo de interação
+    const kanbanData = {
+        novo: [],
+        contato: [],
+        proposta: [],
+        cliente: []
+    };
+
+    // Agrupar clientes únicos por status simulado
+    const clientesUnicos = {};
+    interacoes.forEach(interacao => {
+        if (!clientesUnicos[interacao.cliente_id]) {
+            // Simular status baseado no tipo de interação
+            let status = 'novo';
+            if (interacao.tipo === 'whatsapp' || interacao.tipo === 'ligacao') {
+                status = 'contato';
+            } else if (interacao.tipo === 'reuniao') {
+                status = 'proposta';
+            } else if (interacao.tipo === 'instagram') {
+                status = 'cliente';
+            }
+
+            clientesUnicos[interacao.cliente_id] = {
+                ...interacao,
+                status: status
+            };
+        }
+    });
+
+    // Organizar por status
+    Object.values(clientesUnicos).forEach(cliente => {
+        kanbanData[cliente.status].push(cliente);
+    });
+
+    // Atualizar kanban CRM
+    atualizarColunaKanbanCRM('novos', kanbanData.novo);
+    atualizarColunaKanbanCRM('contato', kanbanData.contato);
+    atualizarColunaKanbanCRM('proposta', kanbanData.proposta);
+    atualizarColunaKanbanCRM('clientes', kanbanData.cliente);
+}
+
+// Função para atualizar coluna do kanban CRM
+function atualizarColunaKanbanCRM(coluna, dados) {
+    const lista = document.getElementById(`kanban-crm-${coluna}-list`);
+    const contador = document.getElementById(`kanban-crm-${coluna}`);
+
+    contador.textContent = dados.length;
+
+    if (dados.length > 0) {
+        lista.innerHTML = dados.map(item => `
+            <div class="mimo-card mb-3" style="border-left: 4px solid var(--mimo-gold);">
+                <div class="mimo-card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="mimo-avatar me-2" style="width: 30px; height: 30px; font-size: 12px;">
+                            ${item.cliente_nome ? item.cliente_nome.charAt(0).toUpperCase() : 'C'}
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">${item.cliente_nome || 'Cliente'}</h6>
+                            <small class="text-muted">${item.tipo}</small>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-2">${item.descricao || 'Sem descrição'}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">${new Date(item.data_interacao).toLocaleDateString('pt-BR')}</small>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-mimo-secondary btn-sm" onclick="verDetalhesCliente(${item.cliente_id})" title="Ver detalhes">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-mimo-primary btn-sm" onclick="novaInteracaoCliente(${item.cliente_id})" title="Nova interação">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        lista.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                <p>Nenhum item</p>
+            </div>
+        `;
+    }
+}
+
+// Função para limpar kanban CRM
+function limparKanbanCRM() {
+    ['novos', 'contato', 'proposta', 'clientes'].forEach(coluna => {
+        document.getElementById(`kanban-crm-${coluna}`).textContent = '0';
+        document.getElementById(`kanban-crm-${coluna}-list`).innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                <p>Nenhum item</p>
+            </div>
+        `;
+    });
+}
+
+// Função para carregar interações
+function carregarInteracoes() {
+    console.log('Carregando interações CRM...');
+
+    fetch('/api/crm/interacoes')
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dados recebidos:', data);
+            const tbody = document.querySelector('#tabela-interacoes tbody');
+            const totalBadge = document.getElementById('total-interacoes-badge');
+
+            if (data.interacoes && data.interacoes.length > 0) {
+                tbody.innerHTML = data.interacoes.map(interacao => {
+                    const dataFormatada = new Date(interacao.data_interacao).toLocaleDateString('pt-BR');
+
+                    let iconeTipo = '';
+                    let corTipo = '';
+                    let statusCliente = '';
+                    switch(interacao.tipo) {
+                        case 'instagram':
+                            iconeTipo = 'bi-instagram';
+                            corTipo = 'badge-mimo-gold';
+                            statusCliente = '🆕 Novo Lead';
+                            break;
+                        case 'whatsapp':
+                            iconeTipo = 'bi-whatsapp';
+                            corTipo = 'badge-mimo-success';
+                            statusCliente = '📞 Em Contato';
+                            break;
+                        case 'ligacao':
+                            iconeTipo = 'bi-telephone';
+                            corTipo = 'badge-mimo-warning';
+                            statusCliente = '📞 Em Contato';
+                            break;
+                        case 'email':
+                            iconeTipo = 'bi-envelope';
+                            corTipo = 'badge-mimo-gold';
+                            statusCliente = '📧 Contato';
+                            break;
+                        case 'reuniao':
+                            iconeTipo = 'bi-calendar-event';
+                            corTipo = 'badge-mimo-warning';
+                            statusCliente = '💰 Proposta';
+                            break;
+                        case 'visita':
+                            iconeTipo = 'bi-geo-alt';
+                            corTipo = 'badge-mimo-success';
+                            statusCliente = '✅ Cliente';
+                            break;
+                        default:
+                            iconeTipo = 'bi-chat-dots';
+                            corTipo = 'badge-mimo-gold';
+                            statusCliente = '📋 Outros';
+                    }
+
+                    return `
+                        <tr class="mimo-fade-in">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="mimo-avatar me-3">
+                                        ${interacao.cliente_nome ? interacao.cliente_nome.charAt(0).toUpperCase() : 'C'}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold fs-6">${interacao.cliente_nome || 'Cliente não informado'}</div>
+                                        <small class="text-muted">ID: ${interacao.cliente_id}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge-mimo ${corTipo}">
+                                    <i class="bi ${iconeTipo} me-1"></i>
+                                    ${interacao.tipo.charAt(0).toUpperCase() + interacao.tipo.slice(1)}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 250px;" title="${interacao.descricao || ''}">
+                                    ${interacao.descricao || 'Sem descrição'}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge-mimo badge-mimo-gold">${dataFormatada}</span>
+                            </td>
+                            <td>
+                                <span class="badge-mimo ${corTipo}">${statusCliente}</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-mimo-secondary btn-sm" onclick="verDetalhesCliente(${interacao.cliente_id})" title="Ver detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-mimo-primary btn-sm" onclick="editarInteracao(${interacao.id})" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-mimo-whatsapp btn-sm" onclick="novaInteracaoCliente(${interacao.cliente_id})" title="Nova interação">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                    <button class="btn btn-mimo-secondary btn-sm" onclick="enviarWhatsAppCRM(${interacao.cliente_id}, '${interacao.cliente_nome}')" title="WhatsApp">
+                                        <i class="bi bi-whatsapp"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                totalBadge.textContent = data.interacoes.length;
+                atualizarEstatisticasCRM(data.interacoes);
+                console.log('Interações carregadas com sucesso:', data.interacoes.length);
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="bi bi-heart-fill fs-1 d-block mb-3 mimo-text-gold"></i>
+                            <h5>Nenhuma interação registrada</h5>
+                            <p class="text-muted">Comece registrando sua primeira interação MIMO</p>
+                            <a href="/crm/nova-interacao" class="btn btn-mimo-primary">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Registrar Primeira Interação
+                            </a>
+                        </td>
+                    </tr>
+                `;
+                totalBadge.textContent = '0';
+                zerarEstatisticasCRM();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar interações:', error);
+            const tbody = document.querySelector('#tabela-interacoes tbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-danger py-5">
+                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-3 text-danger"></i>
+                        <h5>Erro ao carregar interações</h5>
+                        <p class="text-muted">Verifique a conexão e tente novamente</p>
+                        <button class="btn btn-mimo-secondary" onclick="carregarInteracoes()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Tentar Novamente
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+// Função para atualizar estatísticas CRM
+function atualizarEstatisticasCRM(interacoes) {
+    // Calcular clientes únicos
+    const clientesUnicos = [...new Set(interacoes.map(i => i.cliente_id))];
+    const totalClientesAtivos = clientesUnicos.length;
+    
+    // Calcular interações da semana
+    const agora = new Date();
+    const inicioSemana = new Date(agora.setDate(agora.getDate() - agora.getDay()));
+    const interacoesSemana = interacoes.filter(i => {
+        const dataInteracao = new Date(i.data_interacao);
+        return dataInteracao >= inicioSemana;
+    }).length;
+    
+    // Simular clientes VIP (clientes com mais de 5 interações)
+    const contagemPorCliente = {};
+    interacoes.forEach(i => {
+        contagemPorCliente[i.cliente_id] = (contagemPorCliente[i.cliente_id] || 0) + 1;
+    });
+    const clientesVIP = Object.values(contagemPorCliente).filter(count => count >= 5).length;
+    
+    document.getElementById('total-clientes-ativos').textContent = totalClientesAtivos;
+    document.getElementById('total-interacoes').textContent = interacoes.length;
+    document.getElementById('interacoes-semana').textContent = interacoesSemana;
+    document.getElementById('clientes-vip').textContent = clientesVIP;
+}
+
+// Função para zerar estatísticas CRM
+function zerarEstatisticasCRM() {
+    document.getElementById('total-clientes-ativos').textContent = '0';
+    document.getElementById('total-interacoes').textContent = '0';
+    document.getElementById('interacoes-semana').textContent = '0';
+    document.getElementById('clientes-vip').textContent = '0';
+}
+
+// Função para buscar interações
+function buscarInteracoes() {
+    const termo = document.getElementById('busca-interacao').value.toLowerCase();
+    const linhas = document.querySelectorAll('#tabela-interacoes tbody tr');
+    
+    linhas.forEach(linha => {
+        const texto = linha.textContent.toLowerCase();
+        linha.style.display = texto.includes(termo) ? '' : 'none';
+    });
+}
+
+// Função para filtrar por tipo
+function filtrarPorTipo() {
+    const tipo = document.getElementById('filtro-tipo').value;
+    const linhas = document.querySelectorAll('#tabela-interacoes tbody tr');
+    
+    linhas.forEach(linha => {
+        if (!tipo) {
+            linha.style.display = '';
+        } else {
+            const tipoCell = linha.querySelector('td:nth-child(2)');
+            if (tipoCell && tipoCell.textContent.toLowerCase().includes(tipo)) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Função para filtrar por data
+function filtrarPorData() {
+    const dataFiltro = document.getElementById('filtro-data').value;
+    if (!dataFiltro) return;
+    
+    const linhas = document.querySelectorAll('#tabela-interacoes tbody tr');
+    
+    linhas.forEach(linha => {
+        const dataCell = linha.querySelector('td:nth-child(4)');
+        if (dataCell) {
+            const dataTexto = dataCell.textContent;
+            const dataFormatada = dataTexto.split('/').reverse().join('-'); // DD/MM/YYYY -> YYYY-MM-DD
+            linha.style.display = dataFormatada === dataFiltro ? '' : 'none';
+        }
+    });
+}
+
+// Função para filtrar por status
+function filtrarPorStatus() {
+    const status = document.getElementById('filtro-status').value;
+    const linhas = document.querySelectorAll('#tabela-interacoes tbody tr');
+
+    linhas.forEach(linha => {
+        if (!status) {
+            linha.style.display = '';
+        } else {
+            const statusCell = linha.querySelector('td:nth-child(5)');
+            if (statusCell && statusCell.textContent.toLowerCase().includes(status)) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Função para ver detalhes do cliente
+function verDetalhesCliente(clienteId) {
+    // Criar modal com detalhes do cliente
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header mimo-bg-gold">
+                    <h5 class="modal-title mimo-text-white">
+                        <i class="bi bi-person-heart me-2"></i>
+                        Detalhes do Cliente #${clienteId}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center py-4">
+                        <div class="spinner-border mimo-text-gold" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p class="mt-2">Carregando informações do cliente...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    // Remover modal quando fechado
+    modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+    });
+}
+
+// Função para editar interação
+function editarInteracao(id) {
+    alert('Funcionalidade de edição em desenvolvimento. ID: ' + id);
+}
+
+// Função para nova interação com cliente específico
+function novaInteracaoCliente(clienteId) {
+    alert('Nova interação para cliente ID: ' + clienteId + ' - Em desenvolvimento');
+}
+
+// Função para enviar WhatsApp CRM
+function enviarWhatsAppCRM(clienteId, nomeCliente) {
+    // Buscar telefone do cliente (simulado)
+    const mensagem = `Olá ${nomeCliente}! Esperamos que esteja bem! 🌟 Temos novidades incríveis da MIMO para compartilhar com você. Quando podemos conversar? 🍓✨`;
+
+    // Simular abertura do WhatsApp
+    alert(`WhatsApp para ${nomeCliente}: ${mensagem}`);
+
+    // Em produção, buscar telefone real do cliente e abrir WhatsApp
+    // const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
+    // window.open(url, '_blank');
+}
+
+// Carregar dados quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página CRM MIMO carregada...');
+
+    // Inicializar com visualização lista
+    visualizacaoAtualCRM = 'lista';
+    carregarInteracoes();
+
+    // Configurar busca
+    const campoBusca = document.getElementById('busca-interacao');
+    if (campoBusca) {
+        campoBusca.addEventListener('input', buscarInteracoes);
+    }
+
+    // Configurar filtros
+    const filtroTipo = document.getElementById('filtro-tipo');
+    if (filtroTipo) {
+        filtroTipo.addEventListener('change', filtrarPorTipo);
+    }
+
+    const filtroStatus = document.getElementById('filtro-status');
+    if (filtroStatus) {
+        filtroStatus.addEventListener('change', filtrarPorStatus);
+    }
+
+    const filtroData = document.getElementById('filtro-data');
+    if (filtroData) {
+        filtroData.addEventListener('change', filtrarPorData);
+    }
+});
+</script>
+{% endblock %}

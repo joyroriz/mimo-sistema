@@ -2,209 +2,220 @@
 
 {% block title %}Entregas - Sistema MIMO{% endblock %}
 
-{% block extra_css %}
-<style>
-.mimo-card {
-    background: rgba(255,255,255,0.95);
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.entrega-card {
-    background: var(--mimo-gradient-soft);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-}
-
-.entrega-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.status-entregue {
-    background: linear-gradient(135deg, #198754, #20c997);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 600;
-}
-
-.status-pendente {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
-    color: #000;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 600;
-}
-
-.status-atrasado {
-    background: linear-gradient(135deg, #dc3545, #fd7e14);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 600;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container-fluid">
-    <!-- Cabeçalho -->
-    <div class="row mb-4">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="mimo-gradient-text mb-0">
-                        <i class="bi bi-truck me-2"></i>
-                        Gerenciar Entregas
-                    </h2>
-                    <p class="text-muted mb-0">Controle suas entregas com elegância</p>
-                </div>
-                <div>
-                    <a href="{{ url_for('entregas.calendario') }}" class="btn btn-outline-primary me-2">
-                        <i class="bi bi-calendar-event me-2"></i>
-                        Calendário
-                    </a>
-                    <a href="{{ url_for('vendas.nova') }}" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Nova Venda
-                    </a>
-                </div>
+<!-- Cabeçalho MIMO -->
+<div class="row mb-4 mimo-fade-in">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mimo-h1 mb-0">
+                    <i class="bi bi-truck-front-fill me-3 mimo-text-gold"></i>
+                    Controle de Entregas MIMO
+                </h1>
+                <p class="text-muted mb-0 fs-5">Gerencie entregas com excelência e pontualidade</p>
             </div>
-        </div>
-    </div>
-
-    <!-- Estatísticas Rápidas -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="mimo-card text-center p-3">
-                <h3 class="mimo-gradient-text">{{ entregas.total }}</h3>
-                <p class="text-muted mb-0">Total de Entregas</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="mimo-card text-center p-3">
-                <h3 style="color: var(--mimo-orange);">Hoje</h3>
-                <p class="text-muted mb-0">Entregas Programadas</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="mimo-card text-center p-3">
-                <h3 style="color: var(--mimo-red);">Atrasadas</h3>
-                <p class="text-muted mb-0">Precisam Atenção</p>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="mimo-card text-center p-3">
-                <h3 style="color: var(--mimo-blue);">Próximas</h3>
-                <p class="text-muted mb-0">7 dias</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Lista de Entregas -->
-    <div class="mimo-card">
-        <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
-            <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
-                <i class="bi bi-list me-2"></i>
-                Lista de Entregas
-            </h5>
-        </div>
-        <div class="card-body p-4">
-            {% if entregas.items %}
-            {% for venda in entregas.items %}
-            <div class="entrega-card">
-                <div class="row align-items-center">
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                 style="width: 50px; height: 50px; background: var(--mimo-gradient); color: white; font-weight: bold;">
-                                {{ venda.cliente_obj.nome[0].upper() }}
-                            </div>
-                            <div>
-                                <h6 class="mb-1 fw-bold">{{ venda.cliente_obj.nome }}</h6>
-                                <small class="text-muted">
-                                    Pedido: {{ venda.data_pedido.strftime('%d/%m/%Y') }}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-2 text-center">
-                        <h5 class="mb-0 fw-bold" style="color: var(--mimo-orange);">
-                            {{ venda.valor_total | currency }}
-                        </h5>
-                    </div>
-                    
-                    <div class="col-md-2 text-center">
-                        {% if venda.data_entrega %}
-                        <div class="fw-bold">{{ venda.data_entrega.strftime('%d/%m/%Y') }}</div>
-                        <small class="text-muted">Data Entrega</small>
-                        {% else %}
-                        <span class="text-muted">Sem data</span>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="col-md-2 text-center">
-                        {% if venda.status == 'ENTREGUE' %}
-                        <span class="status-entregue">ENTREGUE</span>
-                        {% elif venda.data_entrega and venda.data_entrega < today %}
-                        <span class="status-atrasado">ATRASADO</span>
-                        {% else %}
-                        <span class="status-pendente">PENDENTE</span>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="col-md-3 text-end">
-                        <div class="btn-group btn-group-sm">
-                            <a href="{{ url_for('vendas.visualizar', id=venda.id) }}" 
-                               class="btn btn-outline-info" 
-                               data-bs-toggle="tooltip" title="Ver Venda">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{{ url_for('entregas.atualizar_status', venda_id=venda.id) }}" 
-                               class="btn btn-outline-primary"
-                               data-bs-toggle="tooltip" title="Atualizar Status">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            {% if venda.cliente_obj.contato %}
-                            <a href="https://wa.me/55{{ venda.cliente_obj.contato.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') }}" 
-                               target="_blank" class="btn btn-outline-success"
-                               data-bs-toggle="tooltip" title="WhatsApp">
-                                <i class="bi bi-whatsapp"></i>
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-            
-            {% else %}
-            <div class="text-center py-5">
-                <i class="bi bi-truck display-1 text-muted"></i>
-                <h4 class="mt-3">Nenhuma entrega encontrada</h4>
-                <p class="text-muted">
-                    Não há entregas programadas no momento.
-                </p>
-                <a href="{{ url_for('vendas.nova') }}" class="btn btn-primary btn-lg">
+            <div class="d-flex gap-2">
+                <button class="btn btn-mimo-secondary" onclick="alternarVisualizacaoEntregas()">
+                    <i class="bi bi-kanban me-2"></i>
+                    <span id="btn-visualizacao-entregas">Kanban</span>
+                </button>
+                <a href="/entregas/nova" class="btn btn-mimo-primary btn-lg">
                     <i class="bi bi-plus-circle me-2"></i>
-                    Criar Nova Venda
+                    Nova Entrega
                 </a>
             </div>
-            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Estatísticas de Entregas MIMO -->
+<div class="row mb-4 g-4">
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #F59E0B; --color-end: #D97706;">
+            <i class="bi bi-clock-history fs-1 mb-3"></i>
+            <h4 id="entregas-agendadas">0</h4>
+            <p class="mb-3">Agendadas</p>
+            <small class="opacity-75">Aguardando entrega</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #3B82F6; --color-end: #2563EB;">
+            <i class="bi bi-truck fs-1 mb-3"></i>
+            <h4 id="entregas-transito">0</h4>
+            <p class="mb-3">Em Trânsito</p>
+            <small class="opacity-75">Saíram para entrega</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #22C55E; --color-end: #16A34A;">
+            <i class="bi bi-check-circle-fill fs-1 mb-3"></i>
+            <h4 id="entregas-concluidas">0</h4>
+            <p class="mb-3">Concluídas</p>
+            <small class="opacity-75">Entregues com sucesso</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mimo-stat-card" style="--color-start: #EF4444; --color-end: #DC2626;">
+            <i class="bi bi-x-circle-fill fs-1 mb-3"></i>
+            <h4 id="entregas-canceladas">0</h4>
+            <p class="mb-3">Canceladas</p>
+            <small class="opacity-75">Não realizadas</small>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros e Busca MIMO -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-text mimo-bg-gold">
+                <i class="bi bi-search mimo-text-white"></i>
+            </span>
+            <input type="text" id="busca-entrega" class="form-control-mimo"
+                   placeholder="🔍 Buscar por cliente, venda ou observações...">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select id="filtro-status" class="form-control-mimo" onchange="filtrarPorStatus()">
+            <option value="">📋 Todos os status</option>
+            <option value="agendada">⏰ Agendada</option>
+            <option value="em_transito">🚚 Em Trânsito</option>
+            <option value="entregue">✅ Entregue</option>
+            <option value="cancelada">❌ Cancelada</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="date" id="filtro-data" class="form-control-mimo" onchange="filtrarPorData()"
+               title="Filtrar por data de entrega">
+    </div>
+    <div class="col-md-2">
+        <select id="filtro-cidade" class="form-control-mimo" onchange="filtrarPorCidade()">
+            <option value="">🏙️ Todas as cidades</option>
+            <option value="Anápolis">Anápolis</option>
+            <option value="Goiânia">Goiânia</option>
+            <option value="Brasília">Brasília</option>
+        </select>
+    </div>
+    <div class="col-md-2 text-end">
+        <button class="btn btn-mimo-secondary" onclick="carregarEntregas()">
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            Atualizar
+        </button>
+    </div>
+</div>
+
+<!-- Kanban de Entregas MIMO -->
+<div id="kanban-view-entregas" class="row g-4 mb-4" style="display: none;">
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Agendadas
+                </h6>
+                <span id="kanban-agendadas" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-agendadas-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-clock-history fs-3 d-block mb-2"></i>
+                    <p>Nenhuma entrega agendada</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #3B82F6, #2563EB);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-truck me-2"></i>
+                    Em Trânsito
+                </h6>
+                <span id="kanban-transito" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-transito-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-truck fs-3 d-block mb-2"></i>
+                    <p>Nenhuma entrega em trânsito</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #22C55E, #16A34A);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Entregues
+                </h6>
+                <span id="kanban-entregues" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-entregues-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-check-circle-fill fs-3 d-block mb-2"></i>
+                    <p>Nenhuma entrega concluída</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="mimo-card">
+            <div class="mimo-card-header text-center" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+                <h6 class="mb-0 text-white">
+                    <i class="bi bi-x-circle-fill me-2"></i>
+                    Canceladas
+                </h6>
+                <span id="kanban-canceladas" class="badge badge-mimo-gold mt-1">0</span>
+            </div>
+            <div class="mimo-card-body" id="kanban-canceladas-list" style="min-height: 400px; max-height: 600px; overflow-y: auto;">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-x-circle-fill fs-3 d-block mb-2"></i>
+                    <p>Nenhuma entrega cancelada</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Entregas MIMO -->
+<div id="lista-view-entregas" class="row">
+    <div class="col">
+        <div class="mimo-card">
+            <div class="mimo-card-header">
+                <h2 class="mimo-h2 mb-0">
+                    <i class="bi bi-list-check me-2"></i>
+                    Controle de Entregas
+                    <span id="total-entregas" class="badge-mimo badge-mimo-gold ms-2">0</span>
+                </h2>
+            </div>
+            <div class="mimo-card-body p-0">
+                <div class="table-responsive">
+                    <table id="tabela-entregas" class="table table-mimo mb-0">
+                        <thead>
+                            <tr>
+                                <th>Venda</th>
+                                <th>Cliente</th>
+                                <th>Endereço</th>
+                                <th>Data Entrega</th>
+                                <th>Status</th>
+                                <th>Valor</th>
+                                <th width="160">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="bi bi-hourglass-split fs-1 d-block mb-3 mimo-text-gold"></i>
+                                    <h5>Carregando entregas...</h5>
+                                    <p class="text-muted">Aguarde um momento</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -212,14 +223,493 @@
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Inicializar tooltips
-    $('[data-bs-toggle="tooltip"]').tooltip();
-    
-    // Animações
-    $('.entrega-card').each(function(index) {
-        $(this).css('animation-delay', (index * 0.1) + 's');
+// Variável global para controlar visualização de entregas
+let visualizacaoAtualEntregas = 'lista'; // 'lista' ou 'kanban'
+
+// Função para alternar visualização de entregas
+function alternarVisualizacaoEntregas() {
+    const kanbanView = document.getElementById('kanban-view-entregas');
+    const listaView = document.getElementById('lista-view-entregas');
+    const btnVisualizacao = document.getElementById('btn-visualizacao-entregas');
+
+    if (visualizacaoAtualEntregas === 'lista') {
+        kanbanView.style.display = 'flex';
+        listaView.style.display = 'none';
+        btnVisualizacao.textContent = 'Lista';
+        visualizacaoAtualEntregas = 'kanban';
+        carregarKanbanEntregas();
+    } else {
+        kanbanView.style.display = 'none';
+        listaView.style.display = 'block';
+        btnVisualizacao.textContent = 'Kanban';
+        visualizacaoAtualEntregas = 'lista';
+        carregarEntregas();
+    }
+}
+
+// Função para carregar kanban de entregas
+function carregarKanbanEntregas() {
+    console.log('Carregando kanban de entregas...');
+
+    fetch('/api/entregas')
+        .then(response => response.json())
+        .then(data => {
+            if (data.entregas && data.entregas.length > 0) {
+                organizarKanbanEntregas(data.entregas);
+            } else {
+                limparKanbanEntregas();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar kanban de entregas:', error);
+            limparKanbanEntregas();
+        });
+}
+
+// Função para organizar dados no kanban de entregas
+function organizarKanbanEntregas(entregas) {
+    const kanbanData = {
+        agendada: [],
+        em_transito: [],
+        entregue: [],
+        cancelada: []
+    };
+
+    // Organizar entregas por status
+    entregas.forEach(entrega => {
+        const status = entrega.status || 'agendada';
+        if (kanbanData[status]) {
+            kanbanData[status].push(entrega);
+        } else {
+            kanbanData.agendada.push(entrega); // Default para agendada
+        }
     });
+
+    // Atualizar colunas do kanban
+    atualizarColunaKanbanEntregas('agendadas', kanbanData.agendada);
+    atualizarColunaKanbanEntregas('transito', kanbanData.em_transito);
+    atualizarColunaKanbanEntregas('entregues', kanbanData.entregue);
+    atualizarColunaKanbanEntregas('canceladas', kanbanData.cancelada);
+}
+
+// Função para atualizar coluna do kanban de entregas
+function atualizarColunaKanbanEntregas(coluna, dados) {
+    const lista = document.getElementById(`kanban-${coluna}-list`);
+    const contador = document.getElementById(`kanban-${coluna}`);
+
+    contador.textContent = dados.length;
+
+    if (dados.length > 0) {
+        lista.innerHTML = dados.map(entrega => {
+            const dataFormatada = new Date(entrega.data_entrega).toLocaleDateString('pt-BR');
+
+            return `
+                <div class="mimo-card mb-3" style="border-left: 4px solid var(--mimo-gold);">
+                    <div class="mimo-card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="mimo-avatar me-2" style="width: 30px; height: 30px; font-size: 12px;">
+                                #${entrega.venda_id}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-bold">${entrega.cliente_nome || 'Cliente'}</h6>
+                                <small class="text-muted">${entrega.cliente_telefone || ''}</small>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block">
+                                <i class="bi bi-geo-alt-fill mimo-text-gold me-1"></i>
+                                ${entrega.cliente_endereco || 'Endereço não informado'}
+                            </small>
+                            <small class="text-muted d-block">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                ${dataFormatada}
+                            </small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold mimo-text-gold">R$ ${entrega.valor_total || '0,00'}</span>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-mimo-secondary btn-sm" onclick="verDetalhesEntrega(${entrega.id})" title="Ver detalhes">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                ${entrega.status !== 'entregue' ? `
+                                <button class="btn btn-mimo-whatsapp btn-sm" onclick="marcarComoEntregue(${entrega.id})" title="Marcar como entregue">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                                ` : ''}
+                                <button class="btn btn-mimo-secondary btn-sm" onclick="enviarWhatsApp('${entrega.cliente_telefone}', '${entrega.cliente_nome}')" title="WhatsApp">
+                                    <i class="bi bi-whatsapp"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        lista.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                <p>Nenhum item</p>
+            </div>
+        `;
+    }
+}
+
+// Função para limpar kanban de entregas
+function limparKanbanEntregas() {
+    ['agendadas', 'transito', 'entregues', 'canceladas'].forEach(coluna => {
+        document.getElementById(`kanban-${coluna}`).textContent = '0';
+        document.getElementById(`kanban-${coluna}-list`).innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                <p>Nenhum item</p>
+            </div>
+        `;
+    });
+}
+
+// Função para carregar entregas
+function carregarEntregas() {
+    console.log('Carregando entregas...');
+    
+    fetch('/api/entregas')
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dados recebidos:', data);
+            const tbody = document.querySelector('#tabela-entregas tbody');
+            const totalBadge = document.getElementById('total-entregas');
+            
+            if (data.entregas && data.entregas.length > 0) {
+                tbody.innerHTML = data.entregas.map(entrega => {
+                    const dataFormatada = new Date(entrega.data_entrega).toLocaleDateString('pt-BR');
+
+                    let corStatus = '';
+                    let textoStatus = '';
+                    let iconeStatus = '';
+                    switch(entrega.status) {
+                        case 'agendada':
+                            corStatus = 'badge-mimo-warning';
+                            textoStatus = '⏰ Agendada';
+                            iconeStatus = 'bi-clock-history';
+                            break;
+                        case 'em_transito':
+                            corStatus = 'badge-mimo-gold';
+                            textoStatus = '🚚 Em Trânsito';
+                            iconeStatus = 'bi-truck';
+                            break;
+                        case 'entregue':
+                            corStatus = 'badge-mimo-success';
+                            textoStatus = '✅ Entregue';
+                            iconeStatus = 'bi-check-circle-fill';
+                            break;
+                        case 'cancelada':
+                            corStatus = 'badge-mimo-danger';
+                            textoStatus = '❌ Cancelada';
+                            iconeStatus = 'bi-x-circle-fill';
+                            break;
+                        default:
+                            corStatus = 'badge-mimo-gold';
+                            textoStatus = entrega.status;
+                            iconeStatus = 'bi-question-circle';
+                    }
+
+                    return `
+                        <tr class="mimo-fade-in">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="mimo-avatar me-3" style="background: linear-gradient(135deg, #A98C3D, #B8954A);">
+                                        #${entrega.venda_id}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">Venda #${entrega.venda_id}</div>
+                                        <small class="text-muted">ID Entrega: ${entrega.id}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-bold fs-6">${entrega.cliente_nome || 'Cliente não informado'}</div>
+                                <small class="text-muted">${entrega.cliente_telefone || ''}</small>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 150px;" title="${entrega.cliente_endereco || ''}">
+                                    <i class="bi bi-geo-alt-fill mimo-text-gold me-1"></i>
+                                    ${entrega.cliente_endereco || 'Endereço não informado'}
+                                </div>
+                                <small class="text-muted">${entrega.cliente_cidade || ''}</small>
+                            </td>
+                            <td>
+                                <span class="badge-mimo badge-mimo-gold">${dataFormatada}</span>
+                            </td>
+                            <td>
+                                <span class="badge-mimo ${corStatus}">
+                                    <i class="bi ${iconeStatus} me-1"></i>
+                                    ${textoStatus}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="fw-bold mimo-text-gold">R$ ${entrega.valor_total || '0,00'}</div>
+                                <small class="text-muted">${entrega.observacoes || 'Sem observações'}</small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-mimo-secondary btn-sm" onclick="verDetalhesEntrega(${entrega.id})" title="Ver detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-mimo-primary btn-sm" onclick="editarEntrega(${entrega.id})" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    ${entrega.status !== 'entregue' ? `
+                                    <button class="btn btn-mimo-whatsapp btn-sm" onclick="marcarComoEntregue(${entrega.id})" title="Marcar como entregue">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                    ` : ''}
+                                    <button class="btn btn-mimo-secondary btn-sm" onclick="enviarWhatsApp('${entrega.cliente_telefone}', '${entrega.cliente_nome}')" title="WhatsApp">
+                                        <i class="bi bi-whatsapp"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                totalBadge.textContent = data.entregas.length;
+                atualizarEstatisticasEntregas(data.entregas);
+                console.log('Entregas carregadas com sucesso:', data.entregas.length);
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-truck fs-1 d-block mb-3 mimo-text-gold"></i>
+                            <h5>Nenhuma entrega agendada</h5>
+                            <p class="text-muted">Comece agendando sua primeira entrega MIMO</p>
+                            <a href="/entregas/nova" class="btn btn-mimo-primary">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Agendar Primeira Entrega
+                            </a>
+                        </td>
+                    </tr>
+                `;
+                totalBadge.textContent = '0';
+                zerarEstatisticasEntregas();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar entregas:', error);
+            const tbody = document.querySelector('#tabela-entregas tbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-danger py-5">
+                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-3 text-danger"></i>
+                        <h5>Erro ao carregar entregas</h5>
+                        <p class="text-muted">Verifique a conexão e tente novamente</p>
+                        <button class="btn btn-mimo-secondary" onclick="carregarEntregas()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Tentar Novamente
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+// Função para atualizar estatísticas de entregas
+function atualizarEstatisticasEntregas(entregas) {
+    const agendadas = entregas.filter(e => e.status === 'agendada').length;
+    const emTransito = entregas.filter(e => e.status === 'em_transito').length;
+    const concluidas = entregas.filter(e => e.status === 'entregue').length;
+    const canceladas = entregas.filter(e => e.status === 'cancelada').length;
+    
+    document.getElementById('entregas-agendadas').textContent = agendadas;
+    document.getElementById('entregas-transito').textContent = emTransito;
+    document.getElementById('entregas-concluidas').textContent = concluidas;
+    document.getElementById('entregas-canceladas').textContent = canceladas;
+}
+
+// Função para zerar estatísticas de entregas
+function zerarEstatisticasEntregas() {
+    document.getElementById('entregas-agendadas').textContent = '0';
+    document.getElementById('entregas-transito').textContent = '0';
+    document.getElementById('entregas-concluidas').textContent = '0';
+    document.getElementById('entregas-canceladas').textContent = '0';
+}
+
+// Função para buscar entregas
+function buscarEntregas() {
+    const termo = document.getElementById('busca-entrega').value.toLowerCase();
+    const linhas = document.querySelectorAll('#tabela-entregas tbody tr');
+    
+    linhas.forEach(linha => {
+        const texto = linha.textContent.toLowerCase();
+        linha.style.display = texto.includes(termo) ? '' : 'none';
+    });
+}
+
+// Função para filtrar por status
+function filtrarPorStatus() {
+    const status = document.getElementById('filtro-status').value;
+    const linhas = document.querySelectorAll('#tabela-entregas tbody tr');
+    
+    linhas.forEach(linha => {
+        if (!status) {
+            linha.style.display = '';
+        } else {
+            const statusCell = linha.querySelector('td:nth-child(4)');
+            if (statusCell && statusCell.textContent.toLowerCase().includes(status.replace('_', ' '))) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Função para filtrar por data
+function filtrarPorData() {
+    const dataFiltro = document.getElementById('filtro-data').value;
+    if (!dataFiltro) return;
+    
+    const linhas = document.querySelectorAll('#tabela-entregas tbody tr');
+    
+    linhas.forEach(linha => {
+        const dataCell = linha.querySelector('td:nth-child(3)');
+        if (dataCell) {
+            const dataTexto = dataCell.textContent;
+            const dataFormatada = dataTexto.split('/').reverse().join('-'); // DD/MM/YYYY -> YYYY-MM-DD
+            linha.style.display = dataFormatada === dataFiltro ? '' : 'none';
+        }
+    });
+}
+
+// Função para filtrar por cidade
+function filtrarPorCidade() {
+    const cidade = document.getElementById('filtro-cidade').value;
+    const linhas = document.querySelectorAll('#tabela-entregas tbody tr');
+
+    linhas.forEach(linha => {
+        if (!cidade) {
+            linha.style.display = '';
+        } else {
+            const cidadeCell = linha.querySelector('td:nth-child(3)');
+            if (cidadeCell && cidadeCell.textContent.toLowerCase().includes(cidade.toLowerCase())) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Função para ver detalhes da entrega
+function verDetalhesEntrega(id) {
+    // Criar modal com detalhes da entrega
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header mimo-bg-gold">
+                    <h5 class="modal-title mimo-text-white">
+                        <i class="bi bi-truck-front-fill me-2"></i>
+                        Detalhes da Entrega #${id}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center py-4">
+                        <div class="spinner-border mimo-text-gold" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p class="mt-2">Carregando detalhes da entrega...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+
+    // Remover modal quando fechado
+    modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+    });
+}
+
+// Função para editar entrega
+function editarEntrega(id) {
+    alert('Funcionalidade de edição em desenvolvimento. ID: ' + id);
+}
+
+// Função para enviar WhatsApp
+function enviarWhatsApp(telefone, nomeCliente) {
+    if (!telefone) {
+        alert('Telefone não disponível para este cliente');
+        return;
+    }
+
+    // Limpar telefone e formatar para WhatsApp
+    const telefoneWhats = telefone.replace(/\D/g, '');
+    const mensagem = `Olá ${nomeCliente}! Sua entrega MIMO está sendo preparada com muito carinho. Em breve entraremos em contato para confirmar o horário. 🍓✨`;
+    const url = `https://wa.me/55${telefoneWhats}?text=${encodeURIComponent(mensagem)}`;
+
+    window.open(url, '_blank');
+}
+
+// Função para marcar como entregue
+function marcarComoEntregue(id) {
+    if (confirm('Confirmar que esta entrega foi realizada?')) {
+        fetch('/api/entregas/' + id + '/entregar', {
+            method: 'PATCH'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Entrega marcada como concluída!');
+                carregarEntregas();
+            } else {
+                alert('Erro ao atualizar status da entrega');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao atualizar status da entrega');
+        });
+    }
+}
+
+// Carregar entregas quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página de entregas MIMO carregada...');
+
+    // Inicializar com visualização lista
+    visualizacaoAtualEntregas = 'lista';
+    carregarEntregas();
+
+    // Configurar busca
+    const campoBusca = document.getElementById('busca-entrega');
+    if (campoBusca) {
+        campoBusca.addEventListener('input', buscarEntregas);
+    }
+
+    // Configurar filtros
+    const filtroStatus = document.getElementById('filtro-status');
+    if (filtroStatus) {
+        filtroStatus.addEventListener('change', filtrarPorStatus);
+    }
+
+    const filtroData = document.getElementById('filtro-data');
+    if (filtroData) {
+        filtroData.addEventListener('change', filtrarPorData);
+    }
+
+    const filtroCidade = document.getElementById('filtro-cidade');
+    if (filtroCidade) {
+        filtroCidade.addEventListener('change', filtrarPorCidade);
+    }
 });
 </script>
 {% endblock %}
