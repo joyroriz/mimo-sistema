@@ -28,11 +28,11 @@ def get_mock_data():
             {'id': 5, 'nome': 'Carlos Ferreira', 'email': 'carlos@email.com', 'telefone': '(11) 55555-5555', 'endereco': 'Av. Faria Lima, 654', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '04538-132', 'data_cadastro': '2024-08-24'},
         ],
         'produtos': [
-            {'id': 1, 'nome': 'Smartphone Galaxy S24', 'preco': 2499.90, 'categoria': 'Eletrônicos', 'estoque': 25, 'descricao': 'Smartphone premium com câmera de 200MP'},
-            {'id': 2, 'nome': 'Notebook Dell Inspiron', 'preco': 3299.00, 'categoria': 'Informática', 'estoque': 15, 'descricao': 'Notebook para trabalho e estudos'},
-            {'id': 3, 'nome': 'Fone Bluetooth Sony', 'preco': 299.90, 'categoria': 'Acessórios', 'estoque': 50, 'descricao': 'Fone sem fio com cancelamento de ruído'},
-            {'id': 4, 'nome': 'Smart TV 55" LG', 'preco': 2199.00, 'categoria': 'Eletrônicos', 'estoque': 8, 'descricao': 'Smart TV 4K com sistema webOS'},
-            {'id': 5, 'nome': 'Mouse Gamer Logitech', 'preco': 189.90, 'categoria': 'Informática', 'estoque': 30, 'descricao': 'Mouse gamer com RGB e alta precisão'},
+            {'id': 1, 'nome': 'Smartphone Galaxy S24', 'preco': 2499.90, 'categoria': 'Eletrônicos', 'estoque': 25, 'quantidade_estoque': 25, 'estoque_minimo': 5, 'unidade': 'un', 'descricao': 'Smartphone premium com câmera de 200MP'},
+            {'id': 2, 'nome': 'Notebook Dell Inspiron', 'preco': 3299.00, 'categoria': 'Informática', 'estoque': 15, 'quantidade_estoque': 15, 'estoque_minimo': 3, 'unidade': 'un', 'descricao': 'Notebook para trabalho e estudos'},
+            {'id': 3, 'nome': 'Fone Bluetooth Sony', 'preco': 299.90, 'categoria': 'Acessórios', 'estoque': 50, 'quantidade_estoque': 50, 'estoque_minimo': 10, 'unidade': 'un', 'descricao': 'Fone sem fio com cancelamento de ruído'},
+            {'id': 4, 'nome': 'Smart TV 55" LG', 'preco': 2199.00, 'categoria': 'Eletrônicos', 'estoque': 8, 'quantidade_estoque': 8, 'estoque_minimo': 2, 'unidade': 'un', 'descricao': 'Smart TV 4K com sistema webOS'},
+            {'id': 5, 'nome': 'Mouse Gamer Logitech', 'preco': 189.90, 'categoria': 'Informática', 'estoque': 30, 'quantidade_estoque': 30, 'estoque_minimo': 5, 'unidade': 'un', 'descricao': 'Mouse gamer com RGB e alta precisão'},
         ],
         'vendas': [
             {'id': 1, 'cliente_id': 1, 'produto_id': 1, 'quantidade': 1, 'valor_total': 2499.90, 'data_venda': '2024-08-27', 'status': 'Concluída'},
