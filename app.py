@@ -475,13 +475,7 @@ def vendas():
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'vendas'}), 500
 
-@app.route('/entregas')
-def entregas():
-    """Página lista de entregas"""
-    try:
-        return render_template('entregas/listar.html')
-    except Exception as e:
-        return jsonify({'error': str(e), 'page': 'entregas'}), 500
+# Rota de entregas removida - versão duplicada
 
 @app.route('/entregas')
 def entregas():
@@ -704,140 +698,11 @@ def api_stats():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/vendas', methods=['GET'])
-def api_listar_vendas():
-    """API para listar vendas"""
-    try:
-        conn = get_db_connection()
-        vendas = conn.execute('''
-            SELECT v.id, v.quantidade, v.preco_unitario, v.total, v.data_venda, v.status,
-                   c.nome as cliente_nome, p.nome as produto_nome
-            FROM vendas v
-            LEFT JOIN clientes c ON v.cliente_id = c.id
-            LEFT JOIN produtos p ON v.produto_id = p.id
-            ORDER BY v.data_venda DESC
-        ''').fetchall()
-        conn.close()
+# API de vendas antiga removida - usando versão com dados mock
 
-        vendas_list = []
-        for venda in vendas:
-            vendas_list.append({
-                'id': venda['id'],
-                'quantidade': venda['quantidade'],
-                'preco_unitario': float(venda['preco_unitario']),
-                'total': float(venda['total']),
-                'data_venda': venda['data_venda'],
-                'status': venda['status'],
-                'cliente_nome': venda['cliente_nome'],
-                'produto_nome': venda['produto_nome']
-            })
+# API de entregas antiga removida - usando versão com dados mock
 
-        return jsonify({
-            'success': True,
-            'vendas': vendas_list,
-            'total': len(vendas_list)
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/entregas', methods=['GET'])
-def api_listar_entregas():
-    """API para listar entregas com informações completas"""
-    try:
-        conn = get_db_connection()
-        entregas = conn.execute('''
-            SELECT e.id, e.venda_id, e.data_entrega, e.status, e.observacoes, e.data_cadastro,
-                   c.nome as cliente_nome, c.telefone as cliente_telefone,
-                   c.endereco as cliente_endereco, c.cidade as cliente_cidade,
-                   v.total as valor_total, v.quantidade, v.preco_unitario,
-                   p.nome as produto_nome
-            FROM entregas e
-            LEFT JOIN vendas v ON e.venda_id = v.id
-            LEFT JOIN clientes c ON v.cliente_id = c.id
-            LEFT JOIN produtos p ON v.produto_id = p.id
-            ORDER BY e.data_entrega DESC, e.id DESC
-        ''').fetchall()
-        conn.close()
-
-        entregas_list = []
-        for entrega in entregas:
-            entregas_list.append({
-                'id': entrega['id'],
-                'venda_id': entrega['venda_id'],
-                'data_entrega': entrega['data_entrega'],
-                'status': entrega['status'],
-                'observacoes': entrega['observacoes'],
-                'data_cadastro': entrega['data_cadastro'],
-                'cliente_nome': entrega['cliente_nome'],
-                'cliente_telefone': entrega['cliente_telefone'],
-                'cliente_endereco': entrega['cliente_endereco'],
-                'cliente_cidade': entrega['cliente_cidade'],
-                'valor_total': f"{entrega['valor_total']:.2f}" if entrega['valor_total'] else "0.00",
-                'quantidade': entrega['quantidade'],
-                'preco_unitario': entrega['preco_unitario'],
-                'produto_nome': entrega['produto_nome']
-            })
-
-        return jsonify({
-            'success': True,
-            'entregas': entregas_list,
-            'total': len(entregas_list)
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/entregas/<int:entrega_id>/entregar', methods=['PATCH'])
-def api_marcar_entrega_concluida(entrega_id):
-    """API para marcar entrega como concluída"""
-    try:
-        conn = get_db_connection()
-        conn.execute('''
-            UPDATE entregas
-            SET status = 'entregue'
-            WHERE id = ?
-        ''', (entrega_id,))
-        conn.commit()
-        conn.close()
-
-        return jsonify({
-            'success': True,
-            'message': 'Entrega marcada como concluída'
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/crm/interacoes', methods=['GET'])
-def api_listar_interacoes_crm():
-    """API para listar interações CRM"""
-    try:
-        conn = get_db_connection()
-        interacoes = conn.execute('''
-            SELECT i.id, i.cliente_id, i.tipo, i.descricao, i.data_interacao,
-                   c.nome as cliente_nome
-            FROM crm_interacoes i
-            LEFT JOIN clientes c ON i.cliente_id = c.id
-            ORDER BY i.data_interacao DESC
-        ''').fetchall()
-        conn.close()
-
-        interacoes_list = []
-        for interacao in interacoes:
-            interacoes_list.append({
-                'id': interacao['id'],
-                'cliente_id': interacao['cliente_id'],
-                'tipo': interacao['tipo'],
-                'descricao': interacao['descricao'],
-                'data_interacao': interacao['data_interacao'],
-                'cliente_nome': interacao['cliente_nome']
-            })
-
-        return jsonify({
-            'success': True,
-            'interacoes': interacoes_list,
-            'total': len(interacoes_list)
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+# APIs antigas removidas - usando versões com dados mock
 
 # ==================== TRATAMENTO DE ERROS ====================
 
