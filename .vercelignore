@@ -6,9 +6,6 @@ api/debug.py
 api/health_simple.py
 api/app.py
 api/app_final.py
-*.db
-*.sqlite
-*.sqlite3
 __pycache__/
 *.pyc
 *.pyo
@@ -39,7 +36,7 @@ node_modules/
 # Arquivos de desenvolvimento
 *.md
 *.ps1
-*.js
+# *.js
 e2e/
 tests-examples/
 playwright.config.ts
