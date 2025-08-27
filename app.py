@@ -452,28 +452,10 @@ def crm():
 def api_listar_clientes():
     """API para listar clientes"""
     try:
-        conn = get_db_connection()
-        clientes = conn.execute('''
-            SELECT id, nome, email, telefone, endereco, cidade, estado, cep, data_cadastro
-            FROM clientes 
-            ORDER BY nome
-        ''').fetchall()
-        conn.close()
-        
-        clientes_list = []
-        for cliente in clientes:
-            clientes_list.append({
-                'id': cliente['id'],
-                'nome': cliente['nome'],
-                'email': cliente['email'] or '',
-                'telefone': cliente['telefone'] or '',
-                'endereco': cliente['endereco'] or '',
-                'cidade': cliente['cidade'] or '',
-                'estado': cliente['estado'] or '',
-                'cep': cliente['cep'] or '',
-                'data_cadastro': cliente['data_cadastro']
-            })
-        
+        # Usar dados mock para Vercel
+        data = get_db_connection()
+        clientes_list = data['clientes']
+
         return jsonify({
             'success': True,
             'clientes': clientes_list,
