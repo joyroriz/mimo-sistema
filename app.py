@@ -376,8 +376,7 @@ def carregar_dados_reais():
         print(f"❌ Erro ao carregar dados reais: {e}")
         conn.close()
 
-# Carregar dados reais MIMO
-carregar_dados_reais()
+# Dados mock já carregados - não precisa carregar dados reais no Vercel
 
 # ==================== ROTAS PRINCIPAIS ====================
 
