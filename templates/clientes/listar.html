@@ -61,21 +61,22 @@
             </h5>
         </div>
         <div class="card-body p-0">
-            {% if clientes.items %}
+            {% if clientes.data %}
             <div class="table-responsive">
                 <table id="tabela-clientes" class="table table-hover mb-0">
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Contato</th>
-                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Endereço</th>
                             <th>Cidade</th>
+                            <th>Fonte</th>
                             <th>Cadastro</th>
                             <th width="200">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for cliente in clientes.items %}
+                        {% for cliente in clientes.data %}
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center">
@@ -84,71 +85,53 @@
                                     </div>
                                     <div>
                                         <strong>{{ cliente.nome }}</strong>
-                                        {% if cliente.data_aniversario %}
-                                        <br><small class="text-muted">
-                                            <i class="bi bi-gift me-1"></i>
-                                            {{ cliente.data_aniversario.strftime('%d/%m') }}
-                                        </small>
-                                        {% endif %}
+                                        <!-- Aniversário removido temporariamente -->
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                {% if cliente.contato %}
-                                <a href="https://wa.me/55{{ cliente.contato.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') }}" 
+                                {% if cliente.telefone %}
+                                <a href="https://wa.me/55{{ cliente.telefone.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') }}"
                                    target="_blank" class="text-success text-decoration-none">
                                     <i class="bi bi-whatsapp me-1"></i>
-                                    {{ cliente.contato }}
+                                    {{ cliente.telefone }}
                                 </a>
                                 {% else %}
                                 <span class="text-muted">-</span>
                                 {% endif %}
                             </td>
                             <td>
-                                {% if cliente.email %}
-                                <a href="mailto:{{ cliente.email }}" class="text-decoration-none">
-                                    {{ cliente.email }}
-                                </a>
-                                {% else %}
-                                <span class="text-muted">-</span>
-                                {% endif %}
+                                <div class="text-muted">
+                                    {{ cliente.endereco or '-' }}
+                                    {% if cliente.bairro %}<br><small>{{ cliente.bairro }}</small>{% endif %}
+                                </div>
                             </td>
                             <td>{{ cliente.cidade or '-' }}</td>
                             <td>
+                                <span class="badge bg-primary">{{ cliente.fonte or 'N/A' }}</span>
+                            </td>
+                            <td>
                                 <small class="text-muted">
-                                    {{ cliente.data_cadastro.strftime('%d/%m/%Y') }}
+                                    {{ cliente.data_cadastro }}
                                 </small>
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ url_for('clientes.visualizar', id=cliente.id) }}" 
-                                       class="btn btn-outline-info" 
-                                       data-bs-toggle="tooltip" title="Visualizar">
+                                    <button class="btn btn-outline-info"
+                                            data-bs-toggle="tooltip" title="Visualizar"
+                                            onclick="alert('Funcionalidade em desenvolvimento')">
                                         <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ url_for('clientes.editar', id=cliente.id) }}" 
-                                       class="btn btn-outline-primary"
-                                       data-bs-toggle="tooltip" title="Editar">
+                                    </button>
+                                    <button class="btn btn-outline-primary"
+                                            data-bs-toggle="tooltip" title="Editar"
+                                            onclick="alert('Funcionalidade em desenvolvimento')">
                                         <i class="bi bi-pencil"></i>
-                                    </a>
-                                    {% if cliente.ativo %}
-                                    <form method="POST" action="{{ url_for('clientes.desativar', id=cliente.id) }}" 
-                                          class="d-inline">
-                                        <button type="submit" class="btn btn-outline-warning"
-                                                data-bs-toggle="tooltip" title="Desativar"
-                                                onclick="return confirm('Desativar cliente {{ cliente.nome }}?')">
-                                            <i class="bi bi-pause"></i>
-                                        </button>
-                                    </form>
-                                    {% else %}
-                                    <form method="POST" action="{{ url_for('clientes.ativar', id=cliente.id) }}" 
-                                          class="d-inline">
-                                        <button type="submit" class="btn btn-outline-success"
-                                                data-bs-toggle="tooltip" title="Ativar">
-                                            <i class="bi bi-play"></i>
-                                        </button>
-                                    </form>
-                                    {% endif %}
+                                    </button>
+                                    <button class="btn btn-outline-success"
+                                            data-bs-toggle="tooltip" title="Ações"
+                                            onclick="alert('Funcionalidade em desenvolvimento')">
+                                        <i class="bi bi-gear"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -163,7 +146,7 @@
                 <p class="text-muted">
                     {% if search %}
                     Não encontramos clientes com o termo "{{ search }}".
-                    <br><a href="{{ url_for('clientes.listar') }}">Ver todos os clientes</a>
+                    <br><a href="/clientes">Ver todos os clientes</a>
                     {% else %}
                     Comece cadastrando seu primeiro cliente.
                     {% endif %}

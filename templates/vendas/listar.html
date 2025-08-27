@@ -71,14 +71,14 @@
                     <p class="text-muted mb-0">Controle completo das suas vendas</p>
                 </div>
                 <div>
-                    <a href="{{ url_for('vendas.dashboard') }}" class="btn btn-outline-primary me-2">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary me-2">
                         <i class="bi bi-graph-up me-2"></i>
                         Dashboard
                     </a>
-                    <a href="{{ url_for('vendas.nova') }}" class="btn btn-primary btn-lg">
+                    <button class="btn btn-primary btn-lg" onclick="alert('Funcionalidade em desenvolvimento')">
                         <i class="bi bi-plus-circle me-2"></i>
                         Nova Venda
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
                     <i class="bi bi-search"></i>
                 </button>
                 {% if search %}
-                <a href="{{ url_for('vendas.listar') }}" class="btn btn-outline-secondary ms-2">
+                <a href="/vendas" class="btn btn-outline-secondary ms-2">
                     <i class="bi bi-x"></i>
                 </a>
                 {% endif %}
@@ -125,21 +125,21 @@
             </h5>
         </div>
         <div class="card-body p-4">
-            {% if vendas.items %}
-            {% for venda in vendas.items %}
+            {% if vendas.data %}
+            {% for venda in vendas.data %}
             <div class="venda-card">
                 <div class="row align-items-center">
                     <div class="col-md-3">
                         <div class="d-flex align-items-center">
                             <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
                                  style="width: 50px; height: 50px; background: var(--mimo-gradient); color: white; font-weight: bold;">
-                                {{ venda.cliente_obj.nome[0].upper() }}
+                                {{ venda.cliente_nome[0].upper() }}
                             </div>
                             <div>
-                                <h6 class="mb-1 fw-bold">{{ venda.cliente_obj.nome }}</h6>
+                                <h6 class="mb-1 fw-bold">{{ venda.cliente_nome }}</h6>
                                 <small class="text-muted">
                                     <i class="bi bi-calendar me-1"></i>
-                                    {{ venda.data_pedido.strftime('%d/%m/%Y') }}
+                                    {{ venda.data_venda }}
                                 </small>
                             </div>
                         </div>
@@ -147,66 +147,39 @@
                     
                     <div class="col-md-2 text-center">
                         <h5 class="mb-0 fw-bold" style="color: var(--mimo-orange);">
-                            {{ venda.valor_total | currency }}
+                            R$ {{ "%.2f"|format(venda.total) }}
                         </h5>
-                        {% if venda.desconto > 0 %}
-                        <small class="text-muted">Desc: {{ venda.desconto | currency }}</small>
-                        {% endif %}
+                        <!-- Desconto removido temporariamente -->
                     </div>
                     
                     <div class="col-md-2 text-center">
-                        {% if venda.data_entrega %}
-                        <div class="fw-bold">{{ venda.data_entrega.strftime('%d/%m/%Y') }}</div>
-                        <small class="text-muted">Entrega</small>
-                        {% else %}
-                        <span class="text-muted">Sem data</span>
-                        {% endif %}
+                        <small class="text-muted">Entrega: {{ venda.data_venda }}</small>
                     </div>
                     
                     <div class="col-md-2 text-center">
-                        <span class="status-badge status-{{ venda.status.lower() }}">
-                            {{ venda.status }}
+                        <span class="status-badge status-concluida">
+                            Concluída
                         </span>
                     </div>
                     
                     <div class="col-md-3 text-end">
                         <div class="btn-group btn-group-sm">
-                            <a href="{{ url_for('vendas.visualizar', id=venda.id) }}" 
-                               class="btn btn-outline-info" 
-                               data-bs-toggle="tooltip" title="Visualizar">
+                            <button class="btn btn-outline-info"
+                                    data-bs-toggle="tooltip" title="Visualizar"
+                                    onclick="alert('Funcionalidade em desenvolvimento')">
                                 <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{{ url_for('vendas.editar', id=venda.id) }}" 
-                               class="btn btn-outline-primary"
-                               data-bs-toggle="tooltip" title="Editar">
+                            </button>
+                            <button class="btn btn-outline-primary"
+                                    data-bs-toggle="tooltip" title="Editar"
+                                    onclick="alert('Funcionalidade em desenvolvimento')">
                                 <i class="bi bi-pencil"></i>
-                            </a>
-                            {% if venda.data_entrega %}
-                            <a href="{{ url_for('entregas.atualizar_status', venda_id=venda.id) }}" 
-                               class="btn btn-outline-warning"
-                               data-bs-toggle="tooltip" title="Atualizar Entrega">
-                                <i class="bi bi-truck"></i>
-                            </a>
-                            {% endif %}
+                            </button>
+                            <!-- Entrega removida temporariamente -->
                         </div>
                     </div>
                 </div>
                 
-                <!-- Itens da venda -->
-                {% if venda.itens %}
-                <div class="mt-3 pt-3 border-top">
-                    <small class="text-muted fw-bold">Itens:</small>
-                    <div class="row mt-2">
-                        {% for item in venda.itens %}
-                        <div class="col-md-4 mb-1">
-                            <small class="text-muted">
-                                • {{ item.produto_obj.nome }} ({{ item.quantidade }}x)
-                            </small>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
+                <!-- Itens removidos temporariamente -->
             </div>
             {% endfor %}
             

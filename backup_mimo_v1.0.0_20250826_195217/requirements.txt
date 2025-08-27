@@ -1,0 +1,2 @@
+# Dependências do Sistema MIMO - Versão Ultra Limpa
+Flask==3.0.0

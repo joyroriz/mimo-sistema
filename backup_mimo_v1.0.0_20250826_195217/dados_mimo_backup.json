@@ -1,0 +1,944 @@
+{
+  "clientes": [
+    {
+      "id": 1,
+      "nome": "Daniel",
+      "telefone": "6299100-0284",
+      "endereco": "Av. S-4, Q. 78 L. 01, Loja 02 e 03",
+      "bairro": "Anapolis City",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 2,
+      "nome": "Pedro Busby",
+      "telefone": "6299100-0284",
+      "endereco": "R. Pres. Kennedy, 70 - Venetian Palace",
+      "bairro": "Jundiai",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 3,
+      "nome": "Maria Geovana Rodrigues",
+      "telefone": "62981481996",
+      "endereco": "Aeroporto",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 4,
+      "nome": "Rebecca",
+      "telefone": "62985427087",
+      "endereco": "R. Pres. Kennedy, 70 - Venetian Palace",
+      "bairro": "Jundiaí",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 5,
+      "nome": "Juliana Salomão",
+      "telefone": "61999785681",
+      "endereco": "Retirada",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 6,
+      "nome": "Joy Roriz",
+      "telefone": "62995590276",
+      "endereco": "",
+      "bairro": "Jundiaí",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 7,
+      "nome": "Julie Naoum",
+      "telefone": "62981479088",
+      "endereco": "Av. São Francisco, Prédio Naoum, Ap300",
+      "bairro": "Jundiaí",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 8,
+      "nome": "Flavia Tiaga",
+      "telefone": "62993826651",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 9,
+      "nome": "Madu",
+      "telefone": "62993613181",
+      "endereco": "R. Dona Barbara, qd7, lt4",
+      "bairro": "Santa Cecilia",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 10,
+      "nome": "Júlia Roriz",
+      "telefone": "62996984045",
+      "endereco": "Avenida Doutor José Luiz, qd 60, lote 06",
+      "bairro": "Anapolis City",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 11,
+      "nome": "João Hajjar",
+      "telefone": "62981816816",
+      "endereco": "Residencial Anaville",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 12,
+      "nome": "Miguel Marrula",
+      "telefone": "62992903232",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 13,
+      "nome": "Ornelinda",
+      "telefone": "62998716655",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 14,
+      "nome": "Matheus Mota",
+      "telefone": "62991604858",
+      "endereco": "Residencial Sunflower",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 15,
+      "nome": "Pedro Diniz",
+      "telefone": "62995427997",
+      "endereco": "Sarto Imóveis",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 16,
+      "nome": "Érika Xisto",
+      "telefone": "62992123121",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Goiania",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 17,
+      "nome": "Josimara",
+      "telefone": "61981031812",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Brasília",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 18,
+      "nome": "Eliane",
+      "telefone": "62991678705",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 19,
+      "nome": "Cárita",
+      "telefone": "62981957024",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Goiania",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 20,
+      "nome": "Maria Eduarda",
+      "telefone": "62999686706",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 21,
+      "nome": "Rayssa Caetano",
+      "telefone": "62993220032",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 22,
+      "nome": "Amanda Kamilla",
+      "telefone": "62994373280",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 23,
+      "nome": "Aline Vilela",
+      "telefone": "62999593132",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 24,
+      "nome": "Virgínia",
+      "telefone": "62994482649",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 25,
+      "nome": "Rafaella",
+      "telefone": "62982471235",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 26,
+      "nome": "Stephane Lorrane",
+      "telefone": "62993111613",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 27,
+      "nome": "Vivian Watanabe",
+      "telefone": "62994125012",
+      "endereco": "",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 28,
+      "nome": "Rodrine Jardim",
+      "telefone": "62994790780",
+      "endereco": "Distral Sorvetes",
+      "bairro": "",
+      "cidade": "Anápolis",
+      "fonte": "Instagram",
+      "data_cadastro": "2025-08-26"
+    }
+  ],
+  "produtos": [
+    {
+      "id": 1,
+      "nome": "Fruta desidratada (50g) - Abacaxi com Limão e Hortelã",
+      "preco": 26.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 2,
+      "nome": "Fruta desidratada (50g) - Abacaxi com Pitaya",
+      "preco": 28.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 3,
+      "nome": "Fruta desidratada (50g) - Banana com canela",
+      "preco": 20.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 4,
+      "nome": "Fruta desidratada (50g) - Banana Passa com Flor de Sal",
+      "preco": 20.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 5,
+      "nome": "Fruta desidratada (50g) - Coco com suco de Maçã",
+      "preco": 20.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 6,
+      "nome": "Fruta desidratada (50g) - Kiwi",
+      "preco": 25.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 7,
+      "nome": "Fruta desidratada (50g) - Laranja Bahia",
+      "preco": 25.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 8,
+      "nome": "Fruta desidratada (50g) - Laranja Grapefruit",
+      "preco": 28.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 9,
+      "nome": "Fruta desidratada (50g) - Limão Siciliano",
+      "preco": 20.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 10,
+      "nome": "Fruta desidratada (50g) - Limão Taiti",
+      "preco": 15.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 11,
+      "nome": "Fruta desidratada (50g) - Maçã Fuji",
+      "preco": 20.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 12,
+      "nome": "Fruta desidratada (50g) - Maçã com Laranja e Gengibre",
+      "preco": 26.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 13,
+      "nome": "Fruta desidratada (50g) - Manga com Maracujá",
+      "preco": 26.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 14,
+      "nome": "Fruta desidratada (50g) - Pera",
+      "preco": 23.0,
+      "categoria": "Frutas Desidratadas",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 15,
+      "nome": "Fruta desidratada com chocolate (120g) - Abacaxi",
+      "preco": 35.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 16,
+      "nome": "Fruta desidratada com chocolate (100g) - Abacaxi Rosa",
+      "preco": 33.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 17,
+      "nome": "Fruta desidratada com chocolate (100g) - Banana da Terra (com canela)",
+      "preco": 25.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 18,
+      "nome": "Fruta desidratada com chocolate (120g) - Banana Passa",
+      "preco": 30.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 19,
+      "nome": "Fruta desidratada com chocolate (100g) - Coco",
+      "preco": 25.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 20,
+      "nome": "Fruta desidratada com chocolate (100g) - Kiwi",
+      "preco": 30.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 21,
+      "nome": "Fruta desidratada com chocolate (100g) - Laranja Bahia",
+      "preco": 30.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 22,
+      "nome": "Fruta desidratada com chocolate (100g) - Laranja Grapefruit",
+      "preco": 33.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 23,
+      "nome": "Fruta desidratada com chocolate (100g) - Limão Siciliano",
+      "preco": 25.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 24,
+      "nome": "Fruta desidratada com chocolate (100g) - Limão Taiti",
+      "preco": 20.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 25,
+      "nome": "Fruta desidratada com chocolate (100g) - Maçã Fuji",
+      "preco": 25.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 26,
+      "nome": "Fruta desidratada com chocolate (100g) - Maçã Verde",
+      "preco": 31.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 27,
+      "nome": "Fruta desidratada com chocolate (120g) - Manga",
+      "preco": 38.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 28,
+      "nome": "Fruta desidratada com chocolate (100g) - Pera",
+      "preco": 28.0,
+      "categoria": "Frutas com Chocolate",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 29,
+      "nome": "Kit Rolinho de fruta (12un)",
+      "preco": 45.0,
+      "categoria": "Kits",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 30,
+      "nome": "Kit Rolinho de fruta com chocolate (12un)",
+      "preco": 55.0,
+      "categoria": "Kits",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 31,
+      "nome": "Flor de Couro de Fruta (P)",
+      "preco": 6.0,
+      "categoria": "Flores",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 32,
+      "nome": "Flor de Couro de Fruta (G)",
+      "preco": 12.0,
+      "categoria": "Flores",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 33,
+      "nome": "Rosa de Maçã Colorida",
+      "preco": 12.0,
+      "categoria": "Flores",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 34,
+      "nome": "Flor de Abacaxi Desidratado",
+      "preco": 5.0,
+      "categoria": "Flores",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 35,
+      "nome": "Barra de chocolate (25g) - Morango com semente de abóbora",
+      "preco": 17.0,
+      "categoria": "Barras",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 36,
+      "nome": "Barra de chocolate (25g) - Coco com abacaxi",
+      "preco": 17.0,
+      "categoria": "Barras",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 37,
+      "nome": "Barra de chocolate (25g) - Damasco com Nozes",
+      "preco": 17.0,
+      "categoria": "Barras",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 38,
+      "nome": "Afeto",
+      "preco": 40.0,
+      "categoria": "Experiências",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 39,
+      "nome": "Ananás",
+      "preco": 85.0,
+      "categoria": "Experiências",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 40,
+      "nome": "Assinatura",
+      "preco": 105.0,
+      "categoria": "Experiências",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 41,
+      "nome": "MIMO",
+      "preco": 240.0,
+      "categoria": "Experiências",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    },
+    {
+      "id": 42,
+      "nome": "Essencia",
+      "preco": 30.0,
+      "categoria": "Experiências",
+      "descricao": null,
+      "data_cadastro": "2025-08-26"
+    }
+  ],
+  "vendas": [
+    {
+      "id": 1,
+      "cliente_id": 2,
+      "produto_id": 2,
+      "quantidade": 2,
+      "preco_unitario": 10.5,
+      "total": 21.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 2,
+      "cliente_id": 3,
+      "produto_id": 3,
+      "quantidade": 3,
+      "preco_unitario": 11.0,
+      "total": 33.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 3,
+      "cliente_id": 4,
+      "produto_id": 4,
+      "quantidade": 1,
+      "preco_unitario": 11.5,
+      "total": 11.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 4,
+      "cliente_id": 5,
+      "produto_id": 5,
+      "quantidade": 2,
+      "preco_unitario": 12.0,
+      "total": 24.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 5,
+      "cliente_id": 6,
+      "produto_id": 6,
+      "quantidade": 3,
+      "preco_unitario": 12.5,
+      "total": 37.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 6,
+      "cliente_id": 7,
+      "produto_id": 7,
+      "quantidade": 1,
+      "preco_unitario": 13.0,
+      "total": 13.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 7,
+      "cliente_id": 8,
+      "produto_id": 8,
+      "quantidade": 2,
+      "preco_unitario": 13.5,
+      "total": 27.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 8,
+      "cliente_id": 9,
+      "produto_id": 9,
+      "quantidade": 3,
+      "preco_unitario": 14.0,
+      "total": 42.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 9,
+      "cliente_id": 10,
+      "produto_id": 10,
+      "quantidade": 1,
+      "preco_unitario": 14.5,
+      "total": 14.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 10,
+      "cliente_id": 11,
+      "produto_id": 11,
+      "quantidade": 2,
+      "preco_unitario": 15.0,
+      "total": 30.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 11,
+      "cliente_id": 12,
+      "produto_id": 12,
+      "quantidade": 3,
+      "preco_unitario": 15.5,
+      "total": 46.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 12,
+      "cliente_id": 13,
+      "produto_id": 13,
+      "quantidade": 1,
+      "preco_unitario": 16.0,
+      "total": 16.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 13,
+      "cliente_id": 14,
+      "produto_id": 14,
+      "quantidade": 2,
+      "preco_unitario": 16.5,
+      "total": 33.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 14,
+      "cliente_id": 15,
+      "produto_id": 15,
+      "quantidade": 3,
+      "preco_unitario": 17.0,
+      "total": 51.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 15,
+      "cliente_id": 16,
+      "produto_id": 16,
+      "quantidade": 1,
+      "preco_unitario": 17.5,
+      "total": 17.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 16,
+      "cliente_id": 17,
+      "produto_id": 17,
+      "quantidade": 2,
+      "preco_unitario": 18.0,
+      "total": 36.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 17,
+      "cliente_id": 18,
+      "produto_id": 18,
+      "quantidade": 3,
+      "preco_unitario": 18.5,
+      "total": 55.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 18,
+      "cliente_id": 19,
+      "produto_id": 19,
+      "quantidade": 1,
+      "preco_unitario": 19.0,
+      "total": 19.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 19,
+      "cliente_id": 20,
+      "produto_id": 20,
+      "quantidade": 2,
+      "preco_unitario": 19.5,
+      "total": 39.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 20,
+      "cliente_id": 21,
+      "produto_id": 21,
+      "quantidade": 3,
+      "preco_unitario": 20.0,
+      "total": 60.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 21,
+      "cliente_id": 22,
+      "produto_id": 22,
+      "quantidade": 1,
+      "preco_unitario": 20.5,
+      "total": 20.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 22,
+      "cliente_id": 23,
+      "produto_id": 23,
+      "quantidade": 2,
+      "preco_unitario": 21.0,
+      "total": 42.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 23,
+      "cliente_id": 24,
+      "produto_id": 24,
+      "quantidade": 3,
+      "preco_unitario": 21.5,
+      "total": 64.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 24,
+      "cliente_id": 25,
+      "produto_id": 25,
+      "quantidade": 1,
+      "preco_unitario": 22.0,
+      "total": 22.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 25,
+      "cliente_id": 26,
+      "produto_id": 26,
+      "quantidade": 2,
+      "preco_unitario": 22.5,
+      "total": 45.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 26,
+      "cliente_id": 27,
+      "produto_id": 27,
+      "quantidade": 3,
+      "preco_unitario": 23.0,
+      "total": 69.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 27,
+      "cliente_id": 28,
+      "produto_id": 28,
+      "quantidade": 1,
+      "preco_unitario": 23.5,
+      "total": 23.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 28,
+      "cliente_id": 1,
+      "produto_id": 29,
+      "quantidade": 2,
+      "preco_unitario": 24.0,
+      "total": 48.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 29,
+      "cliente_id": 2,
+      "produto_id": 30,
+      "quantidade": 3,
+      "preco_unitario": 24.5,
+      "total": 73.5,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 30,
+      "cliente_id": 3,
+      "produto_id": 31,
+      "quantidade": 1,
+      "preco_unitario": 25.0,
+      "total": 25.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 31,
+      "cliente_id": 4,
+      "produto_id": 32,
+      "quantidade": 2,
+      "preco_unitario": 25.5,
+      "total": 51.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    },
+    {
+      "id": 32,
+      "cliente_id": 5,
+      "produto_id": 33,
+      "quantidade": 3,
+      "preco_unitario": 26.0,
+      "total": 78.0,
+      "data_venda": "2025-08-26",
+      "status": "concluida"
+    }
+  ]
+}

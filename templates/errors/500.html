@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Erro interno - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="text-center">
+            <div class="mb-4">
+                <i class="bi bi-exclamation-octagon-fill text-danger" style="font-size: 5rem;"></i>
+            </div>
+            <h1 class="display-4 fw-bold text-danger">500</h1>
+            <h2 class="mb-3">Erro interno do servidor</h2>
+            <p class="lead text-muted mb-4">
+                Ocorreu um erro interno no sistema. Nossa equipe foi notificada e está trabalhando para resolver o problema.
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="/" class="btn btn-primary btn-lg me-md-2">
+                    <i class="bi bi-house-door me-2"></i>
+                    Voltar ao Dashboard
+                </a>
+                <button class="btn btn-outline-secondary btn-lg" onclick="location.reload()">
+                    <i class="bi bi-arrow-clockwise me-2"></i>
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informações de suporte -->
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    O que fazer?
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="bi bi-arrow-clockwise text-primary fs-1 mb-2"></i>
+                            <h6>Tente novamente</h6>
+                            <p class="small text-muted">Recarregue a página ou tente a operação novamente</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="bi bi-clock text-warning fs-1 mb-2"></i>
+                            <h6>Aguarde um momento</h6>
+                            <p class="small text-muted">O problema pode ser temporário</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="bi bi-house text-success fs-1 mb-2"></i>
+                            <h6>Volte ao início</h6>
+                            <p class="small text-muted">Acesse o dashboard principal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

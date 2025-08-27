@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes - Sistema MIMO{% endblock %}
+
+{% block content %}
+        <!-- Cabeçalho MIMO -->
+        <div class="row mb-4 mimo-fade-in">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mimo-h1 mb-0">
+                            <i class="bi bi-people-fill me-3 mimo-text-gold"></i>
+                            Gerenciar Clientes
+                        </h1>
+                        <p class="text-muted mb-0 fs-5">Cadastre e gerencie seus clientes com excelência</p>
+                    </div>
+                    <div>
+                        <a href="/clientes/novo" class="btn btn-mimo-primary btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Novo Cliente
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros e Busca MIMO -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="d-flex">
+                    <input type="text" id="busca-cliente" class="form-control-mimo me-2"
+                           placeholder="🔍 Buscar por nome, telefone ou email..."
+                           style="min-width: 300px;">
+                    <button type="button" class="btn btn-mimo-primary" onclick="buscarClientes()">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-mimo-secondary" onclick="carregarClientes()">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Atualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de Clientes MIMO -->
+        <div class="row">
+            <div class="col">
+                <div class="mimo-card">
+                    <div class="mimo-card-header">
+                        <h2 class="mimo-h2 mb-0">
+                            <i class="bi bi-list-ul me-2"></i>
+                            Lista de Clientes
+                            <span id="total-clientes" class="badge-mimo badge-mimo-gold ms-2">0</span>
+                        </h2>
+                    </div>
+                    <div class="mimo-card-body p-0">
+                        <div class="table-responsive">
+                            <table id="tabela-clientes" class="table table-mimo mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Telefone</th>
+                                        <th>Cidade</th>
+                                        <th>Cadastro</th>
+                                        <th width="140">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-5">
+                                            <i class="bi bi-hourglass-split fs-1 d-block mb-3 mimo-text-gold"></i>
+                                            <h5>Carregando clientes...</h5>
+                                            <p class="text-muted">Aguarde um momento</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Função para carregar clientes
+    function carregarClientes() {
+        console.log('Carregando clientes...');
+        
+        fetch('/api/clientes')
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos:', data);
+                const tbody = document.querySelector('#tabela-clientes tbody');
+                const totalBadge = document.getElementById('total-clientes');
+                
+                if (data.clientes && data.clientes.length > 0) {
+                    tbody.innerHTML = data.clientes.map(cliente => {
+                        const dataFormatada = new Date(cliente.data_cadastro).toLocaleDateString('pt-BR');
+                        return `
+                            <tr class="mimo-fade-in">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="mimo-avatar me-3">
+                                            ${cliente.nome.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold fs-6">${cliente.nome}</div>
+                                            <small class="text-muted">${cliente.email}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-mimo badge-mimo-gold">${cliente.telefone}</span>
+                                </td>
+                                <td>
+                                    <span class="fw-medium">${cliente.cidade}</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">${dataFormatada}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/clientes/${cliente.id}" class="btn btn-mimo-secondary btn-sm" title="Ver detalhes">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button class="btn btn-mimo-primary btn-sm" onclick="editarCliente(${cliente.id})" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-mimo-secondary btn-sm" onclick="excluirCliente(${cliente.id}, '${cliente.nome}')" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    
+                    totalBadge.textContent = data.clientes.length;
+                    console.log('Clientes carregados com sucesso:', data.clientes.length);
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-people fs-1 d-block mb-2"></i>
+                                <h5>Nenhum cliente cadastrado</h5>
+                                <p>Comece cadastrando seu primeiro cliente</p>
+                                <a href="/clientes/novo" class="btn btn-primary">
+                                    <i class="bi bi-person-plus me-2"></i>
+                                    Cadastrar Cliente
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    totalBadge.textContent = '0';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar clientes:', error);
+                const tbody = document.querySelector('#tabela-clientes tbody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-danger py-4">
+                            <i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>
+                            <h5>Erro ao carregar clientes</h5>
+                            <p>Verifique a conexão e tente novamente</p>
+                            <button class="btn btn-outline-primary" onclick="carregarClientes()">
+                                <i class="bi bi-arrow-clockwise me-1"></i>
+                                Tentar Novamente
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+
+    // Função para buscar clientes
+    function buscarClientes() {
+        const termo = document.getElementById('busca-cliente').value.toLowerCase();
+        const linhas = document.querySelectorAll('#tabela-clientes tbody tr');
+        
+        linhas.forEach(linha => {
+            const texto = linha.textContent.toLowerCase();
+            linha.style.display = texto.includes(termo) ? '' : 'none';
+        });
+    }
+
+    // Função para editar cliente
+    function editarCliente(id) {
+        window.location.href = '/clientes/' + id + '/editar';
+    }
+
+    // Função para excluir cliente
+    function excluirCliente(id, nome) {
+        if (confirm('Tem certeza que deseja excluir ' + nome + '?')) {
+            fetch('/api/clientes/' + id, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cliente excluído com sucesso!');
+                    carregarClientes();
+                } else {
+                    alert('Erro ao excluir cliente');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao excluir cliente');
+            });
+        }
+    }
+
+    // Carregar clientes quando a página carregar
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página carregada, iniciando carregamento de clientes...');
+        carregarClientes();
+        
+        // Configurar busca
+        const campoBusca = document.getElementById('busca-cliente');
+        if (campoBusca) {
+            campoBusca.addEventListener('input', buscarClientes);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{
+  "versao": "1.0.0",
+  "data_backup": "2025-08-26T19:52:17.694481",
+  "descricao": "Sistema MIMO Mark1 - Design Refinado Completo",
+  "arquivos_incluidos": {
+    "aplicacao": "app_final_vercel.py",
+    "css": "static/css/mimo-style-refined.css",
+    "templates": [
+      "base-refined.html",
+      "dashboard-refined.html",
+      "clientes-refined.html",
+      "produtos-refined.html",
+      "vendas-refined.html",
+      "entregas-refined.html",
+      "crm-refined.html"
+    ],
+    "dados": "dados_mimo_backup.json",
+    "configuracao": [
+      "vercel.json",
+      "requirements.txt"
+    ],
+    "documentacao": [
+      "CHANGELOG.md",
+      "WORKFLOW_GUIDE.md"
+    ]
+  },
+  "estatisticas": {
+    "clientes": 28,
+    "produtos": 42,
+    "vendas": 32
+  }
+}
