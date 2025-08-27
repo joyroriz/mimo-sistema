@@ -458,7 +458,7 @@ def vendas():
         # Simular objeto de paginação
         class MockPagination:
             def __init__(self, items):
-                self.data = items
+                self.items = items
                 self.total = len(items)
                 self.pages = 1
                 self.page = 1
