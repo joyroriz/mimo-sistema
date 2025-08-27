@@ -704,12 +704,24 @@ def api_listar_produtos():
     try:
         # Usar dados mock para Vercel
         data = get_db_connection()
-        produtos_list = data['produtos']
+
+        # Converter preços de centavos para reais e adicionar campos necessários
+        produtos_convertidos = []
+        for produto in data['produtos']:
+            produto_copy = produto.copy()
+            # Converter preco_centavos para preco em reais
+            produto_copy['preco'] = produto['preco_centavos'] / 100.0
+            # Adicionar campos necessários para compatibilidade
+            produto_copy['quantidade_estoque'] = 50
+            produto_copy['estoque_minimo'] = 10
+            produto_copy['unidade'] = 'un'
+            produto_copy['custo'] = 0
+            produtos_convertidos.append(produto_copy)
 
         return jsonify({
             'success': True,
-            'produtos': produtos_list,
-            'total': len(produtos_list)
+            'produtos': produtos_convertidos,
+            'total': len(produtos_convertidos)
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
