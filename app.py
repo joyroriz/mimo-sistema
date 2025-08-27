@@ -18,90 +18,39 @@ app.secret_key = 'mimo_sistema_2025_ultra_seguro'
 # Configuração do banco de dados
 DATABASE = 'mimo_sistema.db'
 
+def get_mock_data():
+    """Retorna dados mock para compatibilidade com Vercel Serverless"""
+    return {
+        'clientes': [
+            {'id': 1, 'nome': 'João Silva', 'email': 'joao@email.com', 'telefone': '(11) 99999-9999', 'endereco': 'Rua das Flores, 123', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01234-567', 'data_cadastro': '2024-08-20'},
+            {'id': 2, 'nome': 'Maria Santos', 'email': 'maria@email.com', 'telefone': '(11) 88888-8888', 'endereco': 'Av. Paulista, 456', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01310-100', 'data_cadastro': '2024-08-21'},
+            {'id': 3, 'nome': 'Pedro Costa', 'email': 'pedro@email.com', 'telefone': '(11) 77777-7777', 'endereco': 'Rua Augusta, 789', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01305-000', 'data_cadastro': '2024-08-22'},
+            {'id': 4, 'nome': 'Ana Oliveira', 'email': 'ana@email.com', 'telefone': '(11) 66666-6666', 'endereco': 'Rua Oscar Freire, 321', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01426-001', 'data_cadastro': '2024-08-23'},
+            {'id': 5, 'nome': 'Carlos Ferreira', 'email': 'carlos@email.com', 'telefone': '(11) 55555-5555', 'endereco': 'Av. Faria Lima, 654', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '04538-132', 'data_cadastro': '2024-08-24'},
+        ],
+        'produtos': [
+            {'id': 1, 'nome': 'Smartphone Galaxy S24', 'preco': 2499.90, 'categoria': 'Eletrônicos', 'estoque': 25, 'descricao': 'Smartphone premium com câmera de 200MP'},
+            {'id': 2, 'nome': 'Notebook Dell Inspiron', 'preco': 3299.00, 'categoria': 'Informática', 'estoque': 15, 'descricao': 'Notebook para trabalho e estudos'},
+            {'id': 3, 'nome': 'Fone Bluetooth Sony', 'preco': 299.90, 'categoria': 'Acessórios', 'estoque': 50, 'descricao': 'Fone sem fio com cancelamento de ruído'},
+            {'id': 4, 'nome': 'Smart TV 55" LG', 'preco': 2199.00, 'categoria': 'Eletrônicos', 'estoque': 8, 'descricao': 'Smart TV 4K com sistema webOS'},
+            {'id': 5, 'nome': 'Mouse Gamer Logitech', 'preco': 189.90, 'categoria': 'Informática', 'estoque': 30, 'descricao': 'Mouse gamer com RGB e alta precisão'},
+        ],
+        'vendas': [
+            {'id': 1, 'cliente_id': 1, 'produto_id': 1, 'quantidade': 1, 'valor_total': 2499.90, 'data_venda': '2024-08-27', 'status': 'Concluída'},
+            {'id': 2, 'cliente_id': 2, 'produto_id': 3, 'quantidade': 2, 'valor_total': 599.80, 'data_venda': '2024-08-26', 'status': 'Pendente'},
+            {'id': 3, 'cliente_id': 3, 'produto_id': 2, 'quantidade': 1, 'valor_total': 3299.00, 'data_venda': '2024-08-25', 'status': 'Concluída'},
+            {'id': 4, 'cliente_id': 4, 'produto_id': 5, 'quantidade': 1, 'valor_total': 189.90, 'data_venda': '2024-08-24', 'status': 'Concluída'},
+            {'id': 5, 'cliente_id': 5, 'produto_id': 4, 'quantidade': 1, 'valor_total': 2199.00, 'data_venda': '2024-08-23', 'status': 'Processando'},
+        ]
+    }
+
 def get_db_connection():
-    """Conecta ao banco de dados SQLite"""
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    """Compatibilidade - retorna dados mock para Vercel"""
+    return get_mock_data()
 
 def init_database():
-    """Inicializa o banco de dados com as tabelas necessárias"""
-    conn = get_db_connection()
-    
-    # Tabela de clientes
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS clientes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            email TEXT,
-            telefone TEXT,
-            endereco TEXT,
-            cidade TEXT,
-            estado TEXT,
-            cep TEXT,
-            data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Tabela de produtos
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS produtos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            descricao TEXT,
-            preco REAL NOT NULL,
-            categoria TEXT,
-            estoque INTEGER DEFAULT 0,
-            data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Tabela de vendas
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS vendas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            cliente_id INTEGER,
-            produto_id INTEGER,
-            quantidade INTEGER NOT NULL,
-            preco_unitario REAL NOT NULL,
-            total REAL NOT NULL,
-            data_venda TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            status TEXT DEFAULT 'pendente',
-            FOREIGN KEY (cliente_id) REFERENCES clientes (id),
-            FOREIGN KEY (produto_id) REFERENCES produtos (id)
-        )
-    ''')
-    
-    # Tabela de entregas
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS entregas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            venda_id INTEGER,
-            data_entrega DATE,
-            status TEXT DEFAULT 'agendada',
-            observacoes TEXT,
-            data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (venda_id) REFERENCES vendas (id)
-        )
-    ''')
-    
-    # Tabela de interações CRM
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS crm_interacoes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            cliente_id INTEGER,
-            tipo TEXT NOT NULL,
-            descricao TEXT,
-            data_interacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (cliente_id) REFERENCES clientes (id)
-        )
-    ''')
-    
-    conn.commit()
-    conn.close()
-
-# Inicializar banco de dados
-init_database()
+    """Compatibilidade - não faz nada no Vercel Serverless"""
+    pass
 
 def gerar_email(nome):
     """Gerar email baseado no nome do cliente"""
