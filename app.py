@@ -425,6 +425,7 @@ def produtos():
         class MockPagination:
             def __init__(self, items):
                 self.items = items
+                self.data = items  # Para compatibilidade com templates
                 self.total = len(items)
                 self.pages = 1
                 self.page = 1
@@ -459,6 +460,7 @@ def vendas():
         class MockPagination:
             def __init__(self, items):
                 self.items = items
+                self.data = items  # Para compatibilidade com templates
                 self.total = len(items)
                 self.pages = 1
                 self.page = 1
@@ -507,7 +509,8 @@ def entregas():
         # Simular objeto de paginação
         class MockPagination:
             def __init__(self, items):
-                self.data = items
+                self.items = items
+                self.data = items  # Para compatibilidade com templates
                 self.total = len(items)
                 self.pages = 1
                 self.page = 1
