@@ -2,223 +2,623 @@
 
 {% block title %}Vendas - Sistema MIMO{% endblock %}
 
-{% block extra_css %}
-<style>
-.mimo-card {
-    background: rgba(255,255,255,0.95);
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.mimo-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-}
-
-.venda-card {
-    background: var(--mimo-gradient-soft);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-left: 4px solid transparent;
-    background-clip: padding-box;
-    transition: all 0.3s ease;
-}
-
-.venda-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.status-pendente {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
-    color: #000;
-}
-
-.status-entregue {
-    background: linear-gradient(135deg, #198754, #20c997);
-    color: white;
-}
-
-.status-cancelado {
-    background: linear-gradient(135deg, #dc3545, #fd7e14);
-    color: white;
-}
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container-fluid">
-    <!-- Cabeçalho -->
-    <div class="row mb-4">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="mimo-gradient-text mb-0">
-                        <i class="bi bi-cart-check me-2"></i>
-                        Gerenciar Vendas
-                    </h2>
-                    <p class="text-muted mb-0">Controle completo das suas vendas</p>
+<div class="mimo-container" style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+    <div class="mimo-content">
+        <!-- Header Elegante com Tipografia Aprimorada -->
+        <div class="mimo-text-center" style="margin-bottom: 4rem;">
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size: 4rem; color: var(--mimo-gold); margin-bottom: 1rem; line-height: 1;">
+                    <i class="bi bi-cart-check"></i>
                 </div>
-                <div>
-                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary me-2">
-                        <i class="bi bi-graph-up me-2"></i>
-                        Dashboard
-                    </a>
-                    <button class="btn btn-primary btn-lg" onclick="alert('Funcionalidade em desenvolvimento')">
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Nova Venda
+                <h1 style="font-family: var(--mimo-font-secondary); font-size: 3.5rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; color: var(--mimo-black);">
+                    Gerenciar Vendas
+                </h1>
+                <p style="font-family: var(--mimo-font-primary); font-size: 1.25rem; font-weight: 400; color: var(--mimo-gray-400); margin: 0; line-height: 1.5; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Controle completo e elegante de todas as suas vendas MIMO
+                </p>
+            </div>
+
+            <!-- Estatísticas Visuais -->
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;" id="total-vendas-header">0</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Vendas Realizadas</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;" id="receita-total-header">R$ 0</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Receita Total</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;" id="ticket-medio-header">R$ 0</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Ticket Médio</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros e Busca MIMO Aprimorados -->
+        <div class="mimo-card" style="margin-bottom: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--mimo-white) 0%, #fefefe 100%); border: 1px solid var(--mimo-gray-100); box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <!-- Título da Seção -->
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="font-family: var(--mimo-font-secondary); font-size: 1.5rem; font-weight: 600; color: var(--mimo-black); margin: 0; display: flex; align-items: center;">
+                    <i class="bi bi-funnel" style="color: var(--mimo-gold); margin-right: 0.75rem; font-size: 1.25rem;"></i>
+                    Filtros e Busca
+                </h3>
+                <p style="font-family: var(--mimo-font-primary); font-size: 0.875rem; color: var(--mimo-gray-400); margin: 0.5rem 0 0 2rem;">
+                    Encontre rapidamente a venda que você procura
+                </p>
+            </div>
+
+            <!-- Controles de Busca -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap;">
+                <!-- Campo de Busca Aprimorado -->
+                <div style="flex: 1; min-width: 300px;">
+                    <label style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-600); display: block; margin-bottom: 0.5rem;">
+                        Buscar Venda
+                    </label>
+                    <div style="position: relative;">
+                        <i class="bi bi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--mimo-gray-400); font-size: 1rem; z-index: 2;"></i>
+                        <input type="text" name="search" class="mimo-input" id="busca-venda"
+                               placeholder="Digite nome do cliente ou número da venda..."
+                               value="{{ search }}"
+                               style="padding-left: 2.75rem; font-size: 0.9rem; height: 3rem; border: 2px solid var(--mimo-gray-200); transition: all 0.3s ease; background: var(--mimo-white);"
+                               onfocus="this.style.borderColor='var(--mimo-gold)'; this.style.boxShadow='0 0 0 3px rgba(212, 175, 55, 0.1)'"
+                               onblur="this.style.borderColor='var(--mimo-gray-200)'; this.style.boxShadow='none'">
+                    </div>
+                </div>
+
+                <!-- Filtro de Status -->
+                <div style="min-width: 200px;">
+                    <label style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-600); display: block; margin-bottom: 0.5rem;">
+                        Status
+                    </label>
+                    <select name="status" class="mimo-input" id="filtro-status"
+                            style="height: 3rem; border: 2px solid var(--mimo-gray-200); transition: all 0.3s ease;"
+                            onfocus="this.style.borderColor='var(--mimo-gold)'; this.style.boxShadow='0 0 0 3px rgba(212, 175, 55, 0.1)'"
+                            onblur="this.style.borderColor='var(--mimo-gray-200)'; this.style.boxShadow='none'">
+                        <option value="">Todos os status</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="entregue">Entregue</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+
+                <!-- Botões de Ação Aprimorados -->
+                <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <button class="mimo-btn mimo-btn-secondary" onclick="carregarVendas()"
+                            style="height: 3rem; padding: 0 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="bi bi-arrow-clockwise" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Atualizar</span>
+                    </button>
+                    <button class="mimo-btn mimo-btn-warning" onclick="alert('Funcionalidade em desenvolvimento')"
+                            style="height: 3rem; padding: 0 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="bi bi-graph-up" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Relatórios</span>
+                    </button>
+                    <button class="mimo-btn mimo-btn-primary" onclick="alert('Funcionalidade em desenvolvimento')"
+                            style="height: 3rem; padding: 0 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);">
+                        <i class="bi bi-plus-circle" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Nova Venda</span>
                     </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Filtros -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <form method="GET" class="d-flex">
-                <input type="text" name="search" class="form-control me-2" 
-                       placeholder="Buscar por cliente..." 
-                       value="{{ search }}"
-                       style="border-radius: 25px;">
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-search"></i>
-                </button>
-                {% if search %}
-                <a href="/vendas" class="btn btn-outline-secondary ms-2">
-                    <i class="bi bi-x"></i>
-                </a>
-                {% endif %}
-            </form>
-        </div>
-        <div class="col-md-3">
-            <form method="GET">
-                <select name="status" class="form-select" onchange="this.form.submit()" style="border-radius: 25px;">
-                    <option value="">Todos os status</option>
-                    <option value="PENDENTE" {% if status == 'PENDENTE' %}selected{% endif %}>Pendente</option>
-                    <option value="ENTREGUE" {% if status == 'ENTREGUE' %}selected{% endif %}>Entregue</option>
-                    <option value="CANCELADO" {% if status == 'CANCELADO' %}selected{% endif %}>Cancelado</option>
-                </select>
-                <input type="hidden" name="search" value="{{ search }}">
-            </form>
-        </div>
-    </div>
-
-    <!-- Lista de Vendas -->
-    <div class="mimo-card">
-        <div class="card-header" style="background: var(--mimo-gradient); color: white; border-radius: 20px 20px 0 0;">
-            <h5 class="mb-0" style="font-family: 'Cormorant Garamond', serif; font-weight: 600;">
-                <i class="bi bi-list me-2"></i>
-                Lista de Vendas
-                <span class="badge bg-light text-dark ms-2">{{ vendas.total }} venda(s)</span>
-            </h5>
-        </div>
-        <div class="card-body p-4">
-            {% if vendas.data %}
-            {% for venda in vendas.data %}
-            <div class="venda-card">
-                <div class="row align-items-center">
-                    <div class="col-md-3">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                 style="width: 50px; height: 50px; background: var(--mimo-gradient); color: white; font-weight: bold;">
-                                {{ venda.cliente_nome[0].upper() }}
-                            </div>
-                            <div>
-                                <h6 class="mb-1 fw-bold">{{ venda.cliente_nome }}</h6>
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar me-1"></i>
-                                    {{ venda.data_venda }}
-                                </small>
-                            </div>
-                        </div>
+        <!-- Lista de Vendas MIMO Aprimorada -->
+        <div class="mimo-card" style="background: var(--mimo-white); border: 1px solid var(--mimo-gray-100); box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden;">
+            <!-- Cabeçalho da Lista Elegante -->
+            <div style="padding: 2rem 2rem 1.5rem 2rem; background: linear-gradient(135deg, #fafafa 0%, var(--mimo-white) 100%); border-bottom: 2px solid var(--mimo-gray-100);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="font-family: var(--mimo-font-secondary); font-size: 2rem; font-weight: 700; color: var(--mimo-black); margin: 0; display: flex; align-items: center; letter-spacing: -0.01em;">
+                            <i class="bi bi-receipt" style="color: var(--mimo-gold); margin-right: 0.75rem; font-size: 1.75rem;"></i>
+                            Lista de Vendas
+                        </h2>
+                        <p style="font-family: var(--mimo-font-primary); font-size: 0.9rem; color: var(--mimo-gray-400); margin: 0.5rem 0 0 2.5rem; font-weight: 400;">
+                            Visualize e gerencie todas as suas vendas realizadas
+                        </p>
                     </div>
-                    
-                    <div class="col-md-2 text-center">
-                        <h5 class="mb-0 fw-bold" style="color: var(--mimo-orange);">
-                            R$ {{ "%.2f"|format(venda.valor_total) }}
-                        </h5>
-                        <!-- Desconto removido temporariamente -->
-                    </div>
-                    
-                    <div class="col-md-2 text-center">
-                        <small class="text-muted">Entrega: {{ venda.data_venda }}</small>
-                    </div>
-                    
-                    <div class="col-md-2 text-center">
-                        <span class="status-badge status-concluida">
-                            Concluída
-                        </span>
-                    </div>
-                    
-                    <div class="col-md-3 text-end">
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-info"
-                                    data-bs-toggle="tooltip" title="Visualizar"
-                                    onclick="alert('Funcionalidade em desenvolvimento')">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                            <button class="btn btn-outline-primary"
-                                    data-bs-toggle="tooltip" title="Editar"
-                                    onclick="alert('Funcionalidade em desenvolvimento')">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <!-- Entrega removida temporariamente -->
+                    <div style="text-align: right;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-500);">Total:</span>
+                            <span id="total-vendas" style="
+                                font-family: var(--mimo-font-secondary);
+                                font-size: 1.5rem;
+                                font-weight: 700;
+                                color: var(--mimo-white);
+                                background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                padding: 0.5rem 1rem;
+                                border-radius: 2rem;
+                                min-width: 3rem;
+                                text-align: center;
+                                box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+                                line-height: 1;
+                            ">0</span>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Itens removidos temporariamente -->
             </div>
-            {% endfor %}
-            
-            <!-- Paginação removida temporariamente -->
-            
-            {% else %}
-            <div class="text-center py-5">
-                <i class="bi bi-cart-x display-1 text-muted"></i>
-                <h4 class="mt-3">Nenhuma venda encontrada</h4>
-                <p class="text-muted">
-                    {% if search or status %}
-                    Não encontramos vendas com os filtros aplicados.
-                    <br><a href="/vendas">Ver todas as vendas</a>
-                    {% else %}
-                    Comece registrando sua primeira venda.
-                    {% endif %}
-                </p>
-                <button class="btn btn-primary btn-lg" onclick="alert('Funcionalidade em desenvolvimento')">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Registrar Primeira Venda
-                </button>
+
+            <!-- Container de Vendas -->
+            <div style="padding: 2rem;" id="container-vendas">
+                <!-- Loading inicial -->
+                <div id="loading-vendas" style="text-align: center; padding: 4rem 2rem;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                        <div style="
+                            font-size: 3rem;
+                            color: var(--mimo-gold);
+                            animation: spin 2s linear infinite;
+                        ">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <h5 style="
+                            font-family: var(--mimo-font-secondary);
+                            font-size: 1.5rem;
+                            font-weight: 600;
+                            color: var(--mimo-black);
+                            margin: 0;
+                        ">Carregando vendas...</h5>
+                        <p style="
+                            font-family: var(--mimo-font-primary);
+                            font-size: 0.9rem;
+                            color: var(--mimo-gray-400);
+                            margin: 0;
+                        ">Aguarde um momento enquanto buscamos seus dados</p>
+                    </div>
+                </div>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<!-- JavaScript para Carregar Vendas -->
 <script>
-$(document).ready(function() {
-    // Inicializar tooltips
-    $('[data-bs-toggle="tooltip"]').tooltip();
-    
-    // Animações
-    $('.venda-card').each(function(index) {
-        $(this).css('animation-delay', (index * 0.1) + 's');
-        $(this).addClass('fade-in');
+    // Função para carregar vendas
+    function carregarVendas() {
+        console.log('Carregando vendas...');
+
+        fetch('/api/vendas')
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos:', data);
+                const container = document.getElementById('container-vendas');
+                const totalBadge = document.getElementById('total-vendas');
+
+                if (data.vendas && data.vendas.length > 0) {
+                    container.innerHTML = data.vendas.map((venda, index) => {
+                        const valor = (venda.valor_total || 0).toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        });
+
+                        const statusInfo = getStatusInfo(venda.status || 'pendente');
+                        const dataVenda = formatarData(venda.data_venda);
+
+                        return `
+                            <div style="
+                                background: linear-gradient(135deg, var(--mimo-white) 0%, #fefefe 100%);
+                                border: 1px solid var(--mimo-gray-100);
+                                border-radius: 1rem;
+                                padding: 1.5rem;
+                                margin-bottom: 1rem;
+                                transition: all 0.3s ease;
+                                animation: fadeInUp 0.6s ease forwards;
+                                animation-delay: ${index * 0.1}s;
+                                opacity: 0;
+                                transform: translateY(20px);
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                            "
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'">
+
+                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                                    <!-- Cliente e Data -->
+                                    <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 250px;">
+                                        <div style="
+                                            width: 3.5rem;
+                                            height: 3.5rem;
+                                            border-radius: 1rem;
+                                            background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 1.5rem;
+                                            color: var(--mimo-white);
+                                            font-family: var(--mimo-font-secondary);
+                                            font-weight: 700;
+                                            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+                                        ">
+                                            ${(venda.cliente_nome || 'Cliente')[0].toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div style="
+                                                font-family: var(--mimo-font-primary);
+                                                font-size: 1.125rem;
+                                                font-weight: 600;
+                                                color: var(--mimo-black);
+                                                line-height: 1.3;
+                                            ">${venda.cliente_nome || 'Cliente não informado'}</div>
+                                            <div style="
+                                                font-family: var(--mimo-font-primary);
+                                                font-size: 0.875rem;
+                                                color: var(--mimo-gray-400);
+                                                margin-top: 0.25rem;
+                                                display: flex;
+                                                align-items: center;
+                                                gap: 0.5rem;
+                                            ">
+                                                <i class="bi bi-calendar" style="color: var(--mimo-gold);"></i>
+                                                ${dataVenda}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Valor -->
+                                    <div style="text-align: center; min-width: 120px;">
+                                        <div style="
+                                            font-family: var(--mimo-font-secondary);
+                                            font-size: 1.5rem;
+                                            font-weight: 700;
+                                            color: var(--mimo-black);
+                                        ">${valor}</div>
+                                        <div style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-size: 0.75rem;
+                                            color: var(--mimo-gray-400);
+                                            text-transform: uppercase;
+                                            letter-spacing: 0.05em;
+                                            margin-top: 0.25rem;
+                                        ">Valor Total</div>
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div style="text-align: center; min-width: 120px;">
+                                        <div style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-size: 0.875rem;
+                                            font-weight: 500;
+                                            color: var(--mimo-white);
+                                            background: ${statusInfo.color};
+                                            padding: 0.5rem 1rem;
+                                            border-radius: 1.5rem;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                        ">
+                                            ${statusInfo.icon}
+                                            ${statusInfo.label}
+                                        </div>
+                                    </div>
+
+                                    <!-- Ações -->
+                                    <div style="display: flex; gap: 0.5rem; min-width: 120px; justify-content: flex-end;">
+                                        <button onclick="verDetalhesVenda(${venda.id})" title="Ver detalhes" style="
+                                            background: var(--mimo-info);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            padding: 0.5rem;
+                                            width: 2.5rem;
+                                            height: 2.5rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+                                        "
+                                        onmouseover="this.style.transform='scale(1.1)'; this.style.backgroundColor='#2563eb'"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor='var(--mimo-info)'">
+                                            <i class="bi bi-eye" style="font-size: 1rem;"></i>
+                                        </button>
+                                        <button onclick="editarVenda(${venda.id})" title="Editar venda" style="
+                                            background: var(--mimo-gold);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            padding: 0.5rem;
+                                            width: 2.5rem;
+                                            height: 2.5rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+                                        "
+                                        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 8px rgba(212, 175, 55, 0.4)'"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(212, 175, 55, 0.3)'">
+                                            <i class="bi bi-pencil" style="font-size: 1rem;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Atualizar estatísticas
+                    totalBadge.textContent = data.vendas.length;
+                    const totalHeaderBadge = document.getElementById('total-vendas-header');
+                    if (totalHeaderBadge) {
+                        totalHeaderBadge.textContent = data.vendas.length;
+                    }
+
+                    // Calcular receita total
+                    const receitaTotal = data.vendas.reduce((acc, venda) => acc + (venda.valor_total || 0), 0);
+                    const receitaHeader = document.getElementById('receita-total-header');
+                    if (receitaHeader) {
+                        receitaHeader.textContent = receitaTotal.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        });
+                    }
+
+                    // Calcular ticket médio
+                    const ticketMedio = data.vendas.length > 0 ? receitaTotal / data.vendas.length : 0;
+                    const ticketHeader = document.getElementById('ticket-medio-header');
+                    if (ticketHeader) {
+                        ticketHeader.textContent = ticketMedio.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        });
+                    }
+
+                    console.log('Vendas carregadas com sucesso:', data.vendas.length);
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 4rem 2rem;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+                                <div style="
+                                    font-size: 4rem;
+                                    color: var(--mimo-gray-300);
+                                ">
+                                    <i class="bi bi-cart-x"></i>
+                                </div>
+                                <div>
+                                    <h5 style="
+                                        font-family: var(--mimo-font-secondary);
+                                        font-size: 1.5rem;
+                                        font-weight: 600;
+                                        color: var(--mimo-black);
+                                        margin: 0 0 0.5rem 0;
+                                    ">Nenhuma venda registrada</h5>
+                                    <p style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-size: 1rem;
+                                        color: var(--mimo-gray-400);
+                                        margin: 0 0 2rem 0;
+                                    ">Comece registrando sua primeira venda e acompanhe o crescimento do seu negócio</p>
+                                    <button onclick="alert('Funcionalidade em desenvolvimento')" style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-weight: 600;
+                                        background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                        color: var(--mimo-white);
+                                        padding: 1rem 2rem;
+                                        border-radius: 2rem;
+                                        border: none;
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 0.5rem;
+                                        transition: all 0.3s ease;
+                                        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+                                        cursor: pointer;
+                                    "
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(212, 175, 55, 0.4)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 175, 55, 0.3)'">
+                                        <i class="bi bi-plus-circle" style="font-size: 1rem;"></i>
+                                        Registrar Primeira Venda
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    totalBadge.textContent = '0';
+                    const totalHeaderBadge = document.getElementById('total-vendas-header');
+                    if (totalHeaderBadge) {
+                        totalHeaderBadge.textContent = '0';
+                    }
+                    const receitaHeader = document.getElementById('receita-total-header');
+                    if (receitaHeader) {
+                        receitaHeader.textContent = 'R$ 0';
+                    }
+                    const ticketHeader = document.getElementById('ticket-medio-header');
+                    if (ticketHeader) {
+                        ticketHeader.textContent = 'R$ 0';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar vendas:', error);
+                const container = document.getElementById('container-vendas');
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--mimo-danger);">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <div>Erro ao carregar vendas. Tente novamente.</div>
+                    </div>
+                `;
+            });
+    }
+
+    // Funções auxiliares
+    function getStatusInfo(status) {
+        switch(status.toLowerCase()) {
+            case 'pendente':
+                return {
+                    label: 'Pendente',
+                    color: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                    icon: '<i class="bi bi-clock"></i>'
+                };
+            case 'entregue':
+                return {
+                    label: 'Entregue',
+                    color: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                    icon: '<i class="bi bi-check-circle"></i>'
+                };
+            case 'cancelado':
+                return {
+                    label: 'Cancelado',
+                    color: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+                    icon: '<i class="bi bi-x-circle"></i>'
+                };
+            default:
+                return {
+                    label: 'Pendente',
+                    color: 'linear-gradient(135deg, var(--mimo-gray-500) 0%, var(--mimo-gray-600) 100%)',
+                    icon: '<i class="bi bi-clock"></i>'
+                };
+        }
+    }
+
+    function formatarData(dataString) {
+        if (!dataString) return 'Data não informada';
+        try {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch (e) {
+            return dataString;
+        }
+    }
+
+    // Funções de ação
+    function editarVenda(id) {
+        alert('Funcionalidade de edição em desenvolvimento. ID: ' + id);
+    }
+
+    function verDetalhesVenda(id) {
+        alert('Funcionalidade de detalhes em desenvolvimento. ID: ' + id);
+    }
+
+    // Função de busca
+    function buscarVendas() {
+        const termo = document.getElementById('busca-venda').value.toLowerCase();
+        const status = document.getElementById('filtro-status').value;
+
+        // Implementar filtro local aqui se necessário
+        console.log('Buscando:', termo, 'Status:', status);
+    }
+
+    // Inicializar página
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página carregada, iniciando carregamento de vendas...');
+        carregarVendas();
+
+        // Configurar busca
+        const campoBusca = document.getElementById('busca-venda');
+        if (campoBusca) {
+            campoBusca.addEventListener('input', buscarVendas);
+        }
+
+        const filtroStatus = document.getElementById('filtro-status');
+        if (filtroStatus) {
+            filtroStatus.addEventListener('change', buscarVendas);
+        }
     });
-});
 </script>
+
+<!-- Estilos CSS Aprimorados para Tipografia e Animações -->
+<style>
+    /* Animações elegantes */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Melhorias tipográficas específicas */
+    .mimo-input:focus {
+        outline: none;
+        border-color: var(--mimo-gold) !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1) !important;
+    }
+
+    /* Responsividade aprimorada */
+    @media (max-width: 768px) {
+        .mimo-container {
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem !important;
+        }
+
+        .mimo-card {
+            padding: 1rem !important;
+        }
+
+        /* Vendas responsivas */
+        .venda-item {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 1rem !important;
+        }
+
+        .venda-item > div {
+            width: 100% !important;
+            min-width: auto !important;
+            text-align: left !important;
+        }
+
+        .venda-actions {
+            justify-content: flex-start !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 2rem !important;
+        }
+
+        .mimo-card {
+            margin: 0 -1rem;
+            border-radius: 0;
+        }
+
+        .mimo-btn {
+            padding: 0.75rem 1rem !important;
+            font-size: 0.8rem !important;
+        }
+    }
+
+    /* Melhorias de acessibilidade */
+    button:focus, a:focus, input:focus, select:focus {
+        outline: 2px solid var(--mimo-gold);
+        outline-offset: 2px;
+    }
+
+    /* Transições suaves para todos os elementos interativos */
+    button, a, input, select, .mimo-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Hover states aprimorados */
+    .mimo-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .mimo-card:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+</style>
 {% endblock %}
