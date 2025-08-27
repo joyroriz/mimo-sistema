@@ -128,14 +128,11 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="/clientes/${cliente.id}" class="btn btn-mimo-secondary btn-sm" title="Ver detalhes">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <button class="btn btn-mimo-primary btn-sm" onclick="editarCliente(${cliente.id})" title="Editar">
-                                            <i class="bi bi-pencil"></i>
+                                        <button class="btn btn-mimo-primary btn-sm" onclick="abrirWhatsApp('${cliente.telefone}')" title="WhatsApp">
+                                            <i class="bi bi-whatsapp"></i>
                                         </button>
-                                        <button class="btn btn-mimo-secondary btn-sm" onclick="excluirCliente(${cliente.id}, '${cliente.nome}')" title="Excluir">
-                                            <i class="bi bi-trash"></i>
+                                        <button class="btn btn-mimo-secondary btn-sm" onclick="copiarTelefone('${cliente.telefone}')" title="Copiar telefone">
+                                            <i class="bi bi-telephone"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -219,11 +216,62 @@
         }
     }
 
+    // Função para abrir WhatsApp conforme especificação MIMO
+    function abrirWhatsApp(telefone) {
+        // Normalizar telefone: remover tudo que não for dígito
+        const telefoneSomenteDigitos = telefone.replace(/\D/g, '');
+
+        // Garantir DDI 55 (Brasil)
+        const telefoneCompleto = telefoneSomenteDigitos.startsWith('55') ?
+            telefoneSomenteDigitos :
+            '55' + telefoneSomenteDigitos;
+
+        // Mensagem padrão MIMO (URL encoded)
+        const mensagem = encodeURIComponent('Olá! Aqui é da MIMO 🍍 Gostaria de apresentar nossas experiências com frutas artesanais.');
+
+        // Abrir WhatsApp
+        const urlWhatsApp = `https://wa.me/${telefoneCompleto}?text=${mensagem}`;
+        window.open(urlWhatsApp, '_blank');
+
+        // Toast de confirmação
+        mostrarToast('WhatsApp aberto com sucesso!', 'success');
+    }
+
+    // Função para copiar telefone
+    function copiarTelefone(telefone) {
+        navigator.clipboard.writeText(telefone).then(function() {
+            mostrarToast('Telefone copiado: ' + telefone, 'success');
+        }).catch(function(err) {
+            console.error('Erro ao copiar telefone:', err);
+            mostrarToast('Erro ao copiar telefone', 'error');
+        });
+    }
+
+    // Função para mostrar toast conforme especificação
+    function mostrarToast(mensagem, tipo = 'success') {
+        // Criar elemento toast
+        const toast = document.createElement('div');
+        toast.className = `mimo-toast mimo-toast-${tipo}`;
+        toast.textContent = mensagem;
+
+        // Adicionar ao body
+        document.body.appendChild(toast);
+
+        // Mostrar toast
+        setTimeout(() => toast.classList.add('show'), 100);
+
+        // Remover após 2.5s conforme especificação
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2500);
+    }
+
     // Carregar clientes quando a página carregar
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Página carregada, iniciando carregamento de clientes...');
         carregarClientes();
-        
+
         // Configurar busca
         const campoBusca = document.getElementById('busca-cliente');
         if (campoBusca) {

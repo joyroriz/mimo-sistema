@@ -38,15 +38,17 @@
     --mimo-radius-lg: 0.75rem;      /* 12px */
     --mimo-radius-xl: 1rem;         /* 16px */
     
-    /* Sombras elegantes */
+    /* Sombras elegantes conforme especificação */
+    --mimo-shadow-soft: 0 10px 25px rgba(0,0,0,0.06);
+    --mimo-shadow-subtle: 0 4px 12px rgba(0,0,0,0.05);
     --mimo-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --mimo-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --mimo-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --mimo-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --mimo-shadow-gold: 0 4px 20px rgba(212, 175, 55, 0.15);
     
-    /* Transições suaves */
-    --mimo-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Transições suaves conforme especificação */
+    --mimo-transition: 220ms ease;
     --mimo-transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -351,4 +353,42 @@ p {
 .mimo-text-muted { color: var(--mimo-gray-400); }
 .mimo-mb-0 { margin-bottom: 0; }
 .mimo-mt-lg { margin-top: var(--mimo-space-lg); }
+
+/* ==================== TOASTS MIMO ==================== */
+.mimo-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--mimo-white);
+    border: 1px solid var(--mimo-gold-light);
+    border-radius: var(--mimo-radius-xl);
+    padding: var(--mimo-space-md) var(--mimo-space-lg);
+    box-shadow: var(--mimo-shadow-soft);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: var(--mimo-transition);
+    font-family: var(--mimo-font-primary);
+    font-weight: 500;
+    color: var(--mimo-black);
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.mimo-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.mimo-toast-success {
+    border-left: 4px solid #10B981;
+}
+
+.mimo-toast-error {
+    border-left: 4px solid #B00020;
+}
+
+.mimo-toast-warning {
+    border-left: 4px solid var(--mimo-gold);
+}
 .mimo-mb-lg { margin-bottom: var(--mimo-space-lg); }

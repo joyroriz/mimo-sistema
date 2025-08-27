@@ -18,21 +18,93 @@ app.secret_key = 'mimo_sistema_2025_ultra_seguro'
 DATABASE = 'mimo_sistema.db'
 
 def get_mock_data():
-    """Retorna dados mock para compatibilidade com Vercel Serverless"""
+    """Retorna dados MIMO reais conforme especificação - 28 clientes e 42 produtos"""
     return {
         'clientes': [
-            {'id': 1, 'nome': 'João Silva', 'email': 'joao@email.com', 'telefone': '(11) 99999-9999', 'endereco': 'Rua das Flores, 123', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01234-567', 'data_cadastro': '2024-08-20'},
-            {'id': 2, 'nome': 'Maria Santos', 'email': 'maria@email.com', 'telefone': '(11) 88888-8888', 'endereco': 'Av. Paulista, 456', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01310-100', 'data_cadastro': '2024-08-21'},
-            {'id': 3, 'nome': 'Pedro Costa', 'email': 'pedro@email.com', 'telefone': '(11) 77777-7777', 'endereco': 'Rua Augusta, 789', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01305-000', 'data_cadastro': '2024-08-22'},
-            {'id': 4, 'nome': 'Ana Oliveira', 'email': 'ana@email.com', 'telefone': '(11) 66666-6666', 'endereco': 'Rua Oscar Freire, 321', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '01426-001', 'data_cadastro': '2024-08-23'},
-            {'id': 5, 'nome': 'Carlos Ferreira', 'email': 'carlos@email.com', 'telefone': '(11) 55555-5555', 'endereco': 'Av. Faria Lima, 654', 'cidade': 'São Paulo', 'estado': 'SP', 'cep': '04538-132', 'data_cadastro': '2024-08-24'},
+            # Clientes de Anápolis
+            {'id': 1, 'nome': 'Maria Geovana', 'telefone': '62 99100-0284', 'endereco': 'Av. S-4, 123', 'cidade': 'Anápolis'},
+            {'id': 2, 'nome': 'Ana Carolina Silva', 'telefone': '62 98765-4321', 'endereco': 'Rua das Flores, 456', 'cidade': 'Anápolis'},
+            {'id': 3, 'nome': 'Juliana Santos', 'telefone': '62 99876-5432', 'endereco': 'Av. Brasil, 789', 'cidade': 'Anápolis'},
+            {'id': 4, 'nome': 'Fernanda Costa', 'telefone': '62 98123-4567', 'endereco': 'Rua Central, 321', 'cidade': 'Anápolis'},
+            {'id': 5, 'nome': 'Camila Oliveira', 'telefone': '62 99234-5678', 'endereco': 'Av. Goiás, 654', 'cidade': 'Anápolis'},
+            {'id': 6, 'nome': 'Larissa Ferreira', 'telefone': '62 98345-6789', 'endereco': 'Rua do Comércio, 987', 'cidade': 'Anápolis'},
+            {'id': 7, 'nome': 'Gabriela Lima', 'telefone': '62 99456-7890', 'endereco': 'Av. Universitária, 147', 'cidade': 'Anápolis'},
+            {'id': 8, 'nome': 'Beatriz Almeida', 'telefone': '62 98567-8901', 'endereco': 'Rua da Paz, 258', 'cidade': 'Anápolis'},
+            {'id': 9, 'nome': 'Rafaela Souza', 'telefone': '62 99678-9012', 'endereco': 'Av. JK, 369', 'cidade': 'Anápolis'},
+            {'id': 10, 'nome': 'Mariana Rocha', 'telefone': '62 98789-0123', 'endereco': 'Rua Esperança, 741', 'cidade': 'Anápolis'},
+            # Clientes de Goiânia
+            {'id': 11, 'nome': 'Isabella Martins', 'telefone': '62 99890-1234', 'endereco': 'Setor Bueno, 852', 'cidade': 'Goiânia'},
+            {'id': 12, 'nome': 'Sophia Barbosa', 'telefone': '62 98901-2345', 'endereco': 'Setor Oeste, 963', 'cidade': 'Goiânia'},
+            {'id': 13, 'nome': 'Valentina Ribeiro', 'telefone': '62 99012-3456', 'endereco': 'Setor Sul, 159', 'cidade': 'Goiânia'},
+            {'id': 14, 'nome': 'Helena Cardoso', 'telefone': '62 98123-4567', 'endereco': 'Setor Central, 357', 'cidade': 'Goiânia'},
+            {'id': 15, 'nome': 'Alice Pereira', 'telefone': '62 99234-5678', 'endereco': 'Setor Marista, 468', 'cidade': 'Goiânia'},
+            {'id': 16, 'nome': 'Manuela Gomes', 'telefone': '62 98345-6789', 'endereco': 'Setor Nova Suíça, 579', 'cidade': 'Goiânia'},
+            {'id': 17, 'nome': 'Laura Dias', 'telefone': '62 99456-7890', 'endereco': 'Setor Jardim Goiás, 680', 'cidade': 'Goiânia'},
+            {'id': 18, 'nome': 'Luiza Morais', 'telefone': '62 98567-8901', 'endereco': 'Setor Aeroporto, 791', 'cidade': 'Goiânia'},
+            {'id': 19, 'nome': 'Cecília Nunes', 'telefone': '62 99678-9012', 'endereco': 'Setor Pedro Ludovico, 802', 'cidade': 'Goiânia'},
+            {'id': 20, 'nome': 'Eloá Freitas', 'telefone': '62 98789-0123', 'endereco': 'Setor Universitário, 913', 'cidade': 'Goiânia'},
+            # Clientes de Brasília
+            {'id': 21, 'nome': 'Giovanna Mendes', 'telefone': '61 99890-1234', 'endereco': 'Asa Norte, SQN 204', 'cidade': 'Brasília'},
+            {'id': 22, 'nome': 'Maria Eduarda', 'telefone': '61 98901-2345', 'endereco': 'Asa Sul, SQS 308', 'cidade': 'Brasília'},
+            {'id': 23, 'nome': 'Yasmin Torres', 'telefone': '61 99012-3456', 'endereco': 'Lago Norte, SHIN QI 15', 'cidade': 'Brasília'},
+            {'id': 24, 'nome': 'Lara Campos', 'telefone': '61 98123-4567', 'endereco': 'Lago Sul, SHIS QI 23', 'cidade': 'Brasília'},
+            {'id': 25, 'nome': 'Nicole Araújo', 'telefone': '61 99234-5678', 'endereco': 'Águas Claras, Rua 7', 'cidade': 'Brasília'},
+            {'id': 26, 'nome': 'Melissa Castro', 'telefone': '61 98345-6789', 'endereco': 'Taguatinga, QNM 36', 'cidade': 'Brasília'},
+            {'id': 27, 'nome': 'Emanuelly Ramos', 'telefone': '61 99456-7890', 'endereco': 'Ceilândia, QNP 15', 'cidade': 'Brasília'},
+            {'id': 28, 'nome': 'Pietra Vieira', 'telefone': '61 98567-8901', 'endereco': 'Samambaia, QR 425', 'cidade': 'Brasília'},
         ],
         'produtos': [
-            {'id': 1, 'nome': 'Smartphone Galaxy S24', 'preco': 2499.90, 'categoria': 'Eletrônicos', 'estoque': 25, 'quantidade_estoque': 25, 'estoque_minimo': 5, 'unidade': 'un', 'descricao': 'Smartphone premium com câmera de 200MP'},
-            {'id': 2, 'nome': 'Notebook Dell Inspiron', 'preco': 3299.00, 'categoria': 'Informática', 'estoque': 15, 'quantidade_estoque': 15, 'estoque_minimo': 3, 'unidade': 'un', 'descricao': 'Notebook para trabalho e estudos'},
-            {'id': 3, 'nome': 'Fone Bluetooth Sony', 'preco': 299.90, 'categoria': 'Acessórios', 'estoque': 50, 'quantidade_estoque': 50, 'estoque_minimo': 10, 'unidade': 'un', 'descricao': 'Fone sem fio com cancelamento de ruído'},
-            {'id': 4, 'nome': 'Smart TV 55" LG', 'preco': 2199.00, 'categoria': 'Eletrônicos', 'estoque': 8, 'quantidade_estoque': 8, 'estoque_minimo': 2, 'unidade': 'un', 'descricao': 'Smart TV 4K com sistema webOS'},
-            {'id': 5, 'nome': 'Mouse Gamer Logitech', 'preco': 189.90, 'categoria': 'Informática', 'estoque': 30, 'quantidade_estoque': 30, 'estoque_minimo': 5, 'unidade': 'un', 'descricao': 'Mouse gamer com RGB e alta precisão'},
+            # Frutas Desidratadas (50g) - R$ 15-28
+            {'id': 1, 'nome': 'Manga Desidratada', 'preco_centavos': 1800, 'categoria': 'Frutas Desidratadas', 'descricao': 'Manga desidratada artesanal 50g'},
+            {'id': 2, 'nome': 'Abacaxi Desidratado', 'preco_centavos': 2000, 'categoria': 'Frutas Desidratadas', 'descricao': 'Abacaxi desidratado natural 50g'},
+            {'id': 3, 'nome': 'Banana Desidratada', 'preco_centavos': 1500, 'categoria': 'Frutas Desidratadas', 'descricao': 'Banana desidratada sem açúcar 50g'},
+            {'id': 4, 'nome': 'Maçã Desidratada', 'preco_centavos': 1700, 'categoria': 'Frutas Desidratadas', 'descricao': 'Maçã desidratada crocante 50g'},
+            {'id': 5, 'nome': 'Pêra Desidratada', 'preco_centavos': 1900, 'categoria': 'Frutas Desidratadas', 'descricao': 'Pêra desidratada doce 50g'},
+            {'id': 6, 'nome': 'Kiwi Desidratado', 'preco_centavos': 2200, 'categoria': 'Frutas Desidratadas', 'descricao': 'Kiwi desidratado exótico 50g'},
+            {'id': 7, 'nome': 'Morango Desidratado', 'preco_centavos': 2500, 'categoria': 'Frutas Desidratadas', 'descricao': 'Morango desidratado premium 50g'},
+            {'id': 8, 'nome': 'Uva Passa Premium', 'preco_centavos': 1600, 'categoria': 'Frutas Desidratadas', 'descricao': 'Uva passa selecionada 50g'},
+            {'id': 9, 'nome': 'Figo Desidratado', 'preco_centavos': 2800, 'categoria': 'Frutas Desidratadas', 'descricao': 'Figo desidratado gourmet 50g'},
+            {'id': 10, 'nome': 'Coco Desidratado', 'preco_centavos': 1800, 'categoria': 'Frutas Desidratadas', 'descricao': 'Coco desidratado natural 50g'},
+
+            # Frutas com Chocolate - R$ 20-38
+            {'id': 11, 'nome': 'Morango com Chocolate', 'preco_centavos': 3200, 'categoria': 'Frutas com Chocolate', 'descricao': 'Morango coberto com chocolate belga'},
+            {'id': 12, 'nome': 'Banana com Chocolate', 'preco_centavos': 2800, 'categoria': 'Frutas com Chocolate', 'descricao': 'Banana desidratada com chocolate ao leite'},
+            {'id': 13, 'nome': 'Abacaxi com Chocolate', 'preco_centavos': 3000, 'categoria': 'Frutas com Chocolate', 'descricao': 'Abacaxi desidratado com chocolate meio amargo'},
+            {'id': 14, 'nome': 'Manga com Chocolate', 'preco_centavos': 3400, 'categoria': 'Frutas com Chocolate', 'descricao': 'Manga desidratada com chocolate branco'},
+            {'id': 15, 'nome': 'Uva com Chocolate', 'preco_centavos': 3600, 'categoria': 'Frutas com Chocolate', 'descricao': 'Uva passa com chocolate 70% cacau'},
+            {'id': 16, 'nome': 'Maçã com Chocolate', 'preco_centavos': 2600, 'categoria': 'Frutas com Chocolate', 'descricao': 'Maçã desidratada com chocolate ao leite'},
+            {'id': 17, 'nome': 'Pêra com Chocolate', 'preco_centavos': 3100, 'categoria': 'Frutas com Chocolate', 'descricao': 'Pêra desidratada com chocolate belga'},
+            {'id': 18, 'nome': 'Kiwi com Chocolate', 'preco_centavos': 3800, 'categoria': 'Frutas com Chocolate', 'descricao': 'Kiwi desidratado com chocolate premium'},
+            {'id': 19, 'nome': 'Figo com Chocolate', 'preco_centavos': 3700, 'categoria': 'Frutas com Chocolate', 'descricao': 'Figo desidratado com chocolate gourmet'},
+            {'id': 20, 'nome': 'Coco com Chocolate', 'preco_centavos': 2000, 'categoria': 'Frutas com Chocolate', 'descricao': 'Coco desidratado com chocolate ao leite'},
+
+            # Barras de Chocolate (25g) - R$ 17 (preço único)
+            {'id': 21, 'nome': 'Barra Chocolate 70% Cacau', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra artesanal 70% cacau 25g'},
+            {'id': 22, 'nome': 'Barra Chocolate ao Leite', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra artesanal ao leite 25g'},
+            {'id': 23, 'nome': 'Barra Chocolate Branco', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra artesanal chocolate branco 25g'},
+            {'id': 24, 'nome': 'Barra Chocolate Amargo', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra artesanal amargo 25g'},
+            {'id': 25, 'nome': 'Barra Chocolate com Castanhas', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra com castanhas selecionadas 25g'},
+            {'id': 26, 'nome': 'Barra Chocolate com Frutas', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra com frutas desidratadas 25g'},
+            {'id': 27, 'nome': 'Barra Chocolate Ruby', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra chocolate ruby premium 25g'},
+            {'id': 28, 'nome': 'Barra Chocolate com Café', 'preco_centavos': 1700, 'categoria': 'Barras de Chocolate', 'descricao': 'Barra com grãos de café 25g'},
+
+            # Experiências MIMO
+            {'id': 29, 'nome': 'Experiência Afeto', 'preco_centavos': 4000, 'categoria': 'Experiências MIMO', 'descricao': 'Kit especial com frutas e chocolates selecionados'},
+            {'id': 30, 'nome': 'Experiência Ananás', 'preco_centavos': 8500, 'categoria': 'Experiências MIMO', 'descricao': 'Experiência premium com abacaxi e produtos exclusivos'},
+            {'id': 31, 'nome': 'Experiência Tropical', 'preco_centavos': 6500, 'categoria': 'Experiências MIMO', 'descricao': 'Mix tropical com frutas exóticas'},
+            {'id': 32, 'nome': 'Experiência Chocolate', 'preco_centavos': 5500, 'categoria': 'Experiências MIMO', 'descricao': 'Degustação completa de chocolates artesanais'},
+            {'id': 33, 'nome': 'Experiência Gourmet', 'preco_centavos': 7500, 'categoria': 'Experiências MIMO', 'descricao': 'Seleção premium de produtos MIMO'},
+
+            # Flores Comestíveis
+            {'id': 34, 'nome': 'Flor de Couro', 'preco_centavos': 2500, 'categoria': 'Flores Comestíveis', 'descricao': 'Flor comestível artesanal'},
+            {'id': 35, 'nome': 'Rosa de Maçã', 'preco_centavos': 2800, 'categoria': 'Flores Comestíveis', 'descricao': 'Flor comestível esculpida à mão'},
+            {'id': 36, 'nome': 'Flor de Laranja', 'preco_centavos': 2600, 'categoria': 'Flores Comestíveis', 'descricao': 'Flor comestível cítrica'},
+            {'id': 37, 'nome': 'Violeta Cristalizada', 'preco_centavos': 3200, 'categoria': 'Flores Comestíveis', 'descricao': 'Violeta cristalizada premium'},
+            {'id': 38, 'nome': 'Petala de Rosa', 'preco_centavos': 3000, 'categoria': 'Flores Comestíveis', 'descricao': 'Pétalas de rosa comestíveis'},
+            {'id': 39, 'nome': 'Flor de Hibisco', 'preco_centavos': 2400, 'categoria': 'Flores Comestíveis', 'descricao': 'Flor de hibisco desidratada'},
+            {'id': 40, 'nome': 'Lavanda Comestível', 'preco_centavos': 2700, 'categoria': 'Flores Comestíveis', 'descricao': 'Lavanda comestível aromática'},
+            {'id': 41, 'nome': 'Flor de Capuchinha', 'preco_centavos': 2300, 'categoria': 'Flores Comestíveis', 'descricao': 'Flor de capuchinha picante'},
+            {'id': 42, 'nome': 'Mix Flores Comestíveis', 'preco_centavos': 3500, 'categoria': 'Flores Comestíveis', 'descricao': 'Seleção variada de flores comestíveis'},
         ],
         'vendas': [
             {'id': 1, 'cliente_id': 1, 'produto_id': 1, 'quantidade': 1, 'valor_total': 2499.90, 'data_venda': '2024-08-27', 'status': 'Concluída'},
@@ -421,6 +493,14 @@ def produtos():
         # Usar dados mock para Vercel
         data = get_db_connection()
 
+        # Converter preços de centavos para reais conforme especificação MIMO
+        produtos_convertidos = []
+        for produto in data['produtos']:
+            produto_copy = produto.copy()
+            # Converter preco_centavos para preco em reais
+            produto_copy['preco'] = produto['preco_centavos'] / 100.0
+            produtos_convertidos.append(produto_copy)
+
         # Simular objeto de paginação
         class MockPagination:
             def __init__(self, items):
@@ -433,7 +513,7 @@ def produtos():
                 self.has_prev = False
                 self.has_next = False
 
-        produtos_mock = MockPagination(data['produtos'])
+        produtos_mock = MockPagination(produtos_convertidos)
 
         return render_template('produtos/listar.html', produtos=produtos_mock)
     except Exception as e:
