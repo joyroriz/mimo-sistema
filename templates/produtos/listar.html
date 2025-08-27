@@ -106,9 +106,9 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <strong class="text-success">{{ produto.preco | currency }}</strong>
+                                <strong class="text-success">R$ {{ "%.2f"|format(produto.preco) }}</strong>
                                 {% if produto.custo and produto.custo > 0 %}
-                                <br><small class="text-muted">Custo: {{ produto.custo | currency }}</small>
+                                <br><small class="text-muted">Custo: R$ {{ "%.2f"|format(produto.custo) }}</small>
                                 {% endif %}
                             </td>
                             <td>

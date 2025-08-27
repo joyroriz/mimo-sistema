@@ -516,25 +516,9 @@ def api_excluir_cliente(cliente_id):
 def api_listar_produtos():
     """API para listar produtos"""
     try:
-        conn = get_db_connection()
-        produtos = conn.execute('''
-            SELECT id, nome, descricao, preco, categoria, estoque, data_cadastro
-            FROM produtos
-            ORDER BY nome
-        ''').fetchall()
-        conn.close()
-
-        produtos_list = []
-        for produto in produtos:
-            produtos_list.append({
-                'id': produto['id'],
-                'nome': produto['nome'],
-                'descricao': produto['descricao'] or '',
-                'preco': float(produto['preco']),
-                'categoria': produto['categoria'] or '',
-                'estoque': produto['estoque'],
-                'data_cadastro': produto['data_cadastro']
-            })
+        # Usar dados mock para Vercel
+        data = get_db_connection()
+        produtos_list = data['produtos']
 
         return jsonify({
             'success': True,
