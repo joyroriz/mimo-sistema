@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "sistema-mimo-mark1",
+  "name": "sistema-mimo-mark1-final",
   "builds": [
     {
       "src": "api/index.py",
@@ -14,7 +14,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "/api/index.py"
     }
   ],
   "env": {
