@@ -1,11 +1,6 @@
-# Ignorar arquivos desnecessários para novo projeto Vercel
-api/index.py
-api/app_novo.py
-api/main.py
-api/debug.py
-api/health_simple.py
-api/app.py
-api/app_final.py
+# Ignorar arquivos desnecessários para deploy Vercel
+api/
+mimo-sistema/
 __pycache__/
 *.pyc
 *.pyo
@@ -36,7 +31,7 @@ node_modules/
 # Arquivos de desenvolvimento
 *.md
 *.ps1
-# *.js
+
 e2e/
 tests-examples/
 playwright.config.ts
