@@ -22,36 +22,36 @@ def get_mock_data():
     return {
         'clientes': [
             # Clientes de Anápolis
-            {'id': 1, 'nome': 'Maria Geovana', 'telefone': '62 99100-0284', 'endereco': 'Av. S-4, 123', 'cidade': 'Anápolis'},
-            {'id': 2, 'nome': 'Ana Carolina Silva', 'telefone': '62 98765-4321', 'endereco': 'Rua das Flores, 456', 'cidade': 'Anápolis'},
-            {'id': 3, 'nome': 'Juliana Santos', 'telefone': '62 99876-5432', 'endereco': 'Av. Brasil, 789', 'cidade': 'Anápolis'},
-            {'id': 4, 'nome': 'Fernanda Costa', 'telefone': '62 98123-4567', 'endereco': 'Rua Central, 321', 'cidade': 'Anápolis'},
-            {'id': 5, 'nome': 'Camila Oliveira', 'telefone': '62 99234-5678', 'endereco': 'Av. Goiás, 654', 'cidade': 'Anápolis'},
-            {'id': 6, 'nome': 'Larissa Ferreira', 'telefone': '62 98345-6789', 'endereco': 'Rua do Comércio, 987', 'cidade': 'Anápolis'},
-            {'id': 7, 'nome': 'Gabriela Lima', 'telefone': '62 99456-7890', 'endereco': 'Av. Universitária, 147', 'cidade': 'Anápolis'},
-            {'id': 8, 'nome': 'Beatriz Almeida', 'telefone': '62 98567-8901', 'endereco': 'Rua da Paz, 258', 'cidade': 'Anápolis'},
-            {'id': 9, 'nome': 'Rafaela Souza', 'telefone': '62 99678-9012', 'endereco': 'Av. JK, 369', 'cidade': 'Anápolis'},
-            {'id': 10, 'nome': 'Mariana Rocha', 'telefone': '62 98789-0123', 'endereco': 'Rua Esperança, 741', 'cidade': 'Anápolis'},
+            {'id': 1, 'nome': 'Maria Geovana', 'telefone': '62 99100-0284', 'endereco': 'Av. S-4, 123', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-20'},
+            {'id': 2, 'nome': 'Ana Carolina Silva', 'telefone': '62 98765-4321', 'endereco': 'Rua das Flores, 456', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-21'},
+            {'id': 3, 'nome': 'Juliana Santos', 'telefone': '62 99876-5432', 'endereco': 'Av. Brasil, 789', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-22'},
+            {'id': 4, 'nome': 'Fernanda Costa', 'telefone': '62 98123-4567', 'endereco': 'Rua Central, 321', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-23'},
+            {'id': 5, 'nome': 'Camila Oliveira', 'telefone': '62 99234-5678', 'endereco': 'Av. Goiás, 654', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-24'},
+            {'id': 6, 'nome': 'Larissa Ferreira', 'telefone': '62 98345-6789', 'endereco': 'Rua do Comércio, 987', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-25'},
+            {'id': 7, 'nome': 'Gabriela Lima', 'telefone': '62 99456-7890', 'endereco': 'Av. Universitária, 147', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-26'},
+            {'id': 8, 'nome': 'Beatriz Almeida', 'telefone': '62 98567-8901', 'endereco': 'Rua da Paz, 258', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-27'},
+            {'id': 9, 'nome': 'Rafaela Souza', 'telefone': '62 99678-9012', 'endereco': 'Av. JK, 369', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-28'},
+            {'id': 10, 'nome': 'Mariana Rocha', 'telefone': '62 98789-0123', 'endereco': 'Rua Esperança, 741', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-29'},
             # Clientes de Goiânia
-            {'id': 11, 'nome': 'Isabella Martins', 'telefone': '62 99890-1234', 'endereco': 'Setor Bueno, 852', 'cidade': 'Goiânia'},
-            {'id': 12, 'nome': 'Sophia Barbosa', 'telefone': '62 98901-2345', 'endereco': 'Setor Oeste, 963', 'cidade': 'Goiânia'},
-            {'id': 13, 'nome': 'Valentina Ribeiro', 'telefone': '62 99012-3456', 'endereco': 'Setor Sul, 159', 'cidade': 'Goiânia'},
-            {'id': 14, 'nome': 'Helena Cardoso', 'telefone': '62 98123-4567', 'endereco': 'Setor Central, 357', 'cidade': 'Goiânia'},
-            {'id': 15, 'nome': 'Alice Pereira', 'telefone': '62 99234-5678', 'endereco': 'Setor Marista, 468', 'cidade': 'Goiânia'},
-            {'id': 16, 'nome': 'Manuela Gomes', 'telefone': '62 98345-6789', 'endereco': 'Setor Nova Suíça, 579', 'cidade': 'Goiânia'},
-            {'id': 17, 'nome': 'Laura Dias', 'telefone': '62 99456-7890', 'endereco': 'Setor Jardim Goiás, 680', 'cidade': 'Goiânia'},
-            {'id': 18, 'nome': 'Luiza Morais', 'telefone': '62 98567-8901', 'endereco': 'Setor Aeroporto, 791', 'cidade': 'Goiânia'},
-            {'id': 19, 'nome': 'Cecília Nunes', 'telefone': '62 99678-9012', 'endereco': 'Setor Pedro Ludovico, 802', 'cidade': 'Goiânia'},
-            {'id': 20, 'nome': 'Eloá Freitas', 'telefone': '62 98789-0123', 'endereco': 'Setor Universitário, 913', 'cidade': 'Goiânia'},
+            {'id': 11, 'nome': 'Isabella Martins', 'telefone': '62 99890-1234', 'endereco': 'Setor Bueno, 852', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-15'},
+            {'id': 12, 'nome': 'Sophia Barbosa', 'telefone': '62 98901-2345', 'endereco': 'Setor Oeste, 963', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-16'},
+            {'id': 13, 'nome': 'Valentina Ribeiro', 'telefone': '62 99012-3456', 'endereco': 'Setor Sul, 159', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-17'},
+            {'id': 14, 'nome': 'Helena Cardoso', 'telefone': '62 98123-4567', 'endereco': 'Setor Central, 357', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-18'},
+            {'id': 15, 'nome': 'Alice Pereira', 'telefone': '62 99234-5678', 'endereco': 'Setor Marista, 468', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-19'},
+            {'id': 16, 'nome': 'Manuela Gomes', 'telefone': '62 98345-6789', 'endereco': 'Setor Nova Suíça, 579', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-20'},
+            {'id': 17, 'nome': 'Laura Dias', 'telefone': '62 99456-7890', 'endereco': 'Setor Jardim Goiás, 680', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-21'},
+            {'id': 18, 'nome': 'Luiza Morais', 'telefone': '62 98567-8901', 'endereco': 'Setor Aeroporto, 791', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-22'},
+            {'id': 19, 'nome': 'Cecília Nunes', 'telefone': '62 99678-9012', 'endereco': 'Setor Pedro Ludovico, 802', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-23'},
+            {'id': 20, 'nome': 'Eloá Freitas', 'telefone': '62 98789-0123', 'endereco': 'Setor Universitário, 913', 'cidade': 'Goiânia', 'data_cadastro': '2024-07-24'},
             # Clientes de Brasília
-            {'id': 21, 'nome': 'Giovanna Mendes', 'telefone': '61 99890-1234', 'endereco': 'Asa Norte, SQN 204', 'cidade': 'Brasília'},
-            {'id': 22, 'nome': 'Maria Eduarda', 'telefone': '61 98901-2345', 'endereco': 'Asa Sul, SQS 308', 'cidade': 'Brasília'},
-            {'id': 23, 'nome': 'Yasmin Torres', 'telefone': '61 99012-3456', 'endereco': 'Lago Norte, SHIN QI 15', 'cidade': 'Brasília'},
-            {'id': 24, 'nome': 'Lara Campos', 'telefone': '61 98123-4567', 'endereco': 'Lago Sul, SHIS QI 23', 'cidade': 'Brasília'},
-            {'id': 25, 'nome': 'Nicole Araújo', 'telefone': '61 99234-5678', 'endereco': 'Águas Claras, Rua 7', 'cidade': 'Brasília'},
-            {'id': 26, 'nome': 'Melissa Castro', 'telefone': '61 98345-6789', 'endereco': 'Taguatinga, QNM 36', 'cidade': 'Brasília'},
-            {'id': 27, 'nome': 'Emanuelly Ramos', 'telefone': '61 99456-7890', 'endereco': 'Ceilândia, QNP 15', 'cidade': 'Brasília'},
-            {'id': 28, 'nome': 'Pietra Vieira', 'telefone': '61 98567-8901', 'endereco': 'Samambaia, QR 425', 'cidade': 'Brasília'},
+            {'id': 21, 'nome': 'Giovanna Mendes', 'telefone': '61 99890-1234', 'endereco': 'Asa Norte, SQN 204', 'cidade': 'Brasília', 'data_cadastro': '2024-06-10'},
+            {'id': 22, 'nome': 'Maria Eduarda', 'telefone': '61 98901-2345', 'endereco': 'Asa Sul, SQS 308', 'cidade': 'Brasília', 'data_cadastro': '2024-06-11'},
+            {'id': 23, 'nome': 'Yasmin Torres', 'telefone': '61 99012-3456', 'endereco': 'Lago Norte, SHIN QI 15', 'cidade': 'Brasília', 'data_cadastro': '2024-06-12'},
+            {'id': 24, 'nome': 'Lara Campos', 'telefone': '61 98123-4567', 'endereco': 'Lago Sul, SHIS QI 23', 'cidade': 'Brasília', 'data_cadastro': '2024-06-13'},
+            {'id': 25, 'nome': 'Nicole Araújo', 'telefone': '61 99234-5678', 'endereco': 'Águas Claras, Rua 7', 'cidade': 'Brasília', 'data_cadastro': '2024-06-14'},
+            {'id': 26, 'nome': 'Melissa Castro', 'telefone': '61 98345-6789', 'endereco': 'Taguatinga, QNM 36', 'cidade': 'Brasília', 'data_cadastro': '2024-06-15'},
+            {'id': 27, 'nome': 'Emanuelly Ramos', 'telefone': '61 99456-7890', 'endereco': 'Ceilândia, QNP 15', 'cidade': 'Brasília', 'data_cadastro': '2024-06-16'},
+            {'id': 28, 'nome': 'Pietra Vieira', 'telefone': '61 98567-8901', 'endereco': 'Samambaia, QR 425', 'cidade': 'Brasília', 'data_cadastro': '2024-06-17'},
         ],
         'produtos': [
             # Frutas Desidratadas (50g) - R$ 15-28
@@ -499,6 +499,11 @@ def produtos():
             produto_copy = produto.copy()
             # Converter preco_centavos para preco em reais
             produto_copy['preco'] = produto['preco_centavos'] / 100.0
+            # Adicionar campos de estoque para compatibilidade com template
+            produto_copy['quantidade_estoque'] = 50  # Estoque padrão
+            produto_copy['estoque_minimo'] = 10      # Mínimo padrão
+            produto_copy['unidade'] = 'un'           # Unidade padrão
+            produto_copy['custo'] = 0                # Custo padrão
             produtos_convertidos.append(produto_copy)
 
         # Simular objeto de paginação
