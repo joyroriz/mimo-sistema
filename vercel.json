@@ -1,8 +1,9 @@
 {
   "version": 2,
+  "name": "sistema-mimo-mark1",
   "builds": [
     {
-      "src": "api/main_minimal.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
@@ -13,11 +14,16 @@
     },
     {
       "src": "/(.*)",
-      "dest": "api/main_minimal.py"
+      "dest": "api/index.py"
     }
   ],
   "env": {
     "FLASK_ENV": "production",
     "PYTHONPATH": "."
+  },
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30
+    }
   }
 }

@@ -1,0 +1,230 @@
+{% extends "base-refined.html" %}
+
+{% block title %}Entregas - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="mimo-section">
+    <div class="mimo-container">
+        <!-- Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+            <div>
+                <h1 style="margin-bottom: 0.5rem;">
+                    <i class="bi bi-truck mimo-text-gold me-2"></i>
+                    Entregas MIMO
+                </h1>
+                <p class="mimo-text-muted mimo-mb-0">
+                    Kanban de entregas e logística
+                </p>
+            </div>
+            <a href="/entregas/nova" class="mimo-btn mimo-btn-primary">
+                <i class="bi bi-truck-plus"></i>
+                Nova Entrega
+            </a>
+        </div>
+
+        <!-- Métricas de Entregas -->
+        <div class="mimo-grid mimo-grid-4" style="margin-bottom: 2rem;">
+            <div class="mimo-card mimo-text-center">
+                <div style="font-size: 2rem; color: var(--mimo-warning); margin-bottom: 0.5rem;">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.25rem;">8</h3>
+                <p class="mimo-text-muted mimo-mb-0">Pendentes</p>
+            </div>
+            
+            <div class="mimo-card mimo-text-center">
+                <div style="font-size: 2rem; color: var(--mimo-info); margin-bottom: 0.5rem;">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.25rem;">12</h3>
+                <p class="mimo-text-muted mimo-mb-0">Em Trânsito</p>
+            </div>
+            
+            <div class="mimo-card mimo-text-center">
+                <div style="font-size: 2rem; color: var(--mimo-success); margin-bottom: 0.5rem;">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.25rem;">45</h3>
+                <p class="mimo-text-muted mimo-mb-0">Entregues</p>
+            </div>
+            
+            <div class="mimo-card mimo-text-center">
+                <div style="font-size: 2rem; color: var(--mimo-gold); margin-bottom: 0.5rem;">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.25rem;">96%</h3>
+                <p class="mimo-text-muted mimo-mb-0">Taxa Sucesso</p>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+            
+            <!-- Coluna: Pendentes -->
+            <div class="mimo-card" style="background: rgba(245, 158, 11, 0.05); border-left: 4px solid var(--mimo-warning);">
+                <div class="mimo-card-header">
+                    <h4 class="mimo-card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-clock" style="color: var(--mimo-warning);"></i>
+                        Pendentes
+                        <span class="mimo-badge mimo-badge-warning">8</span>
+                    </h4>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 500px; overflow-y: auto;">
+                    <!-- Card de Entrega -->
+                    <div class="mimo-card" style="margin: 0; padding: 1rem; border: 1px solid var(--mimo-gray-200);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600; color: var(--mimo-black);">#001</span>
+                            <span class="mimo-badge mimo-badge-warning">Pendente</span>
+                        </div>
+                        <h6 style="margin-bottom: 0.5rem;">Daniel - Anápolis</h6>
+                        <p class="mimo-text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            Fruta desidratada (50g) - Abacaxi com Limão
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <small class="mimo-text-muted">Hoje, 14:30</small>
+                            <button class="mimo-btn mimo-btn-ghost" style="padding: 0.25rem 0.5rem;">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mimo-card" style="margin: 0; padding: 1rem; border: 1px solid var(--mimo-gray-200);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600; color: var(--mimo-black);">#002</span>
+                            <span class="mimo-badge mimo-badge-warning">Pendente</span>
+                        </div>
+                        <h6 style="margin-bottom: 0.5rem;">Joy Roriz - Anápolis</h6>
+                        <p class="mimo-text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            Experiência Afeto
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <small class="mimo-text-muted">Hoje, 15:45</small>
+                            <button class="mimo-btn mimo-btn-ghost" style="padding: 0.25rem 0.5rem;">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna: Em Trânsito -->
+            <div class="mimo-card" style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid var(--mimo-info);">
+                <div class="mimo-card-header">
+                    <h4 class="mimo-card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-truck" style="color: var(--mimo-info);"></i>
+                        Em Trânsito
+                        <span class="mimo-badge mimo-badge-info">12</span>
+                    </h4>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 500px; overflow-y: auto;">
+                    <div class="mimo-card" style="margin: 0; padding: 1rem; border: 1px solid var(--mimo-gray-200);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600; color: var(--mimo-black);">#003</span>
+                            <span class="mimo-badge" style="background: rgba(59, 130, 246, 0.1); color: var(--mimo-info);">Em Trânsito</span>
+                        </div>
+                        <h6 style="margin-bottom: 0.5rem;">Pedro Busby - Anápolis</h6>
+                        <p class="mimo-text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            Kit Rolinho de fruta (12un)
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <small class="mimo-text-muted">Ontem, 16:20</small>
+                            <button class="mimo-btn mimo-btn-ghost" style="padding: 0.25rem 0.5rem;">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mimo-card" style="margin: 0; padding: 1rem; border: 1px solid var(--mimo-gray-200);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600; color: var(--mimo-black);">#004</span>
+                            <span class="mimo-badge" style="background: rgba(59, 130, 246, 0.1); color: var(--mimo-info);">Em Trânsito</span>
+                        </div>
+                        <h6 style="margin-bottom: 0.5rem;">Maria Geovana - Anápolis</h6>
+                        <p class="mimo-text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            Barra de chocolate - Coco com abacaxi
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <small class="mimo-text-muted">Ontem, 17:10</small>
+                            <button class="mimo-btn mimo-btn-ghost" style="padding: 0.25rem 0.5rem;">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna: Entregues -->
+            <div class="mimo-card" style="background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--mimo-success);">
+                <div class="mimo-card-header">
+                    <h4 class="mimo-card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-check-circle" style="color: var(--mimo-success);"></i>
+                        Entregues
+                        <span class="mimo-badge mimo-badge-success">45</span>
+                    </h4>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 500px; overflow-y: auto;">
+                    <div class="mimo-card" style="margin: 0; padding: 1rem; border: 1px solid var(--mimo-gray-200);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600; color: var(--mimo-black);">#005</span>
+                            <span class="mimo-badge mimo-badge-success">Entregue</span>
+                        </div>
+                        <h6 style="margin-bottom: 0.5rem;">Rebecca - Anápolis</h6>
+                        <p class="mimo-text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            Experiência Ananás
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <small class="mimo-text-muted">Anteontem, 10:15</small>
+                            <button class="mimo-btn mimo-btn-ghost" style="padding: 0.25rem 0.5rem;">
+                                <i class="bi bi-check"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mimo-card" style="margin: 0; padding: 1rem; border: 1px solid var(--mimo-gray-200);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600; color: var(--mimo-black);">#006</span>
+                            <span class="mimo-badge mimo-badge-success">Entregue</span>
+                        </div>
+                        <h6 style="margin-bottom: 0.5rem;">Juliana Salomão - Anápolis</h6>
+                        <p class="mimo-text-muted" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            Flor de Couro (G)
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <small class="mimo-text-muted">Anteontem, 11:30</small>
+                            <button class="mimo-btn mimo-btn-ghost" style="padding: 0.25rem 0.5rem;">
+                                <i class="bi bi-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos específicos para o kanban */
+.mimo-badge-info {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--mimo-info);
+}
+
+/* Animações suaves para drag and drop (futuro) */
+.kanban-card {
+    transition: var(--mimo-transition);
+    cursor: grab;
+}
+
+.kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mimo-shadow-lg);
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+</style>
+{% endblock %}

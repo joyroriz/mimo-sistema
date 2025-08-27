@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Sistema MIMO - Ponto de Entrada para Vercel
-Arquivo de entrada principal para deployment no Vercel
+Sistema MIMO Mark1 - Entry Point para Vercel
+Importa a aplicação principal do app_final_vercel.py
 """
 
-# Importar a aplicação principal
-try:
-    from .main_clean import app
-except ImportError:
-    from main_clean import app
+import sys
+import os
 
-# Exportar aplicação para Vercel
+# Adicionar o diretório raiz ao path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Importar a aplicação principal
+from app_final_vercel import app
+
+# Esta é a aplicação que o Vercel vai usar
 application = app
 
-# Para compatibilidade com diferentes configurações
-def handler(event, context):
-    """Handler para AWS Lambda/Vercel"""
-    return app(event, context)
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(debug=False)
