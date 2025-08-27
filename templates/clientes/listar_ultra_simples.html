@@ -3,51 +3,45 @@
 {% block title %}Clientes - Sistema MIMO{% endblock %}
 
 {% block content %}
-        <!-- Cabeçalho MIMO -->
-        <div class="row mb-4 mimo-fade-in">
-            <div class="col">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="mimo-h1 mb-0">
-                            <i class="bi bi-people-fill me-3 mimo-text-gold"></i>
-                            Gerenciar Clientes
-                        </h1>
-                        <p class="text-muted mb-0 fs-5">Cadastre e gerencie seus clientes com excelência</p>
-                    </div>
-                    <div>
-                        <a href="/clientes/novo" class="btn btn-mimo-primary btn-lg">
-                            <i class="bi bi-person-plus me-2"></i>
-                            Novo Cliente
-                        </a>
-                    </div>
-                </div>
-            </div>
+<div class="mimo-section">
+    <div class="mimo-container">
+        <!-- Header Elegante -->
+        <div class="mimo-text-center" style="margin-bottom: 3rem;">
+            <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">
+                <i class="bi bi-people-fill mimo-text-gold"></i>
+                Gerenciar Clientes
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--mimo-gray-400); margin: 0;">
+                Cadastre e gerencie seus clientes com excelência
+            </p>
         </div>
 
         <!-- Filtros e Busca MIMO -->
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <div class="d-flex">
-                    <input type="text" id="busca-cliente" class="form-control-mimo me-2"
-                           placeholder="🔍 Buscar por nome, telefone ou email..."
-                           style="min-width: 300px;">
-                    <button type="button" class="btn btn-mimo-primary" onclick="buscarClientes()">
-                        <i class="bi bi-search"></i>
-                    </button>
+        <div class="mimo-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div style="flex: 1; margin-right: 1rem;">
+                    <div style="position: relative;">
+                        <i class="bi bi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--mimo-gray-400);"></i>
+                        <input type="text" class="mimo-input" id="busca-cliente"
+                               placeholder="🔍 Buscar por nome, telefone ou cidade..."
+                               style="padding-left: 2.5rem;">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4 text-end">
-                <button class="btn btn-mimo-secondary" onclick="carregarClientes()">
-                    <i class="bi bi-arrow-clockwise me-1"></i>
-                    Atualizar
-                </button>
+                <div>
+                    <button class="mimo-btn mimo-btn-secondary" onclick="carregarClientes()" style="margin-right: 1rem;">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Atualizar
+                    </button>
+                    <a href="/clientes/novo" class="mimo-btn mimo-btn-primary">
+                        <i class="bi bi-person-plus"></i>
+                        Novo Cliente
+                    </a>
+                </div>
             </div>
         </div>
 
         <!-- Lista de Clientes MIMO -->
-        <div class="row">
-            <div class="col">
-                <div class="mimo-card">
+        <div class="mimo-card">
                     <div class="mimo-card-header">
                         <h2 class="mimo-h2 mb-0">
                             <i class="bi bi-list-ul me-2"></i>
@@ -80,8 +74,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+    </div>
+</div>
     </div>
 {% endblock %}
 

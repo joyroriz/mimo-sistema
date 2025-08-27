@@ -3,50 +3,34 @@
 {% block title %}Produtos - Sistema MIMO{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <!-- Cabeçalho -->
-    <div class="row mb-4">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="mb-0">
-                        <i class="bi bi-box me-2"></i>
-                        Gerenciar Produtos
-                    </h2>
-                    <p class="text-muted mb-0">Cadastre e gerencie seus produtos</p>
-                </div>
-                <div>
-                    <button class="btn btn-success btn-lg" onclick="alert('Funcionalidade em desenvolvimento')">
-                        <i class="bi bi-plus-circle me-2"></i>
-                        Novo Produto
-                    </button>
-                </div>
-            </div>
+<div class="mimo-section">
+    <div class="mimo-container">
+        <!-- Header Elegante -->
+        <div class="mimo-text-center" style="margin-bottom: 3rem;">
+            <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">
+                <i class="bi bi-box mimo-text-gold"></i>
+                Gerenciar Produtos
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--mimo-gray-400); margin: 0;">
+                Cadastre e gerencie seus produtos
+            </p>
         </div>
-    </div>
 
-    <!-- Filtros e Busca -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <form method="GET" class="d-flex">
-                <input type="text" name="search" class="form-control me-2" 
-                       placeholder="Buscar por nome ou descrição..." 
-                       value="{{ search }}"
-                       style="min-width: 300px;">
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-search"></i>
-                </button>
-                {% if search %}
-                <a href="/produtos" class="btn btn-outline-secondary ms-2">
-                    <i class="bi bi-x"></i>
-                </a>
-                {% endif %}
-            </form>
-        </div>
-        <div class="col-md-3">
-            <form method="GET">
-                <select name="categoria" class="form-select" onchange="this.form.submit()">
-                    <option value="">Todas as categorias</option>
+        <!-- Filtros e Busca MIMO -->
+        <div class="mimo-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div style="flex: 1; margin-right: 1rem;">
+                    <div style="position: relative;">
+                        <i class="bi bi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--mimo-gray-400);"></i>
+                        <input type="text" name="search" class="mimo-input"
+                               placeholder="Buscar por nome ou descrição..."
+                               value="{{ search }}"
+                               style="padding-left: 2.5rem;">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <select name="categoria" class="mimo-input" onchange="this.form.submit()">
+                        <option value="">Todas as categorias</option>
                     {% for cat in categorias %}
                     <option value="{{ cat }}" {% if categoria == cat %}selected{% endif %}>
                         {{ cat.replace('_', ' ').title() }}
