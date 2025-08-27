@@ -37,7 +37,7 @@
                     <i class="bi bi-search"></i>
                 </button>
                 {% if search %}
-                <a href="{{ url_for('produtos.listar') }}" class="btn btn-outline-secondary ms-2">
+                <a href="/produtos" class="btn btn-outline-secondary ms-2">
                     <i class="bi bi-x"></i>
                 </a>
                 {% endif %}
@@ -135,34 +135,21 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ url_for('produtos.visualizar', id=produto.id) }}" 
-                                       class="btn btn-outline-info" 
-                                       data-bs-toggle="tooltip" title="Visualizar">
+                                    <button class="btn btn-outline-info"
+                                            data-bs-toggle="tooltip" title="Visualizar"
+                                            onclick="alert('Funcionalidade em desenvolvimento')">
                                         <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ url_for('produtos.editar', id=produto.id) }}" 
-                                       class="btn btn-outline-primary"
-                                       data-bs-toggle="tooltip" title="Editar">
+                                    </button>
+                                    <button class="btn btn-outline-primary"
+                                            data-bs-toggle="tooltip" title="Editar"
+                                            onclick="alert('Funcionalidade em desenvolvimento')">
                                         <i class="bi bi-pencil"></i>
-                                    </a>
-                                    {% if produto.ativo %}
-                                    <form method="POST" action="{{ url_for('produtos.desativar', id=produto.id) }}" 
-                                          class="d-inline">
-                                        <button type="submit" class="btn btn-outline-warning"
-                                                data-bs-toggle="tooltip" title="Desativar"
-                                                onclick="return confirm('Desativar produto {{ produto.nome }}?')">
-                                            <i class="bi bi-pause"></i>
-                                        </button>
-                                    </form>
-                                    {% else %}
-                                    <form method="POST" action="{{ url_for('produtos.ativar', id=produto.id) }}" 
-                                          class="d-inline">
-                                        <button type="submit" class="btn btn-outline-success"
-                                                data-bs-toggle="tooltip" title="Ativar">
-                                            <i class="bi bi-play"></i>
-                                        </button>
-                                    </form>
-                                    {% endif %}
+                                    </button>
+                                    <button class="btn btn-outline-danger"
+                                            data-bs-toggle="tooltip" title="Excluir"
+                                            onclick="alert('Funcionalidade em desenvolvimento')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -177,7 +164,7 @@
                 <p class="text-muted">
                     {% if search %}
                     Não encontramos produtos com o termo "{{ search }}".
-                    <br><a href="{{ url_for('produtos.listar') }}">Ver todos os produtos</a>
+                    <br><a href="/produtos">Ver todos os produtos</a>
                     {% else %}
                     Comece cadastrando seu primeiro produto.
                     {% endif %}
@@ -190,50 +177,7 @@
             {% endif %}
         </div>
         
-        <!-- Paginação -->
-        {% if produtos.pages > 1 %}
-        <div class="card-footer">
-            <nav aria-label="Paginação de produtos">
-                <ul class="pagination justify-content-center mb-0">
-                    {% if produtos.has_prev %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('produtos.listar', page=produtos.prev_num, search=search, categoria=categoria) }}">
-                            <i class="bi bi-chevron-left"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for page_num in produtos.iter_pages() %}
-                        {% if page_num %}
-                            {% if page_num != produtos.page %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('produtos.listar', page=page_num, search=search, categoria=categoria) }}">
-                                    {{ page_num }}
-                                </a>
-                            </li>
-                            {% else %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ page_num }}</span>
-                            </li>
-                            {% endif %}
-                        {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if produtos.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('produtos.listar', page=produtos.next_num, search=search, categoria=categoria) }}">
-                            <i class="bi bi-chevron-right"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
-        {% endif %}
+        <!-- Paginação removida temporariamente -->
     </div>
 </div>
 {% endblock %}
