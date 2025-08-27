@@ -6,7 +6,6 @@ Sistema completo de gestão empresarial
 """
 
 import os
-import sqlite3
 from datetime import datetime, date
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import json
