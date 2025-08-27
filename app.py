@@ -384,29 +384,24 @@ def carregar_dados_reais():
 def index():
     """Página inicial - Dashboard"""
     try:
-        conn = get_db_connection()
-        
-        # Estatísticas básicas
-        total_clientes = conn.execute('SELECT COUNT(*) FROM clientes').fetchone()[0]
-        total_produtos = conn.execute('SELECT COUNT(*) FROM produtos').fetchone()[0]
-        total_vendas = conn.execute('SELECT COUNT(*) FROM vendas').fetchone()[0]
-        
-        # Vendas do mês
-        vendas_mes = conn.execute('''
-            SELECT COALESCE(SUM(total), 0) 
-            FROM vendas 
-            WHERE strftime('%Y-%m', data_venda) = strftime('%Y-%m', 'now')
-        ''').fetchone()[0]
-        
-        conn.close()
-        
+        # Usar dados mock para Vercel
+        data = get_db_connection()
+
+        # Estatísticas básicas usando dados mock
+        total_clientes = len(data['clientes'])
+        total_produtos = len(data['produtos'])
+        total_vendas = len(data['vendas'])
+
+        # Vendas do mês (soma dos valores)
+        vendas_mes = sum([venda['valor_total'] for venda in data['vendas']])
+
         stats = {
             'total_clientes': total_clientes,
             'total_produtos': total_produtos,
             'total_vendas': total_vendas,
             'vendas_mes': float(vendas_mes) if vendas_mes else 0.0
         }
-        
+
         return render_template('dashboard.html', stats=stats)
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'dashboard'}), 500
