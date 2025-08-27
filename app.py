@@ -788,9 +788,6 @@ def internal_error(error):
 
 # ==================== EXECUÇÃO ====================
 
-# Inicializar banco de dados
-init_database()
-
 # Exportar para Vercel
 application = app
 
