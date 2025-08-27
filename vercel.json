@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "sistema-mimo-mark1-final",
   "builds": [
     {
       "src": "api/index.py",
@@ -9,16 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "/api/index.py"
     }
-  ],
-  "env": {
-    "FLASK_ENV": "production",
-    "PYTHONPATH": "."
-  }
+  ]
 }
