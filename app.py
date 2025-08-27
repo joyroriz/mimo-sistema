@@ -442,8 +442,18 @@ def produtos():
 def vendas():
     """Página lista de vendas"""
     try:
-        # Usar dados mock para Vercel
         data = get_db_connection()
+
+        # Enriquecer dados de vendas com informações de clientes e produtos
+        vendas_enriched = []
+        for venda in data['vendas']:
+            cliente = next((c for c in data['clientes'] if c['id'] == venda['cliente_id']), None)
+            produto = next((p for p in data['produtos'] if p['id'] == venda['produto_id']), None)
+
+            venda_copy = venda.copy()
+            venda_copy['cliente_nome'] = cliente['nome'] if cliente else 'Cliente não encontrado'
+            venda_copy['produto_nome'] = produto['nome'] if produto else 'Produto não encontrado'
+            vendas_enriched.append(venda_copy)
 
         # Simular objeto de paginação
         class MockPagination:
@@ -459,7 +469,7 @@ def vendas():
             def iter_pages(self):
                 return [1]
 
-        vendas_mock = MockPagination(data['vendas'])
+        vendas_mock = MockPagination(vendas_enriched)
 
         return render_template('vendas/listar.html', vendas=vendas_mock)
     except Exception as e:
@@ -473,11 +483,70 @@ def entregas():
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'entregas'}), 500
 
+@app.route('/entregas')
+def entregas():
+    """Página lista de entregas"""
+    try:
+        data = get_db_connection()
+
+        # Criar dados de entregas baseados nas vendas
+        entregas_list = []
+        for venda in data['vendas']:
+            cliente = next((c for c in data['clientes'] if c['id'] == venda['cliente_id']), None)
+            produto = next((p for p in data['produtos'] if p['id'] == venda['produto_id']), None)
+
+            if cliente and produto:
+                entrega = {
+                    'id': venda['id'],
+                    'venda_id': venda['id'],
+                    'cliente_nome': cliente['nome'],
+                    'produto_nome': produto['nome'],
+                    'endereco': cliente['endereco'],
+                    'cidade': cliente['cidade'],
+                    'cep': cliente['cep'],
+                    'data_entrega': venda['data_venda'],
+                    'status': 'Entregue' if venda['status'] == 'Concluída' else 'Pendente',
+                    'valor_total': venda['valor_total']
+                }
+                entregas_list.append(entrega)
+
+        # Simular objeto de paginação
+        class MockPagination:
+            def __init__(self, items):
+                self.data = items
+                self.total = len(items)
+                self.pages = 1
+                self.page = 1
+                self.per_page = len(items)
+                self.has_prev = False
+                self.has_next = False
+
+            def iter_pages(self):
+                return [1]
+
+        entregas_mock = MockPagination(entregas_list)
+
+        return render_template('entregas/listar.html', entregas=entregas_mock)
+    except Exception as e:
+        return jsonify({'error': str(e), 'page': 'entregas'}), 500
+
 @app.route('/crm')
 def crm():
     """Página CRM"""
     try:
-        return render_template('crm/dashboard.html')
+        # Dados mock de CRM
+        leads = [
+            {'id': 1, 'nome': 'Roberto Silva', 'email': 'roberto@email.com', 'telefone': '(11) 99999-1111', 'empresa': 'Tech Solutions', 'status': 'Novo', 'valor_estimado': 5000.00, 'data_criacao': '2024-08-27'},
+            {'id': 2, 'nome': 'Fernanda Costa', 'email': 'fernanda@empresa.com', 'telefone': '(11) 88888-2222', 'empresa': 'Inovação Ltda', 'status': 'Qualificado', 'valor_estimado': 8000.00, 'data_criacao': '2024-08-26'},
+            {'id': 3, 'nome': 'Marcos Oliveira', 'email': 'marcos@startup.com', 'telefone': '(11) 77777-3333', 'empresa': 'StartupTech', 'status': 'Proposta', 'valor_estimado': 12000.00, 'data_criacao': '2024-08-25'},
+        ]
+
+        oportunidades = [
+            {'id': 1, 'nome': 'Projeto Tech Solutions', 'valor': 5000.00, 'probabilidade': 80, 'estagio': 'Negociação'},
+            {'id': 2, 'nome': 'Consultoria Inovação', 'valor': 8000.00, 'probabilidade': 60, 'estagio': 'Proposta'},
+        ]
+
+        return render_template('crm/dashboard.html', leads=leads, oportunidades=oportunidades)
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'crm'}), 500
 
@@ -782,16 +851,98 @@ def internal_error(error):
 
 # ==================== EXECUÇÃO ====================
 
-# Exportar para Vercel
+# APIs completas para funcionalidade total
+
+@app.route('/api/vendas', methods=['GET'])
+def api_listar_vendas():
+    """API para listar vendas"""
+    try:
+        data = get_db_connection()
+        vendas_list = data['vendas']
+
+        # Enriquecer dados com nomes de clientes e produtos
+        for venda in vendas_list:
+            cliente = next((c for c in data['clientes'] if c['id'] == venda['cliente_id']), None)
+            produto = next((p for p in data['produtos'] if p['id'] == venda['produto_id']), None)
+            venda['cliente_nome'] = cliente['nome'] if cliente else 'Cliente não encontrado'
+            venda['produto_nome'] = produto['nome'] if produto else 'Produto não encontrado'
+
+        return jsonify({
+            'success': True,
+            'vendas': vendas_list,
+            'total': len(vendas_list)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/entregas', methods=['GET'])
+def api_listar_entregas():
+    """API para listar entregas"""
+    try:
+        data = get_db_connection()
+
+        # Criar dados de entregas baseados nas vendas
+        entregas = []
+        for venda in data['vendas']:
+            cliente = next((c for c in data['clientes'] if c['id'] == venda['cliente_id']), None)
+            produto = next((p for p in data['produtos'] if p['id'] == venda['produto_id']), None)
+
+            if cliente and produto:
+                entrega = {
+                    'id': venda['id'],
+                    'venda_id': venda['id'],
+                    'cliente_nome': cliente['nome'],
+                    'produto_nome': produto['nome'],
+                    'endereco': cliente['endereco'],
+                    'cidade': cliente['cidade'],
+                    'cep': cliente['cep'],
+                    'data_entrega': venda['data_venda'],
+                    'status': 'Entregue' if venda['status'] == 'Concluída' else 'Pendente',
+                    'valor_total': venda['valor_total']
+                }
+                entregas.append(entrega)
+
+        return jsonify({
+            'success': True,
+            'entregas': entregas,
+            'total': len(entregas)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/crm/leads', methods=['GET'])
+def api_listar_leads():
+    """API para listar leads do CRM"""
+    try:
+        # Dados mock de leads para demonstração
+        leads = [
+            {'id': 1, 'nome': 'Roberto Silva', 'email': 'roberto@email.com', 'telefone': '(11) 99999-1111', 'empresa': 'Tech Solutions', 'status': 'Novo', 'valor_estimado': 5000.00, 'data_criacao': '2024-08-27'},
+            {'id': 2, 'nome': 'Fernanda Costa', 'email': 'fernanda@empresa.com', 'telefone': '(11) 88888-2222', 'empresa': 'Inovação Ltda', 'status': 'Qualificado', 'valor_estimado': 8000.00, 'data_criacao': '2024-08-26'},
+            {'id': 3, 'nome': 'Marcos Oliveira', 'email': 'marcos@startup.com', 'telefone': '(11) 77777-3333', 'empresa': 'StartupTech', 'status': 'Proposta', 'valor_estimado': 12000.00, 'data_criacao': '2024-08-25'},
+        ]
+
+        return jsonify({
+            'success': True,
+            'leads': leads,
+            'total': len(leads)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# Exportar para compatibilidade
 application = app
 
 if __name__ == '__main__':
-    print("🚀 Iniciando Sistema MIMO...")
-    print("📊 Dashboard: http://localhost:8080")
-    print("👥 Clientes: http://localhost:8080/clientes")
-    print("📦 Produtos: http://localhost:8080/produtos")
-    print("💰 Vendas: http://localhost:8080/vendas")
-    print("🚚 Entregas: http://localhost:8080/entregas")
-    print("❤️ CRM: http://localhost:8080/crm")
+    import os
+    port = int(os.environ.get('PORT', 8080))
+    debug = os.environ.get('FLASK_ENV') == 'development'
 
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    print("🚀 Iniciando Sistema MIMO Mark1...")
+    print(f"📊 Dashboard: http://localhost:{port}")
+    print(f"👥 Clientes: http://localhost:{port}/clientes")
+    print(f"📦 Produtos: http://localhost:{port}/produtos")
+    print(f"💰 Vendas: http://localhost:{port}/vendas")
+    print(f"🚚 Entregas: http://localhost:{port}/entregas")
+    print(f"❤️ CRM: http://localhost:{port}/crm")
+
+    app.run(debug=debug, host='0.0.0.0', port=port)
