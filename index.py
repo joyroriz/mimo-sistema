@@ -5,62 +5,86 @@ Sistema MIMO Mark1 - Vercel Serverless Function
 Aplicação Flask auto-contida para deploy no Vercel
 """
 
-from flask import Flask, jsonify, request
-from datetime import datetime
+from flask import Flask, render_template, jsonify, request, redirect, url_for
+from datetime import datetime, timedelta
 import json
 import os
+import sqlite3
 
 # Criar aplicação Flask
-app = Flask(__name__)
+app = Flask(__name__,
+           template_folder='templates',
+           static_folder='static')
 
 # Configuração
 app.config['SECRET_KEY'] = 'mimo-sistema-2024'
 
-# ==================== DADOS MOCK ====================
+# ==================== BANCO DE DADOS ====================
 
-def get_mock_data():
-    """Retorna dados mock para demonstração"""
-    return {
-        'clientes': [
-            {'id': 1, 'nome': 'João Silva', 'email': 'joao@email.com', 'telefone': '(11) 99999-9999'},
-            {'id': 2, 'nome': 'Maria Santos', 'email': 'maria@email.com', 'telefone': '(11) 88888-8888'},
-            {'id': 3, 'nome': 'Pedro Costa', 'email': 'pedro@email.com', 'telefone': '(11) 77777-7777'}
-        ],
-        'produtos': [
-            {'id': 1, 'nome': 'Produto A', 'preco': 29.90, 'categoria': 'Categoria 1', 'estoque': 100},
-            {'id': 2, 'nome': 'Produto B', 'preco': 49.90, 'categoria': 'Categoria 2', 'estoque': 50},
-            {'id': 3, 'nome': 'Produto C', 'preco': 79.90, 'categoria': 'Categoria 1', 'estoque': 25}
-        ],
-        'vendas': [
-            {'id': 1, 'cliente_id': 1, 'produto_id': 1, 'quantidade': 2, 'valor_total': 59.80, 'data_venda': '2024-08-27', 'status': 'Concluída'},
-            {'id': 2, 'cliente_id': 2, 'produto_id': 2, 'quantidade': 1, 'valor_total': 49.90, 'data_venda': '2024-08-27', 'status': 'Pendente'},
-            {'id': 3, 'cliente_id': 3, 'produto_id': 3, 'quantidade': 3, 'valor_total': 239.70, 'data_venda': '2024-08-26', 'status': 'Concluída'}
-        ]
-    }
+def init_db():
+    """Inicializar banco de dados SQLite"""
+    conn = sqlite3.connect('mimo.db')
+    cursor = conn.cursor()
+
+    # Criar tabelas
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS clientes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            email TEXT,
+            telefone TEXT,
+            endereco TEXT,
+            data_cadastro TEXT
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS produtos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            preco REAL,
+            categoria TEXT,
+            estoque INTEGER,
+            descricao TEXT
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS vendas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cliente_id INTEGER,
+            produto_id INTEGER,
+            quantidade INTEGER,
+            valor_total REAL,
+            data_venda TEXT,
+            status TEXT,
+            FOREIGN KEY (cliente_id) REFERENCES clientes (id),
+            FOREIGN KEY (produto_id) REFERENCES produtos (id)
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
 
 # ==================== ROTAS ====================
 
 @app.route('/')
 def dashboard():
     """Dashboard principal"""
-    return jsonify({
-        'message': '🍓 Sistema MIMO Mark1 Online!',
-        'status': 'running',
-        'timestamp': datetime.now().isoformat(),
-        'version': '1.0.0-vercel',
-        'modules': {
-            'clientes': '/api/clientes',
-            'produtos': '/api/produtos',
-            'vendas': '/api/vendas',
-            'health': '/api/health',
-            'status': '/api/status'
-        },
-        'urls': {
-            'dashboard': '/',
-            'api_base': '/api',
-            'github': 'https://github.com/joyroriz/mimo-sistema'
-        }
-    })
+    try:
+        return render_template('dashboard-refined.html')
+    except:
+        return jsonify({
+            'message': '🍓 Sistema MIMO Mark1 Online!',
+            'status': 'running',
+            'timestamp': datetime.now().isoformat(),
+            'modules': {
+                'clientes': '/clientes',
+                'produtos': '/produtos',
+                'vendas': '/vendas',
+                'health': '/health'
+            }
+        })
 
 @app.route('/health')
 def health():
@@ -77,69 +101,66 @@ def health():
 
 @app.route('/clientes')
 def clientes():
-    """API de clientes"""
-    data = get_mock_data()
-    return jsonify({
-        'module': 'clientes',
-        'status': 'active',
-        'message': 'Módulo de clientes funcionando',
-        'data': data['clientes'],
-        'total': len(data['clientes'])
-    })
+    """Página de clientes"""
+    try:
+        return render_template('clientes-refined.html')
+    except:
+        return jsonify({
+            'module': 'clientes',
+            'status': 'active',
+            'message': 'Módulo de clientes funcionando'
+        })
 
 @app.route('/produtos')
 def produtos():
-    """API de produtos"""
-    data = get_mock_data()
-    return jsonify({
-        'module': 'produtos',
-        'status': 'active',
-        'message': 'Módulo de produtos funcionando',
-        'data': data['produtos'],
-        'total': len(data['produtos'])
-    })
+    """Página de produtos"""
+    try:
+        return render_template('produtos-refined.html')
+    except:
+        return jsonify({
+            'module': 'produtos',
+            'status': 'active',
+            'message': 'Módulo de produtos funcionando'
+        })
 
 @app.route('/vendas')
 def vendas():
-    """API de vendas"""
-    data = get_mock_data()
-    return jsonify({
-        'module': 'vendas',
-        'status': 'active',
-        'message': 'Módulo de vendas funcionando',
-        'data': data['vendas'],
-        'total': len(data['vendas'])
-    })
+    """Página de vendas"""
+    try:
+        return render_template('vendas-refined.html')
+    except:
+        return jsonify({
+            'module': 'vendas',
+            'status': 'active',
+            'message': 'Módulo de vendas funcionando'
+        })
 
-@app.route('/status')
+@app.route('/api/status')
 def api_status():
     """Status da API"""
     return jsonify({
         'api': 'Sistema MIMO API',
         'status': 'operational',
         'timestamp': datetime.now().isoformat(),
-        'platform': 'Vercel Serverless Functions',
         'endpoints': [
-            '/ - Dashboard principal',
-            '/health - Health check',
-            '/clientes - API de clientes',
-            '/produtos - API de produtos',
-            '/vendas - API de vendas',
-            '/status - Status da API'
-        ],
-        'features': [
-            'API REST funcionando',
-            'Dados mock disponíveis',
-            'Deploy automático via GitHub',
-            'Serverless Functions'
+            '/health',
+            '/clientes',
+            '/produtos',
+            '/vendas',
+            '/api/status'
         ]
     })
 
-# ==================== HANDLER PARA VERCEL ====================
+# ==================== INICIALIZAÇÃO ====================
 
-# Exportar app para Vercel
+# Inicializar banco de dados
+try:
+    init_db()
+except Exception as e:
+    print(f"Erro ao inicializar DB: {e}")
+
+# Exportar para Vercel
 application = app
 
-# Para desenvolvimento local
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
