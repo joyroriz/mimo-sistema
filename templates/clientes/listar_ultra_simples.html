@@ -5,74 +5,231 @@
 {% block content %}
 <div class="mimo-section">
     <div class="mimo-container">
-        <!-- Header Elegante -->
-        <div class="mimo-text-center" style="margin-bottom: 3rem;">
-            <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">
-                <i class="bi bi-people-fill mimo-text-gold"></i>
-                Gerenciar Clientes
-            </h1>
-            <p style="font-size: 1.125rem; color: var(--mimo-gray-400); margin: 0;">
-                Cadastre e gerencie seus clientes com excelência
-            </p>
+        <!-- Header Elegante com Tipografia Aprimorada -->
+        <div class="mimo-text-center" style="margin-bottom: 4rem;">
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size: 4rem; color: var(--mimo-gold); margin-bottom: 1rem; line-height: 1;">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <h1 style="font-family: var(--mimo-font-secondary); font-size: 3.5rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; color: var(--mimo-black);">
+                    Gerenciar Clientes
+                </h1>
+                <p style="font-family: var(--mimo-font-primary); font-size: 1.25rem; font-weight: 400; color: var(--mimo-gray-400); margin: 0; line-height: 1.5; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Cadastre e gerencie seus clientes com excelência e organização profissional
+                </p>
+            </div>
+
+            <!-- Estatísticas Visuais -->
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;" id="total-clientes-header">0</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Clientes Ativos</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;">3</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Cidades</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Filtros e Busca MIMO -->
-        <div class="mimo-card" style="margin-bottom: 2rem; padding: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <div style="flex: 1; margin-right: 1rem;">
+        <!-- Filtros e Busca MIMO Aprimorados -->
+        <div class="mimo-card" style="margin-bottom: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--mimo-white) 0%, #fefefe 100%); border: 1px solid var(--mimo-gray-100); box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <!-- Título da Seção -->
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="font-family: var(--mimo-font-secondary); font-size: 1.5rem; font-weight: 600; color: var(--mimo-black); margin: 0; display: flex; align-items: center;">
+                    <i class="bi bi-funnel" style="color: var(--mimo-gold); margin-right: 0.75rem; font-size: 1.25rem;"></i>
+                    Filtros e Busca
+                </h3>
+                <p style="font-family: var(--mimo-font-primary); font-size: 0.875rem; color: var(--mimo-gray-400); margin: 0.5rem 0 0 2rem;">
+                    Encontre rapidamente o cliente que você procura
+                </p>
+            </div>
+
+            <!-- Controles de Busca -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap;">
+                <!-- Campo de Busca Aprimorado -->
+                <div style="flex: 1; min-width: 300px;">
+                    <label style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-600); display: block; margin-bottom: 0.5rem;">
+                        Buscar Cliente
+                    </label>
                     <div style="position: relative;">
-                        <i class="bi bi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--mimo-gray-400);"></i>
+                        <i class="bi bi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--mimo-gray-400); font-size: 1rem; z-index: 2;"></i>
                         <input type="text" class="mimo-input" id="busca-cliente"
-                               placeholder="🔍 Buscar por nome, telefone ou cidade..."
-                               style="padding-left: 2.5rem;">
+                               placeholder="Digite nome, telefone ou cidade..."
+                               style="padding-left: 2.75rem; font-size: 0.9rem; height: 3rem; border: 2px solid var(--mimo-gray-200); transition: all 0.3s ease; background: var(--mimo-white);"
+                               onfocus="this.style.borderColor='var(--mimo-gold)'; this.style.boxShadow='0 0 0 3px rgba(212, 175, 55, 0.1)'"
+                               onblur="this.style.borderColor='var(--mimo-gray-200)'; this.style.boxShadow='none'">
                     </div>
                 </div>
-                <div>
-                    <button class="mimo-btn mimo-btn-secondary" onclick="carregarClientes()" style="margin-right: 1rem;">
-                        <i class="bi bi-arrow-clockwise"></i>
-                        Atualizar
+
+                <!-- Botões de Ação Aprimorados -->
+                <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <button class="mimo-btn mimo-btn-secondary" onclick="carregarClientes()"
+                            style="height: 3rem; padding: 0 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="bi bi-arrow-clockwise" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Atualizar</span>
                     </button>
-                    <a href="/clientes/novo" class="mimo-btn mimo-btn-primary">
-                        <i class="bi bi-person-plus"></i>
-                        Novo Cliente
+                    <a href="/clientes/novo" class="mimo-btn mimo-btn-primary"
+                       style="height: 3rem; padding: 0 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);">
+                        <i class="bi bi-person-plus" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Novo Cliente</span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Lista de Clientes MIMO -->
-        <div class="mimo-card">
-                    <div class="mimo-card-header">
-                        <h2 class="mimo-h2 mb-0">
-                            <i class="bi bi-list-ul me-2"></i>
+        <!-- Lista de Clientes MIMO Aprimorada -->
+        <div class="mimo-card" style="background: var(--mimo-white); border: 1px solid var(--mimo-gray-100); box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden;">
+            <!-- Cabeçalho da Lista Elegante -->
+            <div style="padding: 2rem 2rem 1.5rem 2rem; background: linear-gradient(135deg, #fafafa 0%, var(--mimo-white) 100%); border-bottom: 2px solid var(--mimo-gray-100);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="font-family: var(--mimo-font-secondary); font-size: 2rem; font-weight: 700; color: var(--mimo-black); margin: 0; display: flex; align-items: center; letter-spacing: -0.01em;">
+                            <i class="bi bi-list-ul" style="color: var(--mimo-gold); margin-right: 0.75rem; font-size: 1.75rem;"></i>
                             Lista de Clientes
-                            <span id="total-clientes" class="badge-mimo badge-mimo-gold ms-2">0</span>
                         </h2>
+                        <p style="font-family: var(--mimo-font-primary); font-size: 0.9rem; color: var(--mimo-gray-400); margin: 0.5rem 0 0 2.5rem; font-weight: 400;">
+                            Visualize e gerencie todos os seus clientes cadastrados
+                        </p>
                     </div>
-                    <div class="mimo-card-body p-0">
-                        <div class="table-responsive">
-                            <table id="tabela-clientes" class="table table-mimo mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Cliente</th>
-                                        <th>Telefone</th>
-                                        <th>Cidade</th>
-                                        <th>Cadastro</th>
-                                        <th width="140">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-5">
-                                            <i class="bi bi-hourglass-split fs-1 d-block mb-3 mimo-text-gold"></i>
-                                            <h5>Carregando clientes...</h5>
-                                            <p class="text-muted">Aguarde um momento</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div style="text-align: right;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-500);">Total:</span>
+                            <span id="total-clientes" style="
+                                font-family: var(--mimo-font-secondary);
+                                font-size: 1.5rem;
+                                font-weight: 700;
+                                color: var(--mimo-white);
+                                background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                padding: 0.5rem 1rem;
+                                border-radius: 2rem;
+                                min-width: 3rem;
+                                text-align: center;
+                                box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+                                line-height: 1;
+                            ">0</span>
                         </div>
                     </div>
+                </div>
+            </div>
+            <!-- Tabela de Clientes Aprimorada -->
+            <div style="padding: 0; overflow: hidden;">
+                <div style="overflow-x: auto;">
+                    <table id="tabela-clientes" style="width: 100%; border-collapse: collapse; background: var(--mimo-white);">
+                        <!-- Cabeçalho da Tabela Elegante -->
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%); border-bottom: 2px solid var(--mimo-gray-200);">
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-person" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Cliente
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-telephone" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Telefone
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-geo-alt" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Cidade
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-calendar-plus" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Cadastro
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: center;
+                                    border: none;
+                                    width: 140px;
+                                ">
+                                    <i class="bi bi-gear" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <!-- Corpo da Tabela -->
+                        <tbody>
+                            <tr>
+                                <td colspan="5" style="
+                                    text-align: center;
+                                    padding: 4rem 2rem;
+                                    background: var(--mimo-white);
+                                    border: none;
+                                ">
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                                        <div style="
+                                            font-size: 3rem;
+                                            color: var(--mimo-gold);
+                                            animation: spin 2s linear infinite;
+                                        ">
+                                            <i class="bi bi-hourglass-split"></i>
+                                        </div>
+                                        <h5 style="
+                                            font-family: var(--mimo-font-secondary);
+                                            font-size: 1.5rem;
+                                            font-weight: 600;
+                                            color: var(--mimo-black);
+                                            margin: 0;
+                                        ">Carregando clientes...</h5>
+                                        <p style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-size: 0.9rem;
+                                            color: var(--mimo-gray-400);
+                                            margin: 0;
+                                        ">Aguarde um momento enquanto buscamos seus dados</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
                 </div>
     </div>
 </div>
@@ -96,61 +253,206 @@
                 const totalBadge = document.getElementById('total-clientes');
                 
                 if (data.clientes && data.clientes.length > 0) {
-                    tbody.innerHTML = data.clientes.map(cliente => {
+                    tbody.innerHTML = data.clientes.map((cliente, index) => {
                         const dataFormatada = new Date(cliente.data_cadastro).toLocaleDateString('pt-BR');
                         return `
-                            <tr class="mimo-fade-in">
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mimo-avatar me-3">
+                            <tr style="
+                                border-bottom: 1px solid var(--mimo-gray-100);
+                                transition: all 0.3s ease;
+                                animation: fadeInUp 0.6s ease forwards;
+                                animation-delay: ${index * 0.1}s;
+                                opacity: 0;
+                                transform: translateY(20px);
+                            "
+                            onmouseover="this.style.backgroundColor='#fafafa'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+                            onmouseout="this.style.backgroundColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="
+                                            width: 3rem;
+                                            height: 3rem;
+                                            border-radius: 50%;
+                                            background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-family: var(--mimo-font-secondary);
+                                            font-size: 1.25rem;
+                                            font-weight: 700;
+                                            color: var(--mimo-white);
+                                            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+                                        ">
                                             ${cliente.nome.charAt(0).toUpperCase()}
                                         </div>
                                         <div>
-                                            <div class="fw-bold fs-6">${cliente.nome}</div>
-                                            <small class="text-muted">${cliente.email}</small>
+                                            <div style="
+                                                font-family: var(--mimo-font-primary);
+                                                font-size: 1rem;
+                                                font-weight: 600;
+                                                color: var(--mimo-black);
+                                                line-height: 1.3;
+                                            ">${cliente.nome}</div>
+                                            <div style="
+                                                font-family: var(--mimo-font-primary);
+                                                font-size: 0.875rem;
+                                                color: var(--mimo-gray-400);
+                                                margin-top: 0.25rem;
+                                            ">${cliente.email}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="badge-mimo badge-mimo-gold">${cliente.telefone}</span>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-size: 0.9rem;
+                                        font-weight: 500;
+                                        color: var(--mimo-black);
+                                        background: var(--mimo-cream);
+                                        padding: 0.5rem 1rem;
+                                        border-radius: 1.5rem;
+                                        display: inline-block;
+                                        border: 1px solid var(--mimo-gray-200);
+                                    ">${cliente.telefone}</div>
                                 </td>
-                                <td>
-                                    <span class="fw-medium">${cliente.cidade}</span>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-size: 0.9rem;
+                                        font-weight: 500;
+                                        color: var(--mimo-gray-700);
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 0.5rem;
+                                    ">
+                                        <i class="bi bi-geo-alt-fill" style="color: var(--mimo-gold); font-size: 0.875rem;"></i>
+                                        ${cliente.cidade}
+                                    </div>
                                 </td>
-                                <td>
-                                    <small class="text-muted">${dataFormatada}</small>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-size: 0.875rem;
+                                        color: var(--mimo-gray-500);
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 0.5rem;
+                                    ">
+                                        <i class="bi bi-calendar3" style="color: var(--mimo-gold); font-size: 0.875rem;"></i>
+                                        ${dataFormatada}
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-mimo-primary btn-sm" onclick="abrirWhatsApp('${cliente.telefone}')" title="WhatsApp">
-                                            <i class="bi bi-whatsapp"></i>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle; text-align: center;">
+                                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                        <button onclick="abrirWhatsApp('${cliente.telefone}')" title="Abrir WhatsApp" style="
+                                            background: #25D366;
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            padding: 0.5rem;
+                                            width: 2.5rem;
+                                            height: 2.5rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3);
+                                        "
+                                        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 8px rgba(37, 211, 102, 0.4)'"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(37, 211, 102, 0.3)'">
+                                            <i class="bi bi-whatsapp" style="font-size: 1rem;"></i>
                                         </button>
-                                        <button class="btn btn-mimo-secondary btn-sm" onclick="copiarTelefone('${cliente.telefone}')" title="Copiar telefone">
-                                            <i class="bi bi-telephone"></i>
+                                        <button onclick="copiarTelefone('${cliente.telefone}')" title="Copiar telefone" style="
+                                            background: var(--mimo-gray-500);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            padding: 0.5rem;
+                                            width: 2.5rem;
+                                            height: 2.5rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                        "
+                                        onmouseover="this.style.transform='scale(1.1)'; this.style.backgroundColor='var(--mimo-gold)'"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor='var(--mimo-gray-500)'">
+                                            <i class="bi bi-telephone" style="font-size: 1rem;"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
                         `;
                     }).join('');
-                    
+
+                    // Atualizar estatísticas com animação
                     totalBadge.textContent = data.clientes.length;
+                    const totalHeaderBadge = document.getElementById('total-clientes-header');
+                    if (totalHeaderBadge) {
+                        totalHeaderBadge.textContent = data.clientes.length;
+                    }
                     console.log('Clientes carregados com sucesso:', data.clientes.length);
                 } else {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <i class="bi bi-people fs-1 d-block mb-2"></i>
-                                <h5>Nenhum cliente cadastrado</h5>
-                                <p>Comece cadastrando seu primeiro cliente</p>
-                                <a href="/clientes/novo" class="btn btn-primary">
-                                    <i class="bi bi-person-plus me-2"></i>
-                                    Cadastrar Cliente
-                                </a>
+                            <td colspan="5" style="
+                                text-align: center;
+                                padding: 4rem 2rem;
+                                background: var(--mimo-white);
+                                border: none;
+                            ">
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+                                    <div style="
+                                        font-size: 4rem;
+                                        color: var(--mimo-gray-300);
+                                    ">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <div>
+                                        <h5 style="
+                                            font-family: var(--mimo-font-secondary);
+                                            font-size: 1.5rem;
+                                            font-weight: 600;
+                                            color: var(--mimo-black);
+                                            margin: 0 0 0.5rem 0;
+                                        ">Nenhum cliente cadastrado</h5>
+                                        <p style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-size: 1rem;
+                                            color: var(--mimo-gray-400);
+                                            margin: 0 0 2rem 0;
+                                        ">Comece cadastrando seu primeiro cliente e expanda seu negócio</p>
+                                        <a href="/clientes/novo" style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-weight: 600;
+                                            background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                            color: var(--mimo-white);
+                                            padding: 1rem 2rem;
+                                            border-radius: 2rem;
+                                            text-decoration: none;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+                                        "
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(212, 175, 55, 0.4)'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 175, 55, 0.3)'">
+                                            <i class="bi bi-person-plus" style="font-size: 1rem;"></i>
+                                            Cadastrar Primeiro Cliente
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     `;
                     totalBadge.textContent = '0';
+                    const totalHeaderBadge = document.getElementById('total-clientes-header');
+                    if (totalHeaderBadge) {
+                        totalHeaderBadge.textContent = '0';
+                    }
                 }
             })
             .catch(error => {
@@ -273,4 +575,102 @@
         }
     });
 </script>
+
+<!-- Estilos CSS Aprimorados para Tipografia e Animações -->
+<style>
+    /* Animações elegantes */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Melhorias tipográficas específicas */
+    .mimo-input:focus {
+        outline: none;
+        border-color: var(--mimo-gold) !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1) !important;
+    }
+
+    /* Responsividade aprimorada */
+    @media (max-width: 768px) {
+        .mimo-container {
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem !important;
+        }
+
+        .mimo-card {
+            padding: 1rem !important;
+        }
+
+        table th, table td {
+            padding: 1rem !important;
+            font-size: 0.875rem !important;
+        }
+
+        .mimo-avatar {
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            font-size: 1rem !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 2rem !important;
+        }
+
+        .mimo-card {
+            margin: 0 -1rem;
+            border-radius: 0;
+        }
+
+        table {
+            font-size: 0.8rem;
+        }
+
+        .mimo-btn {
+            padding: 0.75rem 1rem !important;
+            font-size: 0.8rem !important;
+        }
+    }
+
+    /* Melhorias de acessibilidade */
+    button:focus, a:focus, input:focus {
+        outline: 2px solid var(--mimo-gold);
+        outline-offset: 2px;
+    }
+
+    /* Transições suaves para todos os elementos interativos */
+    button, a, input, .mimo-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Hover states aprimorados */
+    .mimo-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .mimo-card:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+</style>
 {% endblock %}
