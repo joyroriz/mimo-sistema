@@ -5,163 +5,686 @@
 {% block content %}
 <div class="mimo-section">
     <div class="mimo-container">
-        <!-- Header Elegante -->
-        <div class="mimo-text-center" style="margin-bottom: 3rem;">
-            <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">
-                <i class="bi bi-box mimo-text-gold"></i>
-                Gerenciar Produtos
-            </h1>
-            <p style="font-size: 1.125rem; color: var(--mimo-gray-400); margin: 0;">
-                Cadastre e gerencie seus produtos
-            </p>
+        <!-- Header Elegante com Tipografia Aprimorada -->
+        <div class="mimo-text-center" style="margin-bottom: 4rem;">
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size: 4rem; color: var(--mimo-gold); margin-bottom: 1rem; line-height: 1;">
+                    <i class="bi bi-box"></i>
+                </div>
+                <h1 style="font-family: var(--mimo-font-secondary); font-size: 3.5rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; color: var(--mimo-black);">
+                    Gerenciar Produtos
+                </h1>
+                <p style="font-family: var(--mimo-font-primary); font-size: 1.25rem; font-weight: 400; color: var(--mimo-gray-400); margin: 0; line-height: 1.5; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Cadastre e gerencie seus produtos com qualidade e organização profissional
+                </p>
+            </div>
+
+            <!-- Estatísticas Visuais -->
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;" id="total-produtos-header">0</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Produtos Ativos</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;" id="total-categorias-header">3</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Categorias</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--mimo-font-secondary); font-size: 2.5rem; font-weight: 700; color: var(--mimo-gold); line-height: 1;" id="valor-medio-header">R$ 0</div>
+                    <div style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Valor Médio</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Filtros e Busca MIMO -->
-        <div class="mimo-card" style="margin-bottom: 2rem; padding: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <div style="flex: 1; margin-right: 1rem;">
+        <!-- Filtros e Busca MIMO Aprimorados -->
+        <div class="mimo-card" style="margin-bottom: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--mimo-white) 0%, #fefefe 100%); border: 1px solid var(--mimo-gray-100); box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <!-- Título da Seção -->
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="font-family: var(--mimo-font-secondary); font-size: 1.5rem; font-weight: 600; color: var(--mimo-black); margin: 0; display: flex; align-items: center;">
+                    <i class="bi bi-funnel" style="color: var(--mimo-gold); margin-right: 0.75rem; font-size: 1.25rem;"></i>
+                    Filtros e Busca
+                </h3>
+                <p style="font-family: var(--mimo-font-primary); font-size: 0.875rem; color: var(--mimo-gray-400); margin: 0.5rem 0 0 2rem;">
+                    Encontre rapidamente o produto que você procura
+                </p>
+            </div>
+
+            <!-- Controles de Busca -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap;">
+                <!-- Campo de Busca Aprimorado -->
+                <div style="flex: 1; min-width: 300px;">
+                    <label style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-600); display: block; margin-bottom: 0.5rem;">
+                        Buscar Produto
+                    </label>
                     <div style="position: relative;">
-                        <i class="bi bi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--mimo-gray-400);"></i>
-                        <input type="text" name="search" class="mimo-input"
-                               placeholder="Buscar por nome ou descrição..."
+                        <i class="bi bi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--mimo-gray-400); font-size: 1rem; z-index: 2;"></i>
+                        <input type="text" name="search" class="mimo-input" id="busca-produto"
+                               placeholder="Digite nome, descrição ou categoria..."
                                value="{{ search }}"
-                               style="padding-left: 2.5rem;">
+                               style="padding-left: 2.75rem; font-size: 0.9rem; height: 3rem; border: 2px solid var(--mimo-gray-200); transition: all 0.3s ease; background: var(--mimo-white);"
+                               onfocus="this.style.borderColor='var(--mimo-gold)'; this.style.boxShadow='0 0 0 3px rgba(212, 175, 55, 0.1)'"
+                               onblur="this.style.borderColor='var(--mimo-gray-200)'; this.style.boxShadow='none'">
                     </div>
                 </div>
-                <div style="display: flex; gap: 1rem;">
-                    <select name="categoria" class="mimo-input" onchange="this.form.submit()">
-                        <option value="">Todas as categorias</option>
-                    {% for cat in categorias %}
-                    <option value="{{ cat }}" {% if categoria == cat %}selected{% endif %}>
-                        {{ cat.replace('_', ' ').title() }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <input type="hidden" name="search" value="{{ search }}">
-            </form>
-        </div>
-        <div class="col-md-3 text-end">
-            <a href="#" class="btn btn-outline-warning" onclick="alert('Funcionalidade em desenvolvimento')">
-                <i class="bi bi-exclamation-triangle me-1"></i>
-                Estoque Baixo
-            </a>
-        </div>
-    </div>
 
-    <!-- Tabela de Produtos -->
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <h5 class="mb-0">
-                <i class="bi bi-list me-2"></i>
-                Lista de Produtos
-                <span class="badge bg-success ms-2">{{ produtos.total }} produto(s)</span>
-            </h5>
-        </div>
-        <div class="card-body p-0">
-            {% if produtos.items %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Categoria</th>
-                            <th>Preço</th>
-                            <th>Estoque</th>
-                            <th>Status</th>
-                            <th width="200">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for produto in produtos.items %}
-                        <tr>
-                            <td>
-                                <div>
-                                    <strong>{{ produto.nome }}</strong>
-                                    {% if produto.descricao %}
-                                    <br><small class="text-muted">{{ produto.descricao[:50] }}{% if produto.descricao|length > 50 %}...{% endif %}</small>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td>
-                                {% if produto.categoria %}
-                                <span class="badge bg-secondary">{{ produto.categoria.replace('_', ' ').title() }}</span>
-                                {% else %}
-                                <span class="text-muted">-</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <strong class="text-success">R$ {{ "%.2f"|format(produto.preco) }}</strong>
-                                {% if produto.custo and produto.custo > 0 %}
-                                <br><small class="text-muted">Custo: R$ {{ "%.2f"|format(produto.custo) }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <span class="me-2">{{ produto.quantidade_estoque }} {{ produto.unidade }}</span>
-                                    {% if produto.quantidade_estoque <= produto.estoque_minimo %}
-                                    <span class="badge bg-danger">Baixo</span>
-                                    {% elif produto.quantidade_estoque <= (produto.estoque_minimo * 2) %}
-                                    <span class="badge bg-warning">Atenção</span>
-                                    {% else %}
-                                    <span class="badge bg-success">OK</span>
-                                    {% endif %}
-                                </div>
-                                {% if produto.estoque_minimo > 0 %}
-                                <small class="text-muted">Mín: {{ produto.estoque_minimo }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if produto.ativo %}
-                                <span class="badge bg-success">Ativo</span>
-                                {% else %}
-                                <span class="badge bg-secondary">Inativo</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <button class="btn btn-outline-info"
-                                            data-bs-toggle="tooltip" title="Visualizar"
-                                            onclick="alert('Funcionalidade em desenvolvimento')">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                    <button class="btn btn-outline-primary"
-                                            data-bs-toggle="tooltip" title="Editar"
-                                            onclick="alert('Funcionalidade em desenvolvimento')">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-outline-danger"
-                                            data-bs-toggle="tooltip" title="Excluir"
-                                            onclick="alert('Funcionalidade em desenvolvimento')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <!-- Filtro de Categoria -->
+                <div style="min-width: 200px;">
+                    <label style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-600); display: block; margin-bottom: 0.5rem;">
+                        Categoria
+                    </label>
+                    <select name="categoria" class="mimo-input" id="filtro-categoria"
+                            style="height: 3rem; border: 2px solid var(--mimo-gray-200); transition: all 0.3s ease;"
+                            onfocus="this.style.borderColor='var(--mimo-gold)'; this.style.boxShadow='0 0 0 3px rgba(212, 175, 55, 0.1)'"
+                            onblur="this.style.borderColor='var(--mimo-gray-200)'; this.style.boxShadow='none'">
+                        <option value="">Todas as categorias</option>
+                        <option value="frutas_desidratadas">Frutas Desidratadas</option>
+                        <option value="chocolates_artesanais">Chocolates Artesanais</option>
+                        <option value="experiencias_gastronomicas">Experiências Gastronômicas</option>
+                    </select>
+                </div>
+
+                <!-- Botões de Ação Aprimorados -->
+                <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <button class="mimo-btn mimo-btn-secondary" onclick="carregarProdutos()"
+                            style="height: 3rem; padding: 0 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="bi bi-arrow-clockwise" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Atualizar</span>
+                    </button>
+                    <button class="mimo-btn mimo-btn-warning" onclick="alert('Funcionalidade em desenvolvimento')"
+                            style="height: 3rem; padding: 0 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Estoque Baixo</span>
+                    </button>
+                    <button class="mimo-btn mimo-btn-primary" onclick="alert('Funcionalidade em desenvolvimento')"
+                            style="height: 3rem; padding: 0 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);">
+                        <i class="bi bi-plus-circle" style="font-size: 1rem;"></i>
+                        <span style="font-family: var(--mimo-font-primary);">Novo Produto</span>
+                    </button>
+                </div>
             </div>
-            {% else %}
-            <div class="text-center py-5">
-                <i class="bi bi-box display-1 text-muted"></i>
-                <h4 class="mt-3">Nenhum produto encontrado</h4>
-                <p class="text-muted">
-                    {% if search %}
-                    Não encontramos produtos com o termo "{{ search }}".
-                    <br><a href="/produtos">Ver todos os produtos</a>
-                    {% else %}
-                    Comece cadastrando seu primeiro produto.
-                    {% endif %}
-                </p>
-                <button class="btn btn-success" onclick="alert('Funcionalidade em desenvolvimento')">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Cadastrar Primeiro Produto
-                </button>
-            </div>
-            {% endif %}
         </div>
-        
-        <!-- Paginação removida temporariamente -->
+
+        <!-- Lista de Produtos MIMO Aprimorada -->
+        <div class="mimo-card" style="background: var(--mimo-white); border: 1px solid var(--mimo-gray-100); box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden;">
+            <!-- Cabeçalho da Lista Elegante -->
+            <div style="padding: 2rem 2rem 1.5rem 2rem; background: linear-gradient(135deg, #fafafa 0%, var(--mimo-white) 100%); border-bottom: 2px solid var(--mimo-gray-100);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="font-family: var(--mimo-font-secondary); font-size: 2rem; font-weight: 700; color: var(--mimo-black); margin: 0; display: flex; align-items: center; letter-spacing: -0.01em;">
+                            <i class="bi bi-box-seam" style="color: var(--mimo-gold); margin-right: 0.75rem; font-size: 1.75rem;"></i>
+                            Lista de Produtos
+                        </h2>
+                        <p style="font-family: var(--mimo-font-primary); font-size: 0.9rem; color: var(--mimo-gray-400); margin: 0.5rem 0 0 2.5rem; font-weight: 400;">
+                            Visualize e gerencie todos os seus produtos cadastrados
+                        </p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-family: var(--mimo-font-primary); font-size: 0.875rem; font-weight: 500; color: var(--mimo-gray-500);">Total:</span>
+                            <span id="total-produtos" style="
+                                font-family: var(--mimo-font-secondary);
+                                font-size: 1.5rem;
+                                font-weight: 700;
+                                color: var(--mimo-white);
+                                background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                padding: 0.5rem 1rem;
+                                border-radius: 2rem;
+                                min-width: 3rem;
+                                text-align: center;
+                                box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+                                line-height: 1;
+                            ">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Produtos Aprimorada -->
+            <div style="padding: 0; overflow: hidden;">
+                <div style="overflow-x: auto;">
+                    <table id="tabela-produtos" style="width: 100%; border-collapse: collapse; background: var(--mimo-white);">
+                        <!-- Cabeçalho da Tabela Elegante -->
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%); border-bottom: 2px solid var(--mimo-gray-200);">
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-box" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Produto
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-tag" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Categoria
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-currency-dollar" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Preço
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
+                                    <i class="bi bi-boxes" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Estoque
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: center;
+                                    border: none;
+                                    width: 140px;
+                                ">
+                                    <i class="bi bi-gear" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Ações
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <!-- Corpo da Tabela -->
+                        <tbody>
+                            <tr>
+                                <td colspan="5" style="
+                                    text-align: center;
+                                    padding: 4rem 2rem;
+                                    background: var(--mimo-white);
+                                    border: none;
+                                ">
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                                        <div style="
+                                            font-size: 3rem;
+                                            color: var(--mimo-gold);
+                                            animation: spin 2s linear infinite;
+                                        ">
+                                            <i class="bi bi-hourglass-split"></i>
+                                        </div>
+                                        <h5 style="
+                                            font-family: var(--mimo-font-secondary);
+                                            font-size: 1.5rem;
+                                            font-weight: 600;
+                                            color: var(--mimo-black);
+                                            margin: 0;
+                                        ">Carregando produtos...</h5>
+                                        <p style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-size: 0.9rem;
+                                            color: var(--mimo-gray-400);
+                                            margin: 0;
+                                        ">Aguarde um momento enquanto buscamos seus dados</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- JavaScript para Carregar Produtos -->
+<script>
+    // Função para carregar produtos
+    function carregarProdutos() {
+        console.log('Carregando produtos...');
+
+        fetch('/api/produtos')
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Dados recebidos:', data);
+                const tbody = document.querySelector('#tabela-produtos tbody');
+                const totalBadge = document.getElementById('total-produtos');
+
+                if (data.produtos && data.produtos.length > 0) {
+                    tbody.innerHTML = data.produtos.map((produto, index) => {
+                        const preco = (produto.preco_centavos / 100).toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        });
+
+                        const categoria = produto.categoria.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        const categoriaIcon = getCategoriaIcon(produto.categoria);
+                        const categoriaColor = getCategoriaColor(produto.categoria);
+
+                        return `
+                            <tr style="
+                                border-bottom: 1px solid var(--mimo-gray-100);
+                                transition: all 0.3s ease;
+                                animation: fadeInUp 0.6s ease forwards;
+                                animation-delay: ${index * 0.1}s;
+                                opacity: 0;
+                                transform: translateY(20px);
+                            "
+                            onmouseover="this.style.backgroundColor='#fafafa'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+                            onmouseout="this.style.backgroundColor='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="
+                                            width: 3rem;
+                                            height: 3rem;
+                                            border-radius: 0.75rem;
+                                            background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 1.25rem;
+                                            color: var(--mimo-white);
+                                            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+                                        ">
+                                            ${categoriaIcon}
+                                        </div>
+                                        <div>
+                                            <div style="
+                                                font-family: var(--mimo-font-primary);
+                                                font-size: 1rem;
+                                                font-weight: 600;
+                                                color: var(--mimo-black);
+                                                line-height: 1.3;
+                                            ">${produto.nome}</div>
+                                            <div style="
+                                                font-family: var(--mimo-font-primary);
+                                                font-size: 0.875rem;
+                                                color: var(--mimo-gray-400);
+                                                margin-top: 0.25rem;
+                                                max-width: 300px;
+                                                overflow: hidden;
+                                                text-overflow: ellipsis;
+                                                white-space: nowrap;
+                                            ">${produto.descricao || 'Sem descrição'}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-size: 0.875rem;
+                                        font-weight: 500;
+                                        color: var(--mimo-white);
+                                        background: ${categoriaColor};
+                                        padding: 0.5rem 1rem;
+                                        border-radius: 1.5rem;
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 0.5rem;
+                                    ">
+                                        ${categoriaIcon}
+                                        ${categoria}
+                                    </div>
+                                </td>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="
+                                        font-family: var(--mimo-font-secondary);
+                                        font-size: 1.125rem;
+                                        font-weight: 700;
+                                        color: var(--mimo-black);
+                                    ">${preco}</div>
+                                </td>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-size: 0.9rem;
+                                        font-weight: 500;
+                                        color: var(--mimo-gray-700);
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 0.5rem;
+                                    ">
+                                        <i class="bi bi-boxes" style="color: var(--mimo-gold); font-size: 0.875rem;"></i>
+                                        ${produto.estoque || 'N/A'}
+                                    </div>
+                                </td>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle; text-align: center;">
+                                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                        <button onclick="editarProduto(${produto.id})" title="Editar produto" style="
+                                            background: var(--mimo-gold);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            padding: 0.5rem;
+                                            width: 2.5rem;
+                                            height: 2.5rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+                                        "
+                                        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 8px rgba(212, 175, 55, 0.4)'"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(212, 175, 55, 0.3)'">
+                                            <i class="bi bi-pencil" style="font-size: 1rem;"></i>
+                                        </button>
+                                        <button onclick="verDetalhes(${produto.id})" title="Ver detalhes" style="
+                                            background: var(--mimo-info);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 0.5rem;
+                                            padding: 0.5rem;
+                                            width: 2.5rem;
+                                            height: 2.5rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+                                        "
+                                        onmouseover="this.style.transform='scale(1.1)'; this.style.backgroundColor='#2563eb'"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor='var(--mimo-info)'">
+                                            <i class="bi bi-eye" style="font-size: 1rem;"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    // Atualizar estatísticas com animação
+                    totalBadge.textContent = data.produtos.length;
+                    const totalHeaderBadge = document.getElementById('total-produtos-header');
+                    if (totalHeaderBadge) {
+                        totalHeaderBadge.textContent = data.produtos.length;
+                    }
+
+                    // Calcular valor médio
+                    const valorMedio = data.produtos.reduce((acc, produto) => acc + produto.preco_centavos, 0) / data.produtos.length / 100;
+                    const valorMedioHeader = document.getElementById('valor-medio-header');
+                    if (valorMedioHeader) {
+                        valorMedioHeader.textContent = valorMedio.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        });
+                    }
+
+                    console.log('Produtos carregados com sucesso:', data.produtos.length);
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="
+                                text-align: center;
+                                padding: 4rem 2rem;
+                                background: var(--mimo-white);
+                                border: none;
+                            ">
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+                                    <div style="
+                                        font-size: 4rem;
+                                        color: var(--mimo-gray-300);
+                                    ">
+                                        <i class="bi bi-box"></i>
+                                    </div>
+                                    <div>
+                                        <h5 style="
+                                            font-family: var(--mimo-font-secondary);
+                                            font-size: 1.5rem;
+                                            font-weight: 600;
+                                            color: var(--mimo-black);
+                                            margin: 0 0 0.5rem 0;
+                                        ">Nenhum produto cadastrado</h5>
+                                        <p style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-size: 1rem;
+                                            color: var(--mimo-gray-400);
+                                            margin: 0 0 2rem 0;
+                                        ">Comece cadastrando seu primeiro produto e expanda seu catálogo</p>
+                                        <button onclick="alert('Funcionalidade em desenvolvimento')" style="
+                                            font-family: var(--mimo-font-primary);
+                                            font-weight: 600;
+                                            background: linear-gradient(135deg, var(--mimo-gold) 0%, #c9a96e 100%);
+                                            color: var(--mimo-white);
+                                            padding: 1rem 2rem;
+                                            border-radius: 2rem;
+                                            border: none;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                            transition: all 0.3s ease;
+                                            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+                                            cursor: pointer;
+                                        "
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(212, 175, 55, 0.4)'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(212, 175, 55, 0.3)'">
+                                            <i class="bi bi-plus-circle" style="font-size: 1rem;"></i>
+                                            Cadastrar Primeiro Produto
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    totalBadge.textContent = '0';
+                    const totalHeaderBadge = document.getElementById('total-produtos-header');
+                    if (totalHeaderBadge) {
+                        totalHeaderBadge.textContent = '0';
+                    }
+                    const valorMedioHeader = document.getElementById('valor-medio-header');
+                    if (valorMedioHeader) {
+                        valorMedioHeader.textContent = 'R$ 0';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar produtos:', error);
+                const tbody = document.querySelector('#tabela-produtos tbody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: var(--mimo-danger);">
+                            <i class="bi bi-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <div>Erro ao carregar produtos. Tente novamente.</div>
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+
+    // Funções auxiliares para categorias
+    function getCategoriaIcon(categoria) {
+        switch(categoria) {
+            case 'frutas_desidratadas':
+                return '<i class="bi bi-apple"></i>';
+            case 'chocolates_artesanais':
+                return '<i class="bi bi-heart-fill"></i>';
+            case 'experiencias_gastronomicas':
+                return '<i class="bi bi-star-fill"></i>';
+            default:
+                return '<i class="bi bi-box"></i>';
+        }
+    }
+
+    function getCategoriaColor(categoria) {
+        switch(categoria) {
+            case 'frutas_desidratadas':
+                return 'linear-gradient(135deg, #10B981 0%, #059669 100%)'; // Verde
+            case 'chocolates_artesanais':
+                return 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)'; // Roxo
+            case 'experiencias_gastronomicas':
+                return 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)'; // Laranja
+            default:
+                return 'linear-gradient(135deg, var(--mimo-gray-500) 0%, var(--mimo-gray-600) 100%)';
+        }
+    }
+
+    // Funções de ação
+    function editarProduto(id) {
+        alert('Funcionalidade de edição em desenvolvimento. ID: ' + id);
+    }
+
+    function verDetalhes(id) {
+        alert('Funcionalidade de detalhes em desenvolvimento. ID: ' + id);
+    }
+
+    // Função de busca
+    function buscarProdutos() {
+        const termo = document.getElementById('busca-produto').value.toLowerCase();
+        const categoria = document.getElementById('filtro-categoria').value;
+
+        // Implementar filtro local aqui se necessário
+        console.log('Buscando:', termo, 'Categoria:', categoria);
+    }
+
+    // Inicializar página
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página carregada, iniciando carregamento de produtos...');
+        carregarProdutos();
+
+        // Configurar busca
+        const campoBusca = document.getElementById('busca-produto');
+        if (campoBusca) {
+            campoBusca.addEventListener('input', buscarProdutos);
+        }
+
+        const filtroCategoria = document.getElementById('filtro-categoria');
+        if (filtroCategoria) {
+            filtroCategoria.addEventListener('change', buscarProdutos);
+        }
+    });
+</script>
+<!-- Estilos CSS Aprimorados para Tipografia e Animações -->
+<style>
+    /* Animações elegantes */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Melhorias tipográficas específicas */
+    .mimo-input:focus {
+        outline: none;
+        border-color: var(--mimo-gold) !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1) !important;
+    }
+
+    /* Responsividade aprimorada */
+    @media (max-width: 768px) {
+        .mimo-container {
+            padding: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem !important;
+        }
+
+        .mimo-card {
+            padding: 1rem !important;
+        }
+
+        table th, table td {
+            padding: 1rem !important;
+            font-size: 0.875rem !important;
+        }
+
+        .produto-icon {
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            font-size: 1rem !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h1 {
+            font-size: 2rem !important;
+        }
+
+        .mimo-card {
+            margin: 0 -1rem;
+            border-radius: 0;
+        }
+
+        table {
+            font-size: 0.8rem;
+        }
+
+        .mimo-btn {
+            padding: 0.75rem 1rem !important;
+            font-size: 0.8rem !important;
+        }
+    }
+
+    /* Melhorias de acessibilidade */
+    button:focus, a:focus, input:focus, select:focus {
+        outline: 2px solid var(--mimo-gold);
+        outline-offset: 2px;
+    }
+
+    /* Transições suaves para todos os elementos interativos */
+    button, a, input, select, .mimo-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Hover states aprimorados */
+    .mimo-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .mimo-card:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    /* Estilos específicos para produtos */
+    .produto-icon {
+        transition: all 0.3s ease;
+    }
+
+    .produto-icon:hover {
+        transform: scale(1.1);
+    }
+</style>
 {% endblock %}
