@@ -183,48 +183,7 @@
             </div>
             {% endfor %}
             
-            <!-- Paginação -->
-            {% if vendas.pages > 1 %}
-            <nav aria-label="Paginação de vendas" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if vendas.has_prev %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('vendas.listar', page=vendas.prev_num, search=search, status=status) }}">
-                            <i class="bi bi-chevron-left"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for page_num in vendas.iter_pages() %}
-                        {% if page_num %}
-                            {% if page_num != vendas.page %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('vendas.listar', page=page_num, search=search, status=status) }}">
-                                    {{ page_num }}
-                                </a>
-                            </li>
-                            {% else %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ page_num }}</span>
-                            </li>
-                            {% endif %}
-                        {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if vendas.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('vendas.listar', page=vendas.next_num, search=search, status=status) }}">
-                            <i class="bi bi-chevron-right"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
+            <!-- Paginação removida temporariamente -->
             
             {% else %}
             <div class="text-center py-5">
@@ -233,15 +192,15 @@
                 <p class="text-muted">
                     {% if search or status %}
                     Não encontramos vendas com os filtros aplicados.
-                    <br><a href="{{ url_for('vendas.listar') }}">Ver todas as vendas</a>
+                    <br><a href="/vendas">Ver todas as vendas</a>
                     {% else %}
                     Comece registrando sua primeira venda.
                     {% endif %}
                 </p>
-                <a href="{{ url_for('vendas.nova') }}" class="btn btn-primary btn-lg">
+                <button class="btn btn-primary btn-lg" onclick="alert('Funcionalidade em desenvolvimento')">
                     <i class="bi bi-plus-circle me-2"></i>
                     Registrar Primeira Venda
-                </a>
+                </button>
             </div>
             {% endif %}
         </div>
