@@ -402,7 +402,7 @@ def index():
             'vendas_mes': float(vendas_mes) if vendas_mes else 0.0
         }
 
-        return render_template('dashboard.html', stats=stats)
+        return render_template('dashboard-refined.html', stats=stats)
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'dashboard'}), 500
 
