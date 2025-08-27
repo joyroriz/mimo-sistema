@@ -584,7 +584,7 @@ def entregas():
                     'produto_nome': produto['nome'],
                     'endereco': cliente['endereco'],
                     'cidade': cliente['cidade'],
-                    'cep': cliente['cep'],
+                    'cep': cliente.get('cep', 'N/A'),  # Campo opcional
                     'data_entrega': venda['data_venda'],
                     'status': 'Entregue' if venda['status'] == 'Concluída' else 'Pendente',
                     'valor_total': venda['valor_total']
