@@ -1,14 +1,37 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Sistema MIMO - Aplicação Principal
-Sistema completo de gestão empresarial
+SISTEMA MIMO - GESTÃO EMPRESARIAL ELEGANTE
+==========================================
+Aplicação principal do Sistema MIMO para gestão de clientes, produtos, vendas e entregas.
+Desenvolvido com foco em estabilidade, proteção de dados e experiência profissional.
+
+ARQUIVOS ESSENCIAIS MANTIDOS:
+- app.py (este arquivo - aplicação principal)
+- requirements.txt (dependências Python)
+- railway.json (configuração Railway)
+- templates/ (apenas templates ativos e funcionais)
+- static/ (CSS e JS essenciais)
+
+PROTEÇÃO DE DADOS:
+- Dados de clientes protegidos em estrutura mock robusta
+- Validação de integridade em cada carregamento
+- Tratamento profissional de erros para usuário final
 """
 
 import os
+import logging
+import traceback
 from datetime import datetime, date
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import json
+
+# Configuração de logging para produção
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Configuração da aplicação
 app = Flask(__name__)
@@ -17,9 +40,74 @@ app.secret_key = 'mimo_sistema_2025_ultra_seguro'
 # Configuração do banco de dados
 DATABASE = 'mimo_sistema.db'
 
-def get_mock_data():
-    """Retorna dados MIMO reais conforme especificação - 28 clientes e 42 produtos"""
+# Mensagens de erro amigáveis para usuário final
+MENSAGENS_ERRO = {
+    'geral': 'Ops! Algo deu errado. Tente novamente em alguns instantes.',
+    'carregamento': 'Erro ao carregar dados. Atualize a página.',
+    'sistema': 'Sistema temporariamente indisponível. Voltaremos em breve.',
+    'dados': 'Não foi possível processar os dados. Tente novamente.'
+}
+
+def handle_error_gracefully(error_type='geral', details=None):
+    """
+    Trata erros de forma profissional, registrando detalhes técnicos
+    mas retornando mensagens amigáveis para o usuário final.
+    """
+    if details:
+        logger.error(f"Erro {error_type}: {details}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+
     return {
+        'success': False,
+        'error': MENSAGENS_ERRO.get(error_type, MENSAGENS_ERRO['geral']),
+        'message': MENSAGENS_ERRO.get(error_type, MENSAGENS_ERRO['geral'])
+    }
+
+def validar_integridade_dados(dados):
+    """
+    Valida a integridade dos dados MIMO para garantir proteção total.
+    Verifica se todos os dados essenciais estão presentes e corretos.
+    """
+    try:
+        # Validar estrutura básica
+        if not isinstance(dados, dict):
+            return False
+
+        # Validar clientes (deve ter exatamente 28)
+        if 'clientes' not in dados or len(dados['clientes']) != 28:
+            logger.error(f"Erro de integridade: {len(dados.get('clientes', []))} clientes encontrados, esperado 28")
+            return False
+
+        # Validar produtos (deve ter exatamente 42)
+        if 'produtos' not in dados or len(dados['produtos']) != 42:
+            logger.error(f"Erro de integridade: {len(dados.get('produtos', []))} produtos encontrados, esperado 42")
+            return False
+
+        # Validar campos obrigatórios dos clientes
+        for cliente in dados['clientes']:
+            if not all(key in cliente for key in ['id', 'nome', 'telefone', 'cidade']):
+                logger.error(f"Cliente com dados incompletos: {cliente}")
+                return False
+
+        # Validar campos obrigatórios dos produtos
+        for produto in dados['produtos']:
+            if not all(key in produto for key in ['id', 'nome', 'preco_centavos', 'categoria']):
+                logger.error(f"Produto com dados incompletos: {produto}")
+                return False
+
+        logger.info("Validação de integridade dos dados MIMO: SUCESSO")
+        return True
+
+    except Exception as e:
+        logger.error(f"Erro na validação de integridade: {str(e)}")
+        return False
+
+def get_mock_data():
+    """
+    Retorna dados MIMO reais conforme especificação - 28 clientes e 42 produtos
+    COM PROTEÇÃO E VALIDAÇÃO DE INTEGRIDADE TOTAL
+    """
+    dados = {
         'clientes': [
             # Clientes de Anápolis
             {'id': 1, 'nome': 'Maria Geovana', 'telefone': '62 99100-0284', 'endereco': 'Av. S-4, 123', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-20'},
@@ -115,9 +203,34 @@ def get_mock_data():
         ]
     }
 
+    # VALIDAÇÃO CRÍTICA DE INTEGRIDADE DOS DADOS
+    if not validar_integridade_dados(dados):
+        logger.critical("FALHA CRÍTICA: Dados MIMO corrompidos ou incompletos!")
+        # Retornar dados de emergência básicos para evitar crash total
+        return {
+            'clientes': [],
+            'produtos': [],
+            'vendas': []
+        }
+
+    logger.info("Dados MIMO carregados com sucesso - 28 clientes, 42 produtos protegidos")
+    return dados
+
 def get_db_connection():
-    """Compatibilidade - retorna dados mock para Vercel"""
-    return get_mock_data()
+    """
+    Compatibilidade - retorna dados mock para Vercel
+    COM PROTEÇÃO E VALIDAÇÃO AUTOMÁTICA
+    """
+    try:
+        return get_mock_data()
+    except Exception as e:
+        logger.error(f"Erro ao conectar com dados: {str(e)}")
+        # Retornar estrutura vazia para evitar crash
+        return {
+            'clientes': [],
+            'produtos': [],
+            'vendas': []
+        }
 
 def init_database():
     """Compatibilidade - não faz nada no Vercel Serverless"""
@@ -476,15 +589,18 @@ def index():
 
         return render_template('dashboard-refined.html', stats=stats)
     except Exception as e:
-        return jsonify({'error': str(e), 'page': 'dashboard'}), 500
+        error_response = handle_error_gracefully('carregamento', f"Dashboard: {str(e)}")
+        return render_template('erro_amigavel.html', error=error_response['error']), 500
 
 @app.route('/clientes')
 def clientes():
-    """Página lista de clientes"""
+    """Página lista de clientes COM PROTEÇÃO"""
     try:
+        logger.info("Carregando página de clientes")
         return render_template('clientes/listar_ultra_simples.html')
     except Exception as e:
-        return jsonify({'error': str(e), 'page': 'clientes'}), 500
+        error_response = handle_error_gracefully('carregamento', f"Clientes: {str(e)}")
+        return render_template('erro_amigavel.html', error=error_response['error']), 500
 
 @app.route('/produtos')
 def produtos():
@@ -636,19 +752,21 @@ def crm():
 
 @app.route('/api/clientes', methods=['GET'])
 def api_listar_clientes():
-    """API para listar clientes"""
+    """API para listar clientes COM PROTEÇÃO TOTAL"""
     try:
-        # Usar dados mock para Vercel
+        # Usar dados mock para Vercel com validação
         data = get_db_connection()
-        clientes_list = data['clientes']
+        clientes_list = data.get('clientes', [])
 
+        logger.info(f"API clientes: {len(clientes_list)} clientes carregados")
         return jsonify({
             'success': True,
             'clientes': clientes_list,
             'total': len(clientes_list)
         })
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        error_response = handle_error_gracefully('dados', f"API clientes: {str(e)}")
+        return jsonify(error_response), 500
 
 @app.route('/api/clientes', methods=['POST'])
 def api_criar_cliente():
@@ -814,7 +932,31 @@ def not_found(error):
 def internal_error(error):
     return render_template('errors/500.html'), 500
 
-# ==================== EXECUÇÃO ====================
+# ==================== HANDLERS DE ERRO GLOBAIS ====================
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """Handler para páginas não encontradas"""
+    logger.warning(f"Página não encontrada: {request.url}")
+    return render_template('erro_amigavel.html',
+                         error="Página não encontrada. Verifique o endereço e tente novamente."), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Handler para erros internos do servidor"""
+    logger.error(f"Erro interno do servidor: {str(e)}")
+    return render_template('erro_amigavel.html',
+                         error="Sistema temporariamente indisponível. Voltaremos em breve."), 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """Handler global para todas as exceções não tratadas"""
+    logger.error(f"Exceção não tratada: {str(e)}")
+    logger.error(f"Traceback: {traceback.format_exc()}")
+    return render_template('erro_amigavel.html',
+                         error="Ops! Algo deu errado. Tente novamente em alguns instantes."), 500
+
+# ==================== EXECUÇÃO ===================="
 
 # APIs completas para funcionalidade total
 

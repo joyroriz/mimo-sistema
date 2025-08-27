@@ -1,0 +1,60 @@
+{% extends "base-refined.html" %}
+
+{% block title %}Sistema Temporariamente Indisponível - MIMO{% endblock %}
+
+{% block content %}
+<div class="mimo-section">
+    <div class="mimo-container">
+        <div style="text-align: center; padding: 4rem 0;">
+            <div style="max-width: 600px; margin: 0 auto;">
+                <!-- Ícone elegante -->
+                <div style="font-size: 4rem; color: var(--mimo-gold); margin-bottom: 2rem;">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                
+                <!-- Título amigável -->
+                <h1 style="font-size: 2.5rem; color: var(--mimo-black); margin-bottom: 1rem;">
+                    Ops! Algo deu errado
+                </h1>
+                
+                <!-- Mensagem amigável -->
+                <p style="font-size: 1.25rem; color: var(--mimo-gray-400); margin-bottom: 2rem; line-height: 1.6;">
+                    {% if error %}
+                        {{ error }}
+                    {% else %}
+                        Sistema temporariamente indisponível. Voltaremos em breve.
+                    {% endif %}
+                </p>
+                
+                <!-- Instruções simples -->
+                <div style="background: var(--mimo-cream); padding: 2rem; border-radius: var(--mimo-radius-xl); margin-bottom: 2rem;">
+                    <h3 style="color: var(--mimo-black); margin-bottom: 1rem;">O que você pode fazer:</h3>
+                    <ul style="text-align: left; color: var(--mimo-gray-400); line-height: 1.8;">
+                        <li>Aguarde alguns instantes e tente novamente</li>
+                        <li>Atualize a página (F5)</li>
+                        <li>Volte ao início e navegue novamente</li>
+                    </ul>
+                </div>
+                
+                <!-- Botões de ação -->
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="/" class="mimo-btn mimo-btn-primary" style="padding: 1rem 2rem;">
+                        <i class="bi bi-house"></i>
+                        Voltar ao Início
+                    </a>
+                    <button onclick="window.location.reload()" class="mimo-btn mimo-btn-secondary" style="padding: 1rem 2rem;">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Tentar Novamente
+                    </button>
+                </div>
+                
+                <!-- Mensagem de tranquilização -->
+                <p style="margin-top: 3rem; color: var(--mimo-gray-400); font-size: 0.875rem;">
+                    <i class="bi bi-shield-check mimo-text-gold"></i>
+                    Seus dados estão seguros. Este é apenas um problema temporário.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
