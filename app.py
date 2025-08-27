@@ -418,7 +418,23 @@ def clientes():
 def produtos():
     """Página lista de produtos"""
     try:
-        return render_template('produtos/listar.html')
+        # Usar dados mock para Vercel
+        data = get_db_connection()
+
+        # Simular objeto de paginação
+        class MockPagination:
+            def __init__(self, items):
+                self.items = items
+                self.total = len(items)
+                self.pages = 1
+                self.page = 1
+                self.per_page = len(items)
+                self.has_prev = False
+                self.has_next = False
+
+        produtos_mock = MockPagination(data['produtos'])
+
+        return render_template('produtos/listar.html', produtos=produtos_mock)
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'produtos'}), 500
 
