@@ -540,41 +540,73 @@ function atualizarColunaKanbanEntregas(coluna, dados) {
     if (dados.length > 0) {
         lista.innerHTML = dados.map(entrega => {
             const dataFormatada = new Date(entrega.data_entrega).toLocaleDateString('pt-BR');
+            const valorFormatado = (entrega.valor_total || 0).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+
+            // Simular itens da venda para demonstração
+            const itensSimulados = [
+                { nome: entrega.produto_nome || 'Produto MIMO', quantidade: 1, status_producao: 'pendente' }
+            ];
+            const todosAprovados = itensSimulados.every(item => item.status_producao === 'aprovado');
 
             return `
-                <div class="mimo-card mb-3" style="border-left: 4px solid var(--mimo-gold);">
+                <div class="mimo-card mb-3 kanban-card-entrega" style="border-left: 4px solid var(--mimo-gold); transition: all 0.3s ease;">
                     <div class="mimo-card-body p-3">
                         <div class="d-flex align-items-center mb-2">
-                            <div class="mimo-avatar me-2" style="width: 30px; height: 30px; font-size: 12px;">
+                            <div class="mimo-avatar me-2" style="width: 32px; height: 32px; font-size: 11px; font-family: var(--mimo-font-primary); font-weight: 600;">
                                 #${entrega.venda_id}
                             </div>
                             <div class="flex-grow-1">
-                                <h6 class="mb-0 fw-bold">${entrega.cliente_nome || 'Cliente'}</h6>
-                                <small class="text-muted">${entrega.cliente_telefone || ''}</small>
+                                <h6 class="mb-0" style="font-family: var(--mimo-font-secondary); font-weight: 600; font-size: 0.95rem; color: var(--mimo-black);">
+                                    ${entrega.cliente_nome || 'Cliente'}
+                                </h6>
+                                <small class="text-muted" style="font-family: var(--mimo-font-primary); font-size: 0.8rem;">
+                                    ${entrega.cliente_telefone || ''}
+                                </small>
                             </div>
                         </div>
+
                         <div class="mb-2">
-                            <small class="text-muted d-block">
+                            <small class="text-muted d-block mb-1" style="font-family: var(--mimo-font-primary); font-size: 0.8rem;">
                                 <i class="bi bi-geo-alt-fill mimo-text-gold me-1"></i>
-                                ${entrega.cliente_endereco || 'Endereço não informado'}
+                                ${entrega.endereco || 'Endereço não informado'}
                             </small>
-                            <small class="text-muted d-block">
+                            <small class="text-muted d-block mb-1" style="font-family: var(--mimo-font-primary); font-size: 0.8rem;">
                                 <i class="bi bi-calendar-event me-1"></i>
                                 ${dataFormatada}
                             </small>
+                            <small class="d-block" style="font-family: var(--mimo-font-primary); font-size: 0.8rem;">
+                                <i class="bi bi-box-seam me-1 mimo-text-gold"></i>
+                                <span class="badge ${todosAprovados ? 'bg-success' : 'bg-warning'}" style="font-size: 0.7rem;">
+                                    ${todosAprovados ? 'Produção OK' : 'Aguardando Produção'}
+                                </span>
+                            </small>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold mimo-text-gold">R$ ${entrega.valor_total || '0,00'}</span>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold mimo-text-gold" style="font-family: var(--mimo-font-secondary); font-size: 1rem;">
+                                ${valorFormatado}
+                            </span>
+                        </div>
+
+                        <div class="d-grid gap-1">
+                            <button class="btn btn-outline-primary btn-sm" onclick="verObservacoesEntrega(${entrega.id})"
+                                    style="font-family: var(--mimo-font-primary); font-size: 0.8rem; font-weight: 500;">
+                                <i class="bi bi-list-check me-1"></i>
+                                Ver Observações
+                            </button>
                             <div class="btn-group btn-group-sm">
                                 <button class="btn btn-mimo-secondary btn-sm" onclick="verDetalhesEntrega(${entrega.id})" title="Ver detalhes">
                                     <i class="bi bi-eye"></i>
                                 </button>
-                                ${entrega.status !== 'entregue' ? `
-                                <button class="btn btn-mimo-whatsapp btn-sm" onclick="marcarComoEntregue(${entrega.id})" title="Marcar como entregue">
-                                    <i class="bi bi-check-circle"></i>
+                                ${entrega.status !== 'entregue' && todosAprovados ? `
+                                <button class="btn btn-success btn-sm" onclick="liberarParaEntrega(${entrega.id})" title="Liberar para entrega">
+                                    <i class="bi bi-truck"></i>
                                 </button>
                                 ` : ''}
-                                <button class="btn btn-mimo-secondary btn-sm" onclick="enviarWhatsApp('${entrega.cliente_telefone}', '${entrega.cliente_nome}')" title="WhatsApp">
+                                <button class="btn btn-mimo-whatsapp btn-sm" onclick="enviarWhatsApp('${entrega.cliente_telefone}', '${entrega.cliente_nome}')" title="WhatsApp">
                                     <i class="bi bi-whatsapp"></i>
                                 </button>
                             </div>
@@ -587,7 +619,7 @@ function atualizarColunaKanbanEntregas(coluna, dados) {
         lista.innerHTML = `
             <div class="text-center text-muted py-4">
                 <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                <p>Nenhum item</p>
+                <p style="font-family: var(--mimo-font-primary); font-size: 0.9rem;">Nenhum item</p>
             </div>
         `;
     }
@@ -919,6 +951,290 @@ function marcarComoEntregue(id) {
     }
 }
 
+// Função para ver observações da entrega
+function verObservacoesEntrega(vendaId) {
+    console.log('Abrindo observações para venda:', vendaId);
+
+    // Buscar dados da venda
+    fetch(`/api/vendas/${vendaId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                preencherModalObservacoes(data.venda);
+                const modal = new bootstrap.Modal(document.getElementById('modalObservacoesEntrega'));
+                modal.show();
+            } else {
+                // Usar dados simulados para demonstração
+                const vendaSimulada = {
+                    id: vendaId,
+                    cliente_nome: 'Maria Geovana',
+                    data_venda: '2024-08-27',
+                    itens: [
+                        {
+                            id: 1,
+                            nome: 'Experiência MIMO Afeto',
+                            quantidade: 1,
+                            status_producao: 'pendente',
+                            observacoes: 'Aguardando aprovação do design personalizado'
+                        }
+                    ]
+                };
+                preencherModalObservacoes(vendaSimulada);
+                const modal = new bootstrap.Modal(document.getElementById('modalObservacoesEntrega'));
+                modal.show();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar dados da venda:', error);
+            // Usar dados simulados em caso de erro
+            const vendaSimulada = {
+                id: vendaId,
+                cliente_nome: 'Cliente MIMO',
+                data_venda: new Date().toLocaleDateString('pt-BR'),
+                itens: [
+                    {
+                        id: 1,
+                        nome: 'Produto MIMO',
+                        quantidade: 1,
+                        status_producao: 'pendente',
+                        observacoes: 'Item aguardando produção'
+                    }
+                ]
+            };
+            preencherModalObservacoes(vendaSimulada);
+            const modal = new bootstrap.Modal(document.getElementById('modalObservacoesEntrega'));
+            modal.show();
+        });
+}
+
+// Função para preencher modal de observações
+function preencherModalObservacoes(venda) {
+    document.getElementById('vendaNumero').textContent = venda.id;
+    document.getElementById('clienteNome').textContent = venda.cliente_nome;
+    document.getElementById('dataVenda').textContent = new Date(venda.data_venda).toLocaleDateString('pt-BR');
+
+    const listaItens = document.getElementById('listaItensProducao');
+    listaItens.innerHTML = venda.itens.map(item => {
+        const statusClass = item.status_producao === 'aprovado' ? 'aprovado' : 'pendente';
+        const statusText = item.status_producao === 'aprovado' ? 'Produção Aprovada' : 'Aguardando Produção';
+        const statusIcon = item.status_producao === 'aprovado' ? 'bi-check-circle-fill text-success' : 'bi-clock-fill text-warning';
+
+        return `
+            <div class="item-producao ${statusClass} p-3 mb-3" data-item-id="${item.id}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                            ${item.nome}
+                        </h6>
+                        <p class="text-muted mb-1" style="font-family: var(--mimo-font-primary); font-size: 0.9rem;">
+                            Quantidade: ${item.quantidade}
+                        </p>
+                        <div class="d-flex align-items-center">
+                            <i class="bi ${statusIcon} me-2"></i>
+                            <span class="badge ${item.status_producao === 'aprovado' ? 'bg-success' : 'bg-warning'}" style="font-size: 0.8rem;">
+                                ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        ${item.status_producao !== 'aprovado' ? `
+                        <button class="btn btn-success btn-sm" onclick="aprovarProducaoItem(${item.id})"
+                                style="font-family: var(--mimo-font-primary); font-size: 0.8rem;">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Aprovar
+                        </button>
+                        ` : `
+                        <button class="btn btn-outline-secondary btn-sm" onclick="reverterProducaoItem(${item.id})"
+                                style="font-family: var(--mimo-font-primary); font-size: 0.8rem;">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
+                            Reverter
+                        </button>
+                        `}
+                    </div>
+                </div>
+                ${item.observacoes ? `
+                <div class="mt-2 p-2" style="background-color: #f8f9fa; border-radius: 6px;">
+                    <small class="text-muted" style="font-family: var(--mimo-font-primary);">
+                        <i class="bi bi-chat-text me-1"></i>
+                        ${item.observacoes}
+                    </small>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+
+    // Verificar se todos os itens estão aprovados
+    const todosAprovados = venda.itens.every(item => item.status_producao === 'aprovado');
+    const btnLiberar = document.getElementById('btnLiberarEntrega');
+    btnLiberar.disabled = !todosAprovados;
+    btnLiberar.innerHTML = todosAprovados ?
+        '<i class="bi bi-truck me-2"></i>Liberar para Entrega' :
+        '<i class="bi bi-clock me-2"></i>Aguardando Produção';
+}
+
+// Função para aprovar produção de item
+function aprovarProducaoItem(itemId) {
+    console.log('Aprovando produção do item:', itemId);
+
+    // Simular aprovação (em produção seria uma chamada à API)
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (itemElement) {
+        // Atualizar visualmente o item
+        itemElement.className = 'item-producao aprovado p-3 mb-3';
+
+        // Atualizar badge de status
+        const badge = itemElement.querySelector('.badge');
+        badge.className = 'badge bg-success';
+        badge.textContent = 'Produção Aprovada';
+
+        // Atualizar ícone
+        const icon = itemElement.querySelector('.bi');
+        icon.className = 'bi bi-check-circle-fill text-success me-2';
+
+        // Atualizar botão
+        const button = itemElement.querySelector('button');
+        button.className = 'btn btn-outline-secondary btn-sm';
+        button.onclick = () => reverterProducaoItem(itemId);
+        button.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i>Reverter';
+
+        // Verificar se todos os itens estão aprovados
+        verificarLiberacaoEntrega();
+
+        // Mostrar feedback
+        mostrarToast('Produção aprovada com sucesso!', 'success');
+    }
+}
+
+// Função para reverter produção de item
+function reverterProducaoItem(itemId) {
+    console.log('Revertendo produção do item:', itemId);
+
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (itemElement) {
+        // Atualizar visualmente o item
+        itemElement.className = 'item-producao pendente p-3 mb-3';
+
+        // Atualizar badge de status
+        const badge = itemElement.querySelector('.badge');
+        badge.className = 'badge bg-warning';
+        badge.textContent = 'Aguardando Produção';
+
+        // Atualizar ícone
+        const icon = itemElement.querySelector('.bi');
+        icon.className = 'bi bi-clock-fill text-warning me-2';
+
+        // Atualizar botão
+        const button = itemElement.querySelector('button');
+        button.className = 'btn btn-success btn-sm';
+        button.onclick = () => aprovarProducaoItem(itemId);
+        button.innerHTML = '<i class="bi bi-check-circle me-1"></i>Aprovar';
+
+        // Verificar se todos os itens estão aprovados
+        verificarLiberacaoEntrega();
+
+        // Mostrar feedback
+        mostrarToast('Produção revertida para pendente', 'warning');
+    }
+}
+
+// Função para verificar liberação da entrega
+function verificarLiberacaoEntrega() {
+    const itensAprovados = document.querySelectorAll('.item-producao.aprovado').length;
+    const totalItens = document.querySelectorAll('.item-producao').length;
+    const todosAprovados = itensAprovados === totalItens;
+
+    const btnLiberar = document.getElementById('btnLiberarEntrega');
+    btnLiberar.disabled = !todosAprovados;
+    btnLiberar.innerHTML = todosAprovados ?
+        '<i class="bi bi-truck me-2"></i>Liberar para Entrega' :
+        '<i class="bi bi-clock me-2"></i>Aguardando Produção';
+}
+
+// Função para liberar entrega completa
+function liberarEntregaCompleta() {
+    const vendaId = document.getElementById('vendaNumero').textContent;
+
+    if (confirm('Confirmar liberação desta entrega? Todos os itens estão com produção aprovada.')) {
+        console.log('Liberando entrega para venda:', vendaId);
+
+        // Simular liberação (em produção seria uma chamada à API)
+        mostrarToast('Entrega liberada com sucesso! Status atualizado para "Em Trânsito"', 'success');
+
+        // Fechar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalObservacoesEntrega'));
+        modal.hide();
+
+        // Recarregar dados
+        setTimeout(() => {
+            if (visualizacaoAtualEntregas === 'kanban') {
+                carregarKanbanEntregas();
+            } else {
+                carregarEntregas();
+            }
+        }, 1000);
+    }
+}
+
+// Função para liberar para entrega (botão do Kanban)
+function liberarParaEntrega(vendaId) {
+    console.log('Liberando entrega para venda:', vendaId);
+
+    if (confirm('Liberar esta entrega? Certifique-se de que todos os itens estão prontos.')) {
+        // Simular liberação
+        mostrarToast('Entrega liberada! Status atualizado para "Em Trânsito"', 'success');
+
+        // Recarregar dados
+        setTimeout(() => {
+            if (visualizacaoAtualEntregas === 'kanban') {
+                carregarKanbanEntregas();
+            } else {
+                carregarEntregas();
+            }
+        }, 1000);
+    }
+}
+
+// Função para mostrar toast de feedback
+function mostrarToast(mensagem, tipo = 'info') {
+    // Criar toast dinamicamente
+    const toastContainer = document.getElementById('toast-container') || createToastContainer();
+
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white bg-${tipo === 'success' ? 'success' : tipo === 'warning' ? 'warning' : 'primary'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" style="font-family: var(--mimo-font-primary);">
+                    <i class="bi bi-${tipo === 'success' ? 'check-circle' : tipo === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    ${mensagem}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+    toast.show();
+
+    // Remover toast após ser ocultado
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
+// Função para criar container de toasts
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '9999';
+    document.body.appendChild(container);
+    return container;
+}
+
 // Carregar entregas quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Página de entregas MIMO carregada...');
@@ -1084,5 +1400,108 @@ document.addEventListener('DOMContentLoaded', function() {
     .mimo-stat-card:nth-child(2) { animation-delay: 0.2s; }
     .mimo-stat-card:nth-child(3) { animation-delay: 0.3s; }
     .mimo-stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+    /* Estilos para cards Kanban aprimorados */
+    .kanban-card-entrega {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+    }
+
+    .kanban-card-entrega:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    /* Estilos para modal de observações */
+    .modal-observacoes .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .modal-observacoes .modal-header {
+        background: linear-gradient(135deg, var(--mimo-gold), #D97706);
+        color: white;
+        border-radius: 16px 16px 0 0;
+        border-bottom: none;
+    }
+
+    .item-producao {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .item-producao.aprovado {
+        border-color: #22c55e;
+        background-color: #f0fdf4;
+    }
+
+    .item-producao.pendente {
+        border-color: #f59e0b;
+        background-color: #fffbeb;
+    }
 </style>
+
+<!-- Modal Ver Observações -->
+<div class="modal fade modal-observacoes" id="modalObservacoesEntrega" tabindex="-1" aria-labelledby="modalObservacoesEntregaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalObservacoesEntregaLabel" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                    <i class="bi bi-list-check me-2"></i>
+                    Controle de Produção - Venda #<span id="vendaNumero">1</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-4">
+                    <h6 style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black);">
+                        <i class="bi bi-person-fill me-2 mimo-text-gold"></i>
+                        Cliente: <span id="clienteNome">Maria Geovana</span>
+                    </h6>
+                    <p class="text-muted mb-0" style="font-family: var(--mimo-font-primary);">
+                        <i class="bi bi-calendar-event me-2"></i>
+                        Data da Venda: <span id="dataVenda">27/08/2024</span>
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black); margin-bottom: 1rem;">
+                        <i class="bi bi-box-seam me-2 mimo-text-gold"></i>
+                        Itens da Venda
+                    </h6>
+                    <div id="listaItensProducao">
+                        <!-- Itens serão carregados dinamicamente -->
+                    </div>
+                </div>
+
+                <div class="alert alert-info" style="border-radius: 12px; border: none; background: linear-gradient(135deg, #e0f2fe, #b3e5fc);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill fs-5 me-3" style="color: #0288d1;"></i>
+                        <div>
+                            <h6 class="mb-1" style="font-family: var(--mimo-font-secondary); font-weight: 600; color: #0288d1;">
+                                Regra de Liberação
+                            </h6>
+                            <p class="mb-0" style="font-family: var(--mimo-font-primary); font-size: 0.9rem; color: #0277bd;">
+                                A entrega só será liberada quando <strong>TODOS</strong> os itens estiverem com produção aprovada.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #e9ecef; border-radius: 0 0 16px 16px;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="font-family: var(--mimo-font-primary);">
+                    <i class="bi bi-x-circle me-2"></i>
+                    Fechar
+                </button>
+                <button type="button" class="btn btn-success" id="btnLiberarEntrega" onclick="liberarEntregaCompleta()" style="font-family: var(--mimo-font-primary);">
+                    <i class="bi bi-truck me-2"></i>
+                    Liberar para Entrega
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

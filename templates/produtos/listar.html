@@ -90,11 +90,7 @@
                         <i class="bi bi-arrow-clockwise" style="font-size: 1rem;"></i>
                         <span style="font-family: var(--mimo-font-primary);">Atualizar</span>
                     </button>
-                    <button class="mimo-btn mimo-btn-warning" onclick="alert('Funcionalidade em desenvolvimento')"
-                            style="height: 3rem; padding: 0 1.5rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
-                        <i class="bi bi-exclamation-triangle" style="font-size: 1rem;"></i>
-                        <span style="font-family: var(--mimo-font-primary);">Estoque Baixo</span>
-                    </button>
+
                     <button class="mimo-btn mimo-btn-primary" onclick="alert('Funcionalidade em desenvolvimento')"
                             style="height: 3rem; padding: 0 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);">
                         <i class="bi bi-plus-circle" style="font-size: 1rem;"></i>
@@ -188,20 +184,7 @@
                                     <i class="bi bi-currency-dollar" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
                                     Preço
                                 </th>
-                                <th style="
-                                    font-family: var(--mimo-font-primary);
-                                    font-size: 0.875rem;
-                                    font-weight: 600;
-                                    color: var(--mimo-gray-700);
-                                    text-transform: uppercase;
-                                    letter-spacing: 0.05em;
-                                    padding: 1.25rem 1.5rem;
-                                    text-align: left;
-                                    border: none;
-                                ">
-                                    <i class="bi bi-boxes" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
-                                    Estoque
-                                </th>
+
                                 <th style="
                                     font-family: var(--mimo-font-primary);
                                     font-size: 0.875rem;
@@ -361,20 +344,7 @@
                                         color: var(--mimo-black);
                                     ">${preco}</div>
                                 </td>
-                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
-                                    <div style="
-                                        font-family: var(--mimo-font-primary);
-                                        font-size: 0.9rem;
-                                        font-weight: 500;
-                                        color: var(--mimo-gray-700);
-                                        display: flex;
-                                        align-items: center;
-                                        gap: 0.5rem;
-                                    ">
-                                        <i class="bi bi-boxes" style="color: var(--mimo-gold); font-size: 0.875rem;"></i>
-                                        ${produto.estoque || 'N/A'}
-                                    </div>
-                                </td>
+
                                 <td style="padding: 1.5rem; border: none; vertical-align: middle; text-align: center;">
                                     <div style="display: flex; gap: 0.5rem; justify-content: center;">
                                         <button onclick="editarProduto(${produto.id})" title="Editar produto" style="

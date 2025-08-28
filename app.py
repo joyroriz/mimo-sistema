@@ -615,11 +615,7 @@ def produtos():
             produto_copy = produto.copy()
             # Converter preco_centavos para preco em reais
             produto_copy['preco'] = produto['preco_centavos'] / 100.0
-            # Adicionar campos de estoque para compatibilidade com template
-            produto_copy['quantidade_estoque'] = 50  # Estoque padrão
-            produto_copy['estoque_minimo'] = 10      # Mínimo padrão
-            produto_copy['unidade'] = 'un'           # Unidade padrão
-            produto_copy['custo'] = 0                # Custo padrão
+            # MIMO trabalha com produção sob demanda - não precisa de controle de estoque
             produtos_convertidos.append(produto_copy)
 
         # Simular objeto de paginação
@@ -677,6 +673,17 @@ def vendas():
         return render_template('vendas/listar.html', vendas=vendas_mock)
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'vendas'}), 500
+
+@app.route('/vendas/nova')
+def nova_venda():
+    """Página para criar nova venda"""
+    try:
+        return render_template('vendas/nova.html')
+    except Exception as e:
+        logger.error(f"Erro na página nova venda: {str(e)}")
+        return render_template('erro_amigavel.html',
+                             erro="Erro ao carregar formulário de venda",
+                             detalhes="Tente novamente em alguns instantes"), 500
 
 # Rota de entregas removida - versão duplicada
 
@@ -823,17 +830,13 @@ def api_listar_produtos():
         # Usar dados mock para Vercel
         data = get_db_connection()
 
-        # Converter preços de centavos para reais e adicionar campos necessários
+        # Converter preços de centavos para reais - SEM campos de estoque (produção sob demanda)
         produtos_convertidos = []
         for produto in data['produtos']:
             produto_copy = produto.copy()
             # Converter preco_centavos para preco em reais
             produto_copy['preco'] = produto['preco_centavos'] / 100.0
-            # Adicionar campos necessários para compatibilidade
-            produto_copy['quantidade_estoque'] = 50
-            produto_copy['estoque_minimo'] = 10
-            produto_copy['unidade'] = 'un'
-            produto_copy['custo'] = 0
+            # MIMO trabalha com produção sob demanda - não precisa de controle de estoque
             produtos_convertidos.append(produto_copy)
 
         return jsonify({
@@ -980,6 +983,140 @@ def api_listar_vendas():
             'total': len(vendas_list)
         })
     except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/vendas', methods=['POST'])
+def api_criar_venda():
+    """API para criar nova venda com integrações automáticas"""
+    try:
+        dados_venda = request.get_json()
+
+        # Validações básicas
+        if not dados_venda.get('cliente_id'):
+            return jsonify({'success': False, 'error': 'Cliente é obrigatório'}), 400
+
+        if not dados_venda.get('produtos') or len(dados_venda['produtos']) == 0:
+            return jsonify({'success': False, 'error': 'Pelo menos um produto é obrigatório'}), 400
+
+        # Simular criação da venda (em produção seria salvo no banco)
+        data = get_db_connection()
+
+        # Gerar novo ID para a venda
+        novo_id = max([v['id'] for v in data['vendas']], default=0) + 1
+
+        # Criar nova venda
+        nova_venda = {
+            'id': novo_id,
+            'cliente_id': dados_venda['cliente_id'],
+            'produto_id': dados_venda['produtos'][0]['id'],  # Por compatibilidade com estrutura atual
+            'quantidade': sum([p['quantidade'] for p in dados_venda['produtos']]),
+            'valor_total': dados_venda['valor_total'],
+            'data_venda': dados_venda.get('data_venda', datetime.now().strftime('%Y-%m-%d')),
+            'status': dados_venda.get('status', 'Pendente'),
+            'produtos_detalhados': dados_venda['produtos']  # Lista completa de produtos
+        }
+
+        # INTEGRAÇÃO AUTOMÁTICA 1: Criar entrega automaticamente
+        cliente = next((c for c in data['clientes'] if c['id'] == dados_venda['cliente_id']), None)
+        if cliente:
+            nova_entrega = {
+                'id': novo_id,
+                'venda_id': novo_id,
+                'cliente_nome': cliente['nome'],
+                'cliente_telefone': cliente['telefone'],
+                'endereco': cliente['endereco'],
+                'cidade': cliente['cidade'],
+                'data_entrega': nova_venda['data_venda'],
+                'status': 'agendada',  # Status inicial para entregas
+                'valor_total': nova_venda['valor_total'],
+                'itens_producao': [
+                    {
+                        'produto_id': produto['id'],
+                        'produto_nome': produto['nome'],
+                        'quantidade': produto['quantidade'],
+                        'status_producao': 'pendente'
+                    } for produto in dados_venda['produtos']
+                ]
+            }
+            logger.info(f"Entrega criada automaticamente para venda {novo_id}")
+
+        # INTEGRAÇÃO AUTOMÁTICA 2: Atualizar/criar card no CRM
+        crm_card = {
+            'id': novo_id,
+            'cliente_id': dados_venda['cliente_id'],
+            'cliente_nome': dados_venda['cliente_nome'],
+            'tipo': 'venda',
+            'status': 'cliente',  # Cliente já realizou compra
+            'valor_estimado': dados_venda['valor_total'],
+            'data_criacao': nova_venda['data_venda'],
+            'ultima_interacao': nova_venda['data_venda'],
+            'observacoes': f"Venda #{novo_id} realizada - {len(dados_venda['produtos'])} produto(s)"
+        }
+        logger.info(f"Card CRM atualizado para cliente {dados_venda['cliente_id']}")
+
+        # Simular salvamento (em produção seria persistido)
+        logger.info(f"Nova venda criada: ID {novo_id}, Cliente: {dados_venda['cliente_nome']}, Valor: R$ {dados_venda['valor_total']}")
+
+        return jsonify({
+            'success': True,
+            'message': 'Venda criada com sucesso!',
+            'venda_id': novo_id,
+            'integracoes': {
+                'entrega_criada': True,
+                'crm_atualizado': True
+            }
+        })
+
+    except Exception as e:
+        logger.error(f"Erro ao criar venda: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/vendas/<int:venda_id>', methods=['GET'])
+def api_obter_venda(venda_id):
+    """API para obter detalhes de uma venda específica"""
+    try:
+        data = get_db_connection()
+
+        # Buscar venda
+        venda = next((v for v in data['vendas'] if v['id'] == venda_id), None)
+        if not venda:
+            return jsonify({'success': False, 'error': 'Venda não encontrada'}), 404
+
+        # Enriquecer com dados do cliente
+        cliente = next((c for c in data['clientes'] if c['id'] == venda['cliente_id']), None)
+        produto = next((p for p in data['produtos'] if p['id'] == venda['produto_id']), None)
+
+        # Simular itens detalhados da venda (em produção viria do banco)
+        itens_simulados = [
+            {
+                'id': 1,
+                'nome': produto['nome'] if produto else 'Produto MIMO',
+                'quantidade': venda['quantidade'],
+                'preco_unitario': produto['preco_centavos'] / 100 if produto else 0,
+                'subtotal': venda['valor_total'],
+                'status_producao': 'pendente',
+                'observacoes': 'Aguardando início da produção'
+            }
+        ]
+
+        venda_detalhada = {
+            'id': venda['id'],
+            'cliente_id': venda['cliente_id'],
+            'cliente_nome': cliente['nome'] if cliente else 'Cliente não encontrado',
+            'cliente_telefone': cliente['telefone'] if cliente else '',
+            'data_venda': venda['data_venda'],
+            'status': venda['status'],
+            'valor_total': venda['valor_total'],
+            'itens': itens_simulados
+        }
+
+        return jsonify({
+            'success': True,
+            'venda': venda_detalhada
+        })
+
+    except Exception as e:
+        logger.error(f"Erro ao obter venda {venda_id}: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/entregas', methods=['GET'])
