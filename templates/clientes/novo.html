@@ -1,0 +1,258 @@
+{% extends "base-refined.html" %}
+
+{% block title %}Novo Cliente - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="mimo-section">
+    <div class="mimo-container">
+        <!-- Header Elegante -->
+        <div class="mimo-text-center" style="margin-bottom: 3rem;">
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size: 4rem; color: var(--mimo-gold); margin-bottom: 1rem; line-height: 1;">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <h1 style="font-family: var(--mimo-font-secondary); font-size: 3.5rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; color: var(--mimo-black);">
+                    Novo Cliente MIMO
+                </h1>
+                <p style="font-family: var(--mimo-font-primary); font-size: 1.25rem; font-weight: 400; color: var(--mimo-gray-400); margin: 0; line-height: 1.5; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Cadastre um novo cliente com facilidade e elegância
+                </p>
+            </div>
+        </div>
+
+        <!-- Formulário de Novo Cliente -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="mimo-card" style="background: var(--mimo-white); border: 1px solid var(--mimo-gray-100); box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 20px; overflow: hidden;">
+                    <div style="padding: 3rem;">
+                        <form id="formNovoCliente">
+                            <!-- Informações Básicas -->
+                            <div class="mb-5">
+                                <h3 style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black); margin-bottom: 1.5rem; display: flex; align-items: center;">
+                                    <i class="bi bi-person-fill me-3 mimo-text-gold" style="font-size: 1.5rem;"></i>
+                                    Informações Básicas
+                                </h3>
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Nome Completo *
+                                        </label>
+                                        <input type="text" id="nomeCliente" class="form-control mimo-input" placeholder="Digite o nome completo" required style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            E-mail
+                                        </label>
+                                        <input type="email" id="emailCliente" class="form-control mimo-input" placeholder="cliente@email.com" style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Telefone *
+                                        </label>
+                                        <input type="tel" id="telefoneCliente" class="form-control mimo-input" placeholder="(00) 00000-0000" required style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Data de Nascimento
+                                        </label>
+                                        <input type="date" id="nascimentoCliente" class="form-control mimo-input" style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Endereço -->
+                            <div class="mb-5">
+                                <h3 style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black); margin-bottom: 1.5rem; display: flex; align-items: center;">
+                                    <i class="bi bi-house-fill me-3 mimo-text-gold" style="font-size: 1.5rem;"></i>
+                                    Endereço
+                                </h3>
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-8">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Endereço Completo
+                                        </label>
+                                        <input type="text" id="enderecoCliente" class="form-control mimo-input" placeholder="Rua, número, bairro" style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Cidade *
+                                        </label>
+                                        <select id="cidadeCliente" class="form-select mimo-input" required style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                            <option value="">Selecione...</option>
+                                            <option value="Anápolis">Anápolis</option>
+                                            <option value="Goiânia">Goiânia</option>
+                                            <option value="Brasília">Brasília</option>
+                                            <option value="Aparecida de Goiânia">Aparecida de Goiânia</option>
+                                            <option value="Senador Canedo">Senador Canedo</option>
+                                            <option value="Trindade">Trindade</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Observações -->
+                            <div class="mb-5">
+                                <h3 style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black); margin-bottom: 1.5rem; display: flex; align-items: center;">
+                                    <i class="bi bi-chat-text me-3 mimo-text-gold" style="font-size: 1.5rem;"></i>
+                                    Observações
+                                </h3>
+                                
+                                <textarea id="observacoesCliente" class="form-control mimo-input" rows="4" placeholder="Informações adicionais sobre o cliente (preferências, restrições alimentares, etc.)" style="font-family: var(--mimo-font-primary); resize: vertical;"></textarea>
+                            </div>
+
+                            <!-- Botões de Ação -->
+                            <div class="text-center">
+                                <button type="button" class="btn btn-secondary me-3" onclick="window.location.href='/clientes'" style="padding: 1rem 2rem; font-family: var(--mimo-font-primary); font-weight: 500;">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success" style="padding: 1rem 3rem; font-family: var(--mimo-font-primary); font-weight: 600; background: linear-gradient(135deg, var(--mimo-gold), #c9a96e); border: none; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Cadastrar Cliente
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<script>
+// Configurar eventos quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    configurarFormulario();
+    aplicarMascaras();
+});
+
+// Função para configurar o formulário
+function configurarFormulario() {
+    const form = document.getElementById('formNovoCliente');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        salvarCliente();
+    });
+}
+
+// Função para aplicar máscaras nos campos
+function aplicarMascaras() {
+    const telefoneInput = document.getElementById('telefoneCliente');
+    
+    telefoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length <= 11) {
+            if (value.length <= 10) {
+                value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            } else {
+                value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            }
+        }
+        
+        e.target.value = value;
+    });
+}
+
+// Função para salvar cliente
+function salvarCliente() {
+    // Validações básicas
+    const nome = document.getElementById('nomeCliente').value.trim();
+    const telefone = document.getElementById('telefoneCliente').value.trim();
+    const cidade = document.getElementById('cidadeCliente').value;
+
+    if (!nome) {
+        mostrarToast('Nome é obrigatório', 'warning');
+        return;
+    }
+
+    if (!telefone) {
+        mostrarToast('Telefone é obrigatório', 'warning');
+        return;
+    }
+
+    if (!cidade) {
+        mostrarToast('Cidade é obrigatória', 'warning');
+        return;
+    }
+
+    // Preparar dados do cliente
+    const dadosCliente = {
+        nome: nome,
+        email: document.getElementById('emailCliente').value.trim() || '',
+        telefone: telefone,
+        endereco: document.getElementById('enderecoCliente').value.trim() || '',
+        cidade: cidade,
+        data_nascimento: document.getElementById('nascimentoCliente').value || null,
+        observacoes: document.getElementById('observacoesCliente').value.trim() || '',
+        data_cadastro: new Date().toISOString().split('T')[0]
+    };
+
+    // Mostrar loading
+    const btnSalvar = document.querySelector('button[type="submit"]');
+    const textoOriginal = btnSalvar.innerHTML;
+    btnSalvar.disabled = true;
+    btnSalvar.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Salvando...';
+
+    // Simular salvamento (em produção seria uma chamada à API)
+    setTimeout(() => {
+        console.log('Cliente salvo:', dadosCliente);
+        mostrarToast('Cliente cadastrado com sucesso!', 'success');
+        
+        // Redirecionar após sucesso
+        setTimeout(() => {
+            window.location.href = '/clientes';
+        }, 2000);
+    }, 1500);
+}
+
+// Função para mostrar toast
+function mostrarToast(mensagem, tipo = 'info') {
+    const toastContainer = document.getElementById('toast-container');
+    
+    const toastId = 'toast-' + Date.now();
+    const cores = {
+        success: 'bg-success',
+        error: 'bg-danger',
+        warning: 'bg-warning',
+        info: 'bg-primary'
+    };
+    
+    const icones = {
+        success: 'bi-check-circle',
+        error: 'bi-x-circle',
+        warning: 'bi-exclamation-triangle',
+        info: 'bi-info-circle'
+    };
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white ${cores[tipo]} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" style="font-family: var(--mimo-font-primary);">
+                    <i class="bi ${icones[tipo]} me-2"></i>
+                    ${mensagem}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+    toast.show();
+    
+    // Remover toast após ser ocultado
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+</script>
+
+{% endblock %}

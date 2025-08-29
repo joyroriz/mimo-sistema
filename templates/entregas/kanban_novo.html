@@ -1,0 +1,556 @@
+{% extends "base-refined.html" %}
+
+{% block title %}Entregas - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="mimo-section">
+    <div class="mimo-container">
+        <!-- Header Elegante -->
+        <div class="mimo-text-center" style="margin-bottom: 3rem;">
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size: 4rem; color: var(--mimo-gold); margin-bottom: 1rem; line-height: 1;">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <h1 style="font-family: var(--mimo-font-secondary); font-size: 3.5rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; color: var(--mimo-black);">
+                    Kanban de Entregas MIMO
+                </h1>
+                <p style="font-family: var(--mimo-font-primary); font-size: 1.25rem; font-weight: 400; color: var(--mimo-gray-400); margin: 0; line-height: 1.5; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Fluxo completo de entregas com reset diário automático
+                </p>
+            </div>
+        </div>
+
+        <!-- Estatísticas do Dia -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card text-center" style="border: 2px solid var(--mimo-gold); border-radius: 16px; background: linear-gradient(135deg, #fef3c7, #fbbf24); color: var(--mimo-black);">
+                    <div class="card-body py-3">
+                        <i class="bi bi-calendar-check" style="font-size: 2rem; color: var(--mimo-gold);"></i>
+                        <h3 class="mt-2 mb-1" id="stat-para-hoje" style="font-family: var(--mimo-font-secondary); font-weight: 700;">0</h3>
+                        <p class="mb-0" style="font-family: var(--mimo-font-primary); font-weight: 500;">Para Hoje</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center" style="border: 2px solid #10b981; border-radius: 16px; background: linear-gradient(135deg, #d1fae5, #10b981); color: white;">
+                    <div class="card-body py-3">
+                        <i class="bi bi-check-circle-fill" style="font-size: 2rem;"></i>
+                        <h3 class="mt-2 mb-1" id="stat-entregues" style="font-family: var(--mimo-font-secondary); font-weight: 700;">0</h3>
+                        <p class="mb-0" style="font-family: var(--mimo-font-primary); font-weight: 500;">Entregues Hoje</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center" style="border: 2px solid #8b5cf6; border-radius: 16px; background: linear-gradient(135deg, #ede9fe, #8b5cf6); color: white;">
+                    <div class="card-body py-3">
+                        <i class="bi bi-cart-check" style="font-size: 2rem;"></i>
+                        <h3 class="mt-2 mb-1" id="stat-pedidos" style="font-family: var(--mimo-font-secondary); font-weight: 700;">0</h3>
+                        <p class="mb-0" style="font-family: var(--mimo-font-primary); font-weight: 500;">Pedidos Ativos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <button class="btn btn-outline-secondary w-100" onclick="abrirHistoricoEntregas()" style="height: 100%; padding: 1rem; font-family: var(--mimo-font-primary); font-weight: 500; border-radius: 16px;">
+                        <i class="bi bi-clock-history d-block" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        Ver Entregas Anteriores
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kanban de Entregas Reestruturado -->
+        <div class="row g-3 mb-4">
+            <!-- Coluna 1: Pedido Feito -->
+            <div class="col-md-2-4" style="flex: 0 0 20%; max-width: 20%;">
+                <div class="card h-100" style="min-height: 500px; border-radius: 16px; overflow: hidden;">
+                    <div class="card-header text-center" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED); padding: 1rem; border: none;">
+                        <h6 class="mb-1 text-white" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                            <i class="bi bi-cart-check me-2"></i>
+                            Pedido Feito
+                        </h6>
+                        <small class="text-white opacity-75" style="font-family: var(--mimo-font-primary);">2 dias úteis</small>
+                        <div class="mt-2">
+                            <span class="badge bg-white text-dark" id="kanban-pedido-feito" style="font-weight: 600;">0</span>
+                        </div>
+                    </div>
+                    <div class="card-body" id="kanban-pedido-feito-list" style="overflow-y: auto; max-height: 400px; padding: 1rem;">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-cart-check fs-3 d-block mb-2"></i>
+                            <p class="mb-0">Nenhum pedido</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna 2: Para Amanhã -->
+            <div class="col-md-2-4" style="flex: 0 0 20%; max-width: 20%;">
+                <div class="card h-100" style="min-height: 500px; border-radius: 16px; overflow: hidden;">
+                    <div class="card-header text-center" style="background: linear-gradient(135deg, #F59E0B, #D97706); padding: 1rem; border: none;">
+                        <h6 class="mb-1 text-white" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            Para Amanhã
+                        </h6>
+                        <small class="text-white opacity-75" style="font-family: var(--mimo-font-primary);" id="data-amanha">--</small>
+                        <div class="mt-2">
+                            <span class="badge bg-white text-dark" id="kanban-para-amanha" style="font-weight: 600;">0</span>
+                        </div>
+                    </div>
+                    <div class="card-body" id="kanban-para-amanha-list" style="overflow-y: auto; max-height: 400px; padding: 1rem;">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-calendar-plus fs-3 d-block mb-2"></i>
+                            <p class="mb-0">Nenhuma entrega</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna 3: Para Hoje -->
+            <div class="col-md-2-4" style="flex: 0 0 20%; max-width: 20%;">
+                <div class="card h-100" style="min-height: 500px; border-radius: 16px; overflow: hidden;">
+                    <div class="card-header text-center" style="background: linear-gradient(135deg, #EF4444, #DC2626); padding: 1rem; border: none;">
+                        <h6 class="mb-1 text-white" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Para Hoje
+                        </h6>
+                        <small class="text-white opacity-75" style="font-family: var(--mimo-font-primary);" id="data-hoje">--</small>
+                        <div class="mt-2">
+                            <span class="badge bg-white text-dark" id="kanban-para-hoje" style="font-weight: 600;">0</span>
+                        </div>
+                    </div>
+                    <div class="card-body" id="kanban-para-hoje-list" style="overflow-y: auto; max-height: 400px; padding: 1rem;">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>
+                            <p class="mb-0">Nenhuma entrega</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna 4: Entregues -->
+            <div class="col-md-2-4" style="flex: 0 0 20%; max-width: 20%;">
+                <div class="card h-100" style="min-height: 500px; border-radius: 16px; overflow: hidden;">
+                    <div class="card-header text-center" style="background: linear-gradient(135deg, #10B981, #059669); padding: 1rem; border: none;">
+                        <h6 class="mb-1 text-white" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Entregues
+                        </h6>
+                        <small class="text-white opacity-75" style="font-family: var(--mimo-font-primary);">Hoje</small>
+                        <div class="mt-2">
+                            <span class="badge bg-white text-dark" id="kanban-entregues" style="font-weight: 600;">0</span>
+                        </div>
+                    </div>
+                    <div class="card-body" id="kanban-entregues-list" style="overflow-y: auto; max-height: 400px; padding: 1rem;">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
+                            <p class="mb-0">Nenhuma entrega</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna 5: Canceladas -->
+            <div class="col-md-2-4" style="flex: 0 0 20%; max-width: 20%;">
+                <div class="card h-100" style="min-height: 500px; border-radius: 16px; overflow: hidden;">
+                    <div class="card-header text-center" style="background: linear-gradient(135deg, #6B7280, #4B5563); padding: 1rem; border: none;">
+                        <h6 class="mb-1 text-white" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                            <i class="bi bi-x-circle me-2"></i>
+                            Canceladas
+                        </h6>
+                        <small class="text-white opacity-75" style="font-family: var(--mimo-font-primary);">Não realizadas</small>
+                        <div class="mt-2">
+                            <span class="badge bg-white text-dark" id="kanban-canceladas" style="font-weight: 600;">0</span>
+                        </div>
+                    </div>
+                    <div class="card-body" id="kanban-canceladas-list" style="overflow-y: auto; max-height: 400px; padding: 1rem;">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-x-circle fs-3 d-block mb-2"></i>
+                            <p class="mb-0">Nenhuma cancelada</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Histórico de Entregas -->
+<div class="modal fade" id="modalHistoricoEntregas" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="font-family: var(--mimo-font-secondary); font-weight: 600;">
+                    <i class="bi bi-clock-history me-2 mimo-text-gold"></i>
+                    Histórico de Entregas
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Data Inicial</label>
+                        <input type="date" id="dataInicialHistorico" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Data Final</label>
+                        <input type="date" id="dataFinalHistorico" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-primary w-100" onclick="buscarHistorico()">
+                            <i class="bi bi-search me-2"></i>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                <div id="resultadoHistorico">
+                    <div class="text-center py-4">
+                        <i class="bi bi-search fs-3 d-block mb-2 text-muted"></i>
+                        <p class="text-muted">Selecione um período para buscar entregas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<script>
+// Variáveis globais
+let entregasData = [];
+let dataAtual = new Date();
+
+// Carregar dados quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    configurarDatas();
+    carregarEntregas();
+    configurarResetDiario();
+});
+
+// Função para configurar datas
+function configurarDatas() {
+    const hoje = new Date();
+    const amanha = new Date(hoje);
+    amanha.setDate(hoje.getDate() + 1);
+    
+    document.getElementById('data-hoje').textContent = hoje.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit' 
+    });
+    
+    document.getElementById('data-amanha').textContent = amanha.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit' 
+    });
+}
+
+// Função para carregar entregas
+function carregarEntregas() {
+    // Simular dados de entregas
+    const entregasSimuladas = [
+        {
+            id: 1,
+            cliente_nome: 'Maria Silva',
+            cliente_telefone: '(62) 99999-1111',
+            endereco: 'Rua das Flores, 123 - Centro',
+            cidade: 'Anápolis',
+            data_pedido: '2024-08-27',
+            data_entrega: '2024-08-29',
+            status: 'para_hoje',
+            tipo_entrega: 'entrega',
+            valor_total: 45.90,
+            itens: [
+                { nome: 'Experiência MIMO Afeto', quantidade: 2 }
+            ],
+            observacoes: 'Cliente prefere entrega pela manhã'
+        },
+        {
+            id: 2,
+            cliente_nome: 'João Santos',
+            cliente_telefone: '(62) 99999-2222',
+            endereco: 'Av. Brasil, 456 - Jundiaí',
+            cidade: 'Anápolis',
+            data_pedido: '2024-08-26',
+            data_entrega: '2024-08-30',
+            status: 'para_amanha',
+            tipo_entrega: 'retirada',
+            valor_total: 28.95,
+            itens: [
+                { nome: 'Frutas Desidratadas Premium', quantidade: 1 }
+            ],
+            observacoes: 'Retirada na loja'
+        }
+    ];
+    
+    entregasData = entregasSimuladas;
+    organizarKanban();
+}
+
+// Função para organizar dados no kanban
+function organizarKanban() {
+    const hoje = new Date().toISOString().split('T')[0];
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    const amanhaStr = amanha.toISOString().split('T')[0];
+    
+    const kanbanData = {
+        pedido_feito: [],
+        para_amanha: [],
+        para_hoje: [],
+        entregues: [],
+        canceladas: []
+    };
+    
+    entregasData.forEach(entrega => {
+        if (entrega.data_entrega === hoje) {
+            kanbanData.para_hoje.push(entrega);
+        } else if (entrega.data_entrega === amanhaStr) {
+            kanbanData.para_amanha.push(entrega);
+        } else if (entrega.status === 'entregue') {
+            kanbanData.entregues.push(entrega);
+        } else if (entrega.status === 'cancelada') {
+            kanbanData.canceladas.push(entrega);
+        } else {
+            kanbanData.pedido_feito.push(entrega);
+        }
+    });
+    
+    // Atualizar colunas
+    atualizarColuna('pedido-feito', kanbanData.pedido_feito);
+    atualizarColuna('para-amanha', kanbanData.para_amanha);
+    atualizarColuna('para-hoje', kanbanData.para_hoje);
+    atualizarColuna('entregues', kanbanData.entregues);
+    atualizarColuna('canceladas', kanbanData.canceladas);
+    
+    // Atualizar estatísticas
+    document.getElementById('stat-para-hoje').textContent = kanbanData.para_hoje.length;
+    document.getElementById('stat-entregues').textContent = kanbanData.entregues.length;
+    document.getElementById('stat-pedidos').textContent = kanbanData.pedido_feito.length + kanbanData.para_amanha.length + kanbanData.para_hoje.length;
+}
+
+// Função para atualizar coluna do kanban
+function atualizarColuna(coluna, dados) {
+    const lista = document.getElementById(`kanban-${coluna}-list`);
+    const contador = document.getElementById(`kanban-${coluna}`);
+
+    contador.textContent = dados.length;
+
+    if (dados.length === 0) {
+        lista.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                <p class="mb-0">Nenhuma entrega</p>
+            </div>
+        `;
+        return;
+    }
+
+    lista.innerHTML = dados.map(entrega => criarCardEntrega(entrega)).join('');
+}
+
+// Função para criar card de entrega padronizado
+function criarCardEntrega(entrega) {
+    const itensTexto = entrega.itens.map(item => `${item.quantidade}x ${item.nome}`).join(', ');
+    const quantidadeTotal = entrega.itens.reduce((total, item) => total + item.quantidade, 0);
+
+    return `
+        <div class="card mb-3" style="border-radius: 12px; border: 1px solid var(--mimo-gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;"
+             onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.15)'"
+             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
+            <div class="card-body p-3">
+                <!-- Cliente e Telefone -->
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="mb-0" style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black);">
+                        <i class="bi bi-person-fill me-1 mimo-text-gold"></i>
+                        ${entrega.cliente_nome}
+                    </h6>
+                    <span class="badge ${entrega.tipo_entrega === 'entrega' ? 'bg-primary' : 'bg-secondary'}" style="font-size: 0.7rem;">
+                        ${entrega.tipo_entrega === 'entrega' ? 'Entrega' : 'Retirada'}
+                    </span>
+                </div>
+
+                <!-- Telefone -->
+                <p class="mb-2" style="font-family: var(--mimo-font-primary); font-size: 0.85rem; color: var(--mimo-gray-600);">
+                    <i class="bi bi-telephone me-1"></i>
+                    ${entrega.cliente_telefone}
+                </p>
+
+                <!-- Lista de Itens -->
+                <div class="mb-2">
+                    <small class="text-muted" style="font-family: var(--mimo-font-primary); font-weight: 500;">Itens:</small>
+                    <p class="mb-0" style="font-family: var(--mimo-font-primary); font-size: 0.85rem; color: var(--mimo-black);">
+                        ${itensTexto}
+                    </p>
+                </div>
+
+                <!-- Quantidade Total -->
+                <div class="mb-2">
+                    <span class="badge bg-light text-dark" style="font-family: var(--mimo-font-primary);">
+                        <i class="bi bi-box me-1"></i>
+                        ${quantidadeTotal} item${quantidadeTotal > 1 ? 's' : ''}
+                    </span>
+                </div>
+
+                <!-- Datas -->
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Pedido:</small>
+                        <small style="font-family: var(--mimo-font-primary); font-weight: 500;">
+                            ${new Date(entrega.data_pedido).toLocaleDateString('pt-BR')}
+                        </small>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Entrega:</small>
+                        <small style="font-family: var(--mimo-font-primary); font-weight: 500;">
+                            ${new Date(entrega.data_entrega).toLocaleDateString('pt-BR')}
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Observações -->
+                ${entrega.observacoes ? `
+                    <div class="mb-2">
+                        <small class="text-muted d-block">Observações:</small>
+                        <small style="font-family: var(--mimo-font-primary); color: var(--mimo-gray-700);">
+                            ${entrega.observacoes}
+                        </small>
+                    </div>
+                ` : ''}
+
+                <!-- Valor Total -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong style="font-family: var(--mimo-font-secondary); color: var(--mimo-gold);">
+                        R$ ${entrega.valor_total.toFixed(2).replace('.', ',')}
+                    </strong>
+                    <button class="btn btn-sm btn-outline-primary" onclick="verDetalhesEntrega(${entrega.id})" style="font-size: 0.75rem;">
+                        <i class="bi bi-eye me-1"></i>
+                        Ver
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Função para configurar reset diário
+function configurarResetDiario() {
+    // Verificar se é um novo dia
+    const ultimoReset = localStorage.getItem('ultimo_reset_entregas');
+    const hoje = new Date().toDateString();
+
+    if (ultimoReset !== hoje) {
+        console.log('Novo dia detectado - executando reset diário');
+        executarResetDiario();
+        localStorage.setItem('ultimo_reset_entregas', hoje);
+    }
+}
+
+// Função para executar reset diário
+function executarResetDiario() {
+    // Mover todas as entregas "entregues" para o histórico
+    // Em produção, isso seria uma chamada à API
+    console.log('Reset diário executado - coluna "Entregues" limpa');
+    mostrarToast('Reset diário executado - entregas do dia anterior movidas para histórico', 'info');
+}
+
+// Função para abrir histórico de entregas
+function abrirHistoricoEntregas() {
+    const modal = new bootstrap.Modal(document.getElementById('modalHistoricoEntregas'));
+
+    // Configurar datas padrão (últimos 7 dias)
+    const hoje = new Date();
+    const seteDiasAtras = new Date();
+    seteDiasAtras.setDate(hoje.getDate() - 7);
+
+    document.getElementById('dataFinalHistorico').value = hoje.toISOString().split('T')[0];
+    document.getElementById('dataInicialHistorico').value = seteDiasAtras.toISOString().split('T')[0];
+
+    modal.show();
+}
+
+// Função para buscar histórico
+function buscarHistorico() {
+    const dataInicial = document.getElementById('dataInicialHistorico').value;
+    const dataFinal = document.getElementById('dataFinalHistorico').value;
+
+    if (!dataInicial || !dataFinal) {
+        mostrarToast('Selecione as datas inicial e final', 'warning');
+        return;
+    }
+
+    // Simular busca no histórico
+    const resultadoDiv = document.getElementById('resultadoHistorico');
+    resultadoDiv.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border mimo-text-gold" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Buscando entregas...</p>
+        </div>
+    `;
+
+    setTimeout(() => {
+        resultadoDiv.innerHTML = `
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                Nenhuma entrega encontrada no período de ${new Date(dataInicial).toLocaleDateString('pt-BR')} a ${new Date(dataFinal).toLocaleDateString('pt-BR')}.
+            </div>
+        `;
+    }, 1500);
+}
+
+// Função para ver detalhes da entrega
+function verDetalhesEntrega(id) {
+    const entrega = entregasData.find(e => e.id === id);
+    if (entrega) {
+        mostrarToast(`Detalhes da entrega #${id} - ${entrega.cliente_nome}`, 'info');
+    }
+}
+
+// Função para mostrar toast
+function mostrarToast(mensagem, tipo = 'info') {
+    const toastContainer = document.getElementById('toast-container');
+
+    const toastId = 'toast-' + Date.now();
+    const cores = {
+        success: 'bg-success',
+        error: 'bg-danger',
+        warning: 'bg-warning',
+        info: 'bg-primary'
+    };
+
+    const icones = {
+        success: 'bi-check-circle',
+        error: 'bi-x-circle',
+        warning: 'bi-exclamation-triangle',
+        info: 'bi-info-circle'
+    };
+
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white ${cores[tipo]} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" style="font-family: var(--mimo-font-primary);">
+                    <i class="bi ${icones[tipo]} me-2"></i>
+                    ${mensagem}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+    toast.show();
+
+    // Remover toast após ser ocultado
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+</script>
+
+{% endblock %}

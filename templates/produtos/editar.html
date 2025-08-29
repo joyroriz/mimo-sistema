@@ -1,0 +1,323 @@
+{% extends "base-refined.html" %}
+
+{% block title %}Editar Produto - Sistema MIMO{% endblock %}
+
+{% block content %}
+<div class="mimo-section">
+    <div class="mimo-container">
+        <!-- Header Elegante -->
+        <div class="mimo-text-center" style="margin-bottom: 3rem;">
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size: 4rem; color: var(--mimo-gold); margin-bottom: 1rem; line-height: 1;">
+                    <i class="bi bi-pencil-square"></i>
+                </div>
+                <h1 style="font-family: var(--mimo-font-secondary); font-size: 3.5rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; color: var(--mimo-black);">
+                    Editar Produto MIMO
+                </h1>
+                <p style="font-family: var(--mimo-font-primary); font-size: 1.25rem; font-weight: 400; color: var(--mimo-gray-400); margin: 0; line-height: 1.5; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Atualize as informações do produto com facilidade
+                </p>
+            </div>
+        </div>
+
+        <!-- Formulário de Edição -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="mimo-card" style="background: var(--mimo-white); border: 1px solid var(--mimo-gray-100); box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 20px; overflow: hidden;">
+                    <div style="padding: 3rem;">
+                        <!-- Loading State -->
+                        <div id="loadingState" class="text-center py-5">
+                            <div class="spinner-border mimo-text-gold" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                            <p class="mt-3" style="font-family: var(--mimo-font-primary); color: var(--mimo-gray-500);">
+                                Carregando dados do produto...
+                            </p>
+                        </div>
+
+                        <!-- Formulário -->
+                        <form id="formEditarProduto" style="display: none;">
+                            <!-- Informações Básicas -->
+                            <div class="mb-5">
+                                <h3 style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black); margin-bottom: 1.5rem; display: flex; align-items: center;">
+                                    <i class="bi bi-box-seam me-3 mimo-text-gold" style="font-size: 1.5rem;"></i>
+                                    Informações do Produto
+                                </h3>
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-8">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Nome do Produto *
+                                        </label>
+                                        <input type="text" id="nomeProduto" class="form-control mimo-input" placeholder="Digite o nome do produto" required style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Preço (R$) *
+                                        </label>
+                                        <input type="number" id="precoProduto" class="form-control mimo-input" placeholder="0,00" step="0.01" min="0" required style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Categoria *
+                                        </label>
+                                        <select id="categoriaProduto" class="form-select mimo-input" required style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                            <option value="">Selecione uma categoria...</option>
+                                            <option value="Frutas Desidratadas">Frutas Desidratadas</option>
+                                            <option value="Frutas com Chocolate">Frutas com Chocolate</option>
+                                            <option value="Barras de Chocolate">Barras de Chocolate</option>
+                                            <option value="Experiências MIMO">Experiências MIMO</option>
+                                            <option value="Flores Comestíveis">Flores Comestíveis</option>
+                                            <option value="Doces Artesanais">Doces Artesanais</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Status
+                                        </label>
+                                        <select id="statusProduto" class="form-select mimo-input" style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                            <option value="ativo">Ativo</option>
+                                            <option value="inativo">Inativo</option>
+                                            <option value="sazonal">Sazonal</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Descrição
+                                        </label>
+                                        <textarea id="descricaoProduto" class="form-control mimo-input" rows="4" placeholder="Descreva o produto, ingredientes, características especiais..." style="font-family: var(--mimo-font-primary); resize: vertical;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Informações Adicionais -->
+                            <div class="mb-5">
+                                <h3 style="font-family: var(--mimo-font-secondary); font-weight: 600; color: var(--mimo-black); margin-bottom: 1.5rem; display: flex; align-items: center;">
+                                    <i class="bi bi-info-circle me-3 mimo-text-gold" style="font-size: 1.5rem;"></i>
+                                    Informações Adicionais
+                                </h3>
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Tempo de Produção (dias)
+                                        </label>
+                                        <input type="number" id="tempoProducao" class="form-control mimo-input" placeholder="Ex: 2" min="0" style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Validade (dias)
+                                        </label>
+                                        <input type="number" id="validadeProduto" class="form-control mimo-input" placeholder="Ex: 30" min="1" style="height: 3.5rem; font-family: var(--mimo-font-primary);">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-gray-700); margin-bottom: 0.5rem;">
+                                            Observações de Produção
+                                        </label>
+                                        <textarea id="observacoesProduto" class="form-control mimo-input" rows="3" placeholder="Instruções especiais, cuidados na produção, etc." style="font-family: var(--mimo-font-primary); resize: vertical;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botões de Ação -->
+                            <div class="text-center">
+                                <button type="button" class="btn btn-secondary me-3" onclick="window.location.href='/produtos'" style="padding: 1rem 2rem; font-family: var(--mimo-font-primary); font-weight: 500;">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success" style="padding: 1rem 3rem; font-family: var(--mimo-font-primary); font-weight: 600; background: linear-gradient(135deg, var(--mimo-gold), #c9a96e); border: none; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<script>
+// Variáveis globais
+let produtoId = null;
+let produtoOriginal = null;
+
+// Carregar produto quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    // Extrair ID do produto da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    produtoId = urlParams.get('id');
+    
+    if (!produtoId) {
+        mostrarToast('ID do produto não encontrado', 'error');
+        setTimeout(() => window.location.href = '/produtos', 2000);
+        return;
+    }
+    
+    carregarProduto();
+    configurarFormulario();
+});
+
+// Função para carregar dados do produto
+function carregarProduto() {
+    fetch(`/api/produtos/${produtoId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.produto) {
+                produtoOriginal = data.produto;
+                preencherFormulario(data.produto);
+                mostrarFormulario();
+            } else {
+                // Simular dados para demonstração
+                const produtoSimulado = {
+                    id: produtoId,
+                    nome: 'Experiência MIMO Afeto',
+                    preco: 28.95,
+                    categoria: 'Experiências MIMO',
+                    descricao: 'Uma experiência única de sabores artesanais que desperta o afeto através do paladar.',
+                    status: 'ativo',
+                    tempo_producao: 2,
+                    validade: 30,
+                    observacoes: 'Produto artesanal, preparado com ingredientes selecionados.'
+                };
+                produtoOriginal = produtoSimulado;
+                preencherFormulario(produtoSimulado);
+                mostrarFormulario();
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar produto:', error);
+            mostrarToast('Erro ao carregar dados do produto', 'error');
+            setTimeout(() => window.location.href = '/produtos', 3000);
+        });
+}
+
+// Função para preencher formulário com dados do produto
+function preencherFormulario(produto) {
+    document.getElementById('nomeProduto').value = produto.nome || '';
+    document.getElementById('precoProduto').value = produto.preco || '';
+    document.getElementById('categoriaProduto').value = produto.categoria || '';
+    document.getElementById('descricaoProduto').value = produto.descricao || '';
+    document.getElementById('statusProduto').value = produto.status || 'ativo';
+    document.getElementById('tempoProducao').value = produto.tempo_producao || '';
+    document.getElementById('validadeProduto').value = produto.validade || '';
+    document.getElementById('observacoesProduto').value = produto.observacoes || '';
+}
+
+// Função para mostrar formulário
+function mostrarFormulario() {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('formEditarProduto').style.display = 'block';
+}
+
+// Função para configurar eventos do formulário
+function configurarFormulario() {
+    const form = document.getElementById('formEditarProduto');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        salvarProduto();
+    });
+}
+
+// Função para salvar produto
+function salvarProduto() {
+    // Validações básicas
+    const nome = document.getElementById('nomeProduto').value.trim();
+    const preco = parseFloat(document.getElementById('precoProduto').value);
+    const categoria = document.getElementById('categoriaProduto').value;
+
+    if (!nome) {
+        mostrarToast('Nome do produto é obrigatório', 'warning');
+        return;
+    }
+
+    if (!preco || preco <= 0) {
+        mostrarToast('Preço deve ser maior que zero', 'warning');
+        return;
+    }
+
+    if (!categoria) {
+        mostrarToast('Categoria é obrigatória', 'warning');
+        return;
+    }
+
+    // Preparar dados do produto
+    const dadosProduto = {
+        id: produtoId,
+        nome: nome,
+        preco: preco,
+        categoria: categoria,
+        descricao: document.getElementById('descricaoProduto').value.trim(),
+        status: document.getElementById('statusProduto').value,
+        tempo_producao: parseInt(document.getElementById('tempoProducao').value) || null,
+        validade: parseInt(document.getElementById('validadeProduto').value) || null,
+        observacoes: document.getElementById('observacoesProduto').value.trim()
+    };
+
+    // Mostrar loading
+    const btnSalvar = document.querySelector('button[type="submit"]');
+    const textoOriginal = btnSalvar.innerHTML;
+    btnSalvar.disabled = true;
+    btnSalvar.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Salvando...';
+
+    // Simular salvamento (em produção seria uma chamada à API)
+    setTimeout(() => {
+        console.log('Produto atualizado:', dadosProduto);
+        mostrarToast('Produto atualizado com sucesso!', 'success');
+        
+        // Redirecionar após sucesso
+        setTimeout(() => {
+            window.location.href = '/produtos';
+        }, 2000);
+    }, 1500);
+}
+
+// Função para mostrar toast
+function mostrarToast(mensagem, tipo = 'info') {
+    const toastContainer = document.getElementById('toast-container');
+    
+    const toastId = 'toast-' + Date.now();
+    const cores = {
+        success: 'bg-success',
+        error: 'bg-danger',
+        warning: 'bg-warning',
+        info: 'bg-primary'
+    };
+    
+    const icones = {
+        success: 'bi-check-circle',
+        error: 'bi-x-circle',
+        warning: 'bi-exclamation-triangle',
+        info: 'bi-info-circle'
+    };
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white ${cores[tipo]} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" style="font-family: var(--mimo-font-primary);">
+                    <i class="bi ${icones[tipo]} me-2"></i>
+                    ${mensagem}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+    toast.show();
+    
+    // Remover toast após ser ocultado
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+</script>
+
+{% endblock %}

@@ -518,7 +518,8 @@
 
     // Funções de ação
     function editarProduto(id) {
-        alert('Funcionalidade de edição em desenvolvimento. ID: ' + id);
+        console.log('Redirecionando para edição do produto:', id);
+        window.location.href = `/produtos/editar?id=${id}`;
     }
 
     function verDetalhes(id) {

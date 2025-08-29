@@ -158,6 +158,20 @@
                                     text-align: left;
                                     border: none;
                                 ">
+                                    <i class="bi bi-house" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
+                                    Endereço
+                                </th>
+                                <th style="
+                                    font-family: var(--mimo-font-primary);
+                                    font-size: 0.875rem;
+                                    font-weight: 600;
+                                    color: var(--mimo-gray-700);
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.05em;
+                                    padding: 1.25rem 1.5rem;
+                                    text-align: left;
+                                    border: none;
+                                ">
                                     <i class="bi bi-geo-alt" style="color: var(--mimo-gold); margin-right: 0.5rem;"></i>
                                     Cidade
                                 </th>
@@ -196,7 +210,7 @@
                         <!-- Corpo da Tabela -->
                         <tbody>
                             <tr>
-                                <td colspan="5" style="
+                                <td colspan="6" style="
                                     text-align: center;
                                     padding: 4rem 2rem;
                                     background: var(--mimo-white);
@@ -313,6 +327,24 @@
                                         display: inline-block;
                                         border: 1px solid var(--mimo-gray-200);
                                     ">${cliente.telefone}</div>
+                                </td>
+                                <td style="padding: 1.5rem; border: none; vertical-align: middle;">
+                                    <div style="
+                                        font-family: var(--mimo-font-primary);
+                                        font-size: 0.9rem;
+                                        font-weight: 500;
+                                        color: var(--mimo-gray-700);
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 0.5rem;
+                                        max-width: 200px;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        white-space: nowrap;
+                                    ">
+                                        <i class="bi bi-house-fill" style="color: var(--mimo-gold); font-size: 0.875rem; flex-shrink: 0;"></i>
+                                        <span title="${cliente.endereco || 'Não informado'}">${cliente.endereco || 'Não informado'}</span>
+                                    </div>
                                 </td>
                                 <td style="padding: 1.5rem; border: none; vertical-align: middle;">
                                     <div style="

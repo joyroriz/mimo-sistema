@@ -5,26 +5,77 @@
 {% block content %}
 <div class="mimo-section">
     <div class="mimo-container">
-        <!-- Header Elegante -->
+        <!-- Header Elegante com Filtro de Período -->
         <div class="mimo-text-center" style="margin-bottom: 3rem;">
             <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">
                 <i class="bi bi-gem mimo-text-gold"></i>
                 Dashboard MIMO
             </h1>
-            <p style="font-size: 1.125rem; color: var(--mimo-gray-400); margin: 0;">
+            <p style="font-size: 1.125rem; color: var(--mimo-gray-400); margin-bottom: 2rem;">
                 Visão geral completa do seu negócio
             </p>
+
+            <!-- Filtro de Período -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card" style="border: 2px solid var(--mimo-gold); border-radius: 16px; background: linear-gradient(135deg, #fafafa 0%, var(--mimo-white) 100%);">
+                        <div class="card-body p-3">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-auto">
+                                    <label class="form-label mb-0" style="font-family: var(--mimo-font-primary); font-weight: 600; color: var(--mimo-black);">
+                                        <i class="bi bi-calendar-range me-2 mimo-text-gold"></i>
+                                        Período:
+                                    </label>
+                                </div>
+                                <div class="col-auto">
+                                    <select id="filtroMes" class="form-select" style="min-width: 120px; font-family: var(--mimo-font-primary);">
+                                        <option value="1">Janeiro</option>
+                                        <option value="2">Fevereiro</option>
+                                        <option value="3">Março</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Maio</option>
+                                        <option value="6">Junho</option>
+                                        <option value="7">Julho</option>
+                                        <option value="8" selected>Agosto</option>
+                                        <option value="9">Setembro</option>
+                                        <option value="10">Outubro</option>
+                                        <option value="11">Novembro</option>
+                                        <option value="12">Dezembro</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <select id="filtroAno" class="form-select" style="min-width: 100px; font-family: var(--mimo-font-primary);">
+                                        <option value="2023">2023</option>
+                                        <option value="2024" selected>2024</option>
+                                        <option value="2025">2025</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-primary" onclick="atualizarEstatisticas()" style="background: var(--mimo-gold); border: none; font-family: var(--mimo-font-primary); font-weight: 500;">
+                                        <i class="bi bi-arrow-clockwise me-2"></i>
+                                        Atualizar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Métricas Principais -->
+        <!-- Métricas Principais Dinâmicas -->
         <div class="mimo-grid mimo-grid-4" style="margin-bottom: 3rem;">
             <!-- Clientes -->
-            <div class="mimo-card mimo-text-center">
+            <div class="mimo-card mimo-text-center" style="transition: all 0.3s ease;">
                 <div style="font-size: 2.5rem; color: var(--mimo-gold); margin-bottom: 0.5rem;">
                     <i class="bi bi-people"></i>
                 </div>
-                <h3 style="font-size: 2rem; margin-bottom: 0.25rem;">28</h3>
-                <p class="mimo-text-muted mimo-mb-lg">Total de Clientes</p>
+                <h3 id="totalClientes" style="font-size: 2rem; margin-bottom: 0.25rem;">
+                    <span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>
+                </h3>
+                <p class="mimo-text-muted mimo-mb-lg">
+                    <span id="labelClientes">Total de Clientes</span>
+                </p>
                 <a href="{{ url_for('clientes') }}" class="mimo-btn mimo-btn-primary">
                     <i class="bi bi-arrow-right"></i>
                     Ver todos
@@ -32,12 +83,16 @@
             </div>
 
             <!-- Produtos -->
-            <div class="mimo-card mimo-text-center">
+            <div class="mimo-card mimo-text-center" style="transition: all 0.3s ease;">
                 <div style="font-size: 2.5rem; color: var(--mimo-gold); margin-bottom: 0.5rem;">
                     <i class="bi bi-box"></i>
                 </div>
-                <h3 style="font-size: 2rem; margin-bottom: 0.25rem;">42</h3>
-                <p class="mimo-text-muted mimo-mb-lg">Total de Produtos</p>
+                <h3 id="totalProdutos" style="font-size: 2rem; margin-bottom: 0.25rem;">
+                    <span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>
+                </h3>
+                <p class="mimo-text-muted mimo-mb-lg">
+                    <span id="labelProdutos">Total de Produtos</span>
+                </p>
                 <a href="{{ url_for('produtos') }}" class="mimo-btn mimo-btn-primary">
                     <i class="bi bi-arrow-right"></i>
                     Ver todos
@@ -45,12 +100,16 @@
             </div>
 
             <!-- Vendas -->
-            <div class="mimo-card mimo-text-center">
+            <div class="mimo-card mimo-text-center" style="transition: all 0.3s ease;">
                 <div style="font-size: 2.5rem; color: var(--mimo-gold); margin-bottom: 0.5rem;">
                     <i class="bi bi-cart"></i>
                 </div>
-                <h3 style="font-size: 2rem; margin-bottom: 0.25rem;">32</h3>
-                <p class="mimo-text-muted mimo-mb-lg">Total de Vendas</p>
+                <h3 id="totalVendas" style="font-size: 2rem; margin-bottom: 0.25rem;">
+                    <span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>
+                </h3>
+                <p class="mimo-text-muted mimo-mb-lg">
+                    <span id="labelVendas">Vendas do Período</span>
+                </p>
                 <a href="{{ url_for('vendas') }}" class="mimo-btn mimo-btn-primary">
                     <i class="bi bi-arrow-right"></i>
                     Ver todas
@@ -58,12 +117,16 @@
             </div>
 
             <!-- Receita -->
-            <div class="mimo-card mimo-text-center">
+            <div class="mimo-card mimo-text-center" style="transition: all 0.3s ease;">
                 <div style="font-size: 2.5rem; color: var(--mimo-gold); margin-bottom: 0.5rem;">
                     <i class="bi bi-currency-dollar"></i>
                 </div>
-                <h3 style="font-size: 2rem; margin-bottom: 0.25rem;">R$ 1.247</h3>
-                <p class="mimo-text-muted mimo-mb-lg">Receita Total</p>
+                <h3 id="totalReceita" style="font-size: 2rem; margin-bottom: 0.25rem;">
+                    <span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>
+                </h3>
+                <p class="mimo-text-muted mimo-mb-lg">
+                    <span id="labelReceita">Receita do Período</span>
+                </p>
                 <a href="{{ url_for('vendas') }}" class="mimo-btn mimo-btn-primary">
                     <i class="bi bi-arrow-right"></i>
                     Relatório
@@ -157,4 +220,182 @@
         </div>
     </div>
 </div>
+
+<script>
+// Variáveis globais para o dashboard
+let dadosOriginais = {
+    clientes: [],
+    produtos: [],
+    vendas: []
+};
+
+// Carregar dados iniciais quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard MIMO carregado...');
+    carregarDadosIniciais();
+});
+
+// Função para carregar todos os dados iniciais
+async function carregarDadosIniciais() {
+    try {
+        // Carregar dados de todas as APIs
+        const [clientesResponse, produtosResponse, vendasResponse] = await Promise.all([
+            fetch('/api/clientes'),
+            fetch('/api/produtos'),
+            fetch('/api/vendas')
+        ]);
+
+        const clientesData = await clientesResponse.json();
+        const produtosData = await produtosResponse.json();
+        const vendasData = await vendasResponse.json();
+
+        // Armazenar dados originais
+        dadosOriginais.clientes = clientesData.clientes || [];
+        dadosOriginais.produtos = produtosData.produtos || [];
+        dadosOriginais.vendas = vendasData.vendas || [];
+
+        // Atualizar estatísticas iniciais
+        atualizarEstatisticas();
+
+    } catch (error) {
+        console.error('Erro ao carregar dados do dashboard:', error);
+        // Mostrar dados de fallback
+        document.getElementById('totalClientes').textContent = '28';
+        document.getElementById('totalProdutos').textContent = '42';
+        document.getElementById('totalVendas').textContent = '5';
+        document.getElementById('totalReceita').textContent = 'R$ 8.787,60';
+    }
+}
+
+// Função para atualizar estatísticas baseadas no período selecionado
+function atualizarEstatisticas() {
+    const mesSelecionado = parseInt(document.getElementById('filtroMes').value);
+    const anoSelecionado = parseInt(document.getElementById('filtroAno').value);
+
+    console.log(`Atualizando estatísticas para ${mesSelecionado}/${anoSelecionado}`);
+
+    // Mostrar loading
+    mostrarLoading();
+
+    // Simular delay para melhor UX
+    setTimeout(() => {
+        // Filtrar vendas por período
+        const vendasPeriodo = dadosOriginais.vendas.filter(venda => {
+            const dataVenda = new Date(venda.data_venda);
+            return dataVenda.getMonth() + 1 === mesSelecionado &&
+                   dataVenda.getFullYear() === anoSelecionado;
+        });
+
+        // Calcular estatísticas
+        const totalClientes = dadosOriginais.clientes.length;
+        const totalProdutos = dadosOriginais.produtos.length;
+        const totalVendasPeriodo = vendasPeriodo.length;
+        const receitaPeriodo = vendasPeriodo.reduce((total, venda) => total + (venda.valor_total || 0), 0);
+
+        // Atualizar interface
+        document.getElementById('totalClientes').textContent = totalClientes;
+        document.getElementById('totalProdutos').textContent = totalProdutos;
+        document.getElementById('totalVendas').textContent = totalVendasPeriodo;
+        document.getElementById('totalReceita').textContent = receitaPeriodo.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+        // Atualizar labels baseadas no período
+        const nomesMeses = [
+            '', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        ];
+
+        const mesAtual = new Date().getMonth() + 1;
+        const anoAtual = new Date().getFullYear();
+
+        if (mesSelecionado === mesAtual && anoSelecionado === anoAtual) {
+            document.getElementById('labelVendas').textContent = 'Vendas do Mês Atual';
+            document.getElementById('labelReceita').textContent = 'Receita do Mês Atual';
+        } else {
+            document.getElementById('labelVendas').textContent = `Vendas de ${nomesMeses[mesSelecionado]}/${anoSelecionado}`;
+            document.getElementById('labelReceita').textContent = `Receita de ${nomesMeses[mesSelecionado]}/${anoSelecionado}`;
+        }
+
+        // Animar cards
+        animarCards();
+
+    }, 800);
+}
+
+// Função para mostrar loading nos cards
+function mostrarLoading() {
+    const cards = ['totalClientes', 'totalProdutos', 'totalVendas', 'totalReceita'];
+    cards.forEach(cardId => {
+        document.getElementById(cardId).innerHTML = '<span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>';
+    });
+}
+
+// Função para animar cards
+function animarCards() {
+    const cards = document.querySelectorAll('.mimo-card');
+    cards.forEach((card, index) => {
+        card.style.transform = 'scale(0.95)';
+        card.style.opacity = '0.7';
+
+        setTimeout(() => {
+            card.style.transform = 'scale(1)';
+            card.style.opacity = '1';
+        }, index * 100);
+    });
+}
+
+// Função para mostrar toast de feedback
+function mostrarToast(mensagem, tipo = 'info') {
+    // Criar toast container se não existir
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+        toastContainer.style.zIndex = '9999';
+        document.body.appendChild(toastContainer);
+    }
+
+    const toastId = 'toast-' + Date.now();
+    const cores = {
+        success: 'bg-success',
+        error: 'bg-danger',
+        warning: 'bg-warning',
+        info: 'bg-primary'
+    };
+
+    const icones = {
+        success: 'bi-check-circle',
+        error: 'bi-x-circle',
+        warning: 'bi-exclamation-triangle',
+        info: 'bi-info-circle'
+    };
+
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white ${cores[tipo]} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" style="font-family: var(--mimo-font-primary);">
+                    <i class="bi ${icones[tipo]} me-2"></i>
+                    ${mensagem}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+    toast.show();
+
+    // Remover toast após ser ocultado
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+</script>
+
 {% endblock %}

@@ -602,6 +602,17 @@ def clientes():
         error_response = handle_error_gracefully('carregamento', f"Clientes: {str(e)}")
         return render_template('erro_amigavel.html', error=error_response['error']), 500
 
+@app.route('/clientes/novo')
+def novo_cliente():
+    """Página para cadastrar novo cliente"""
+    try:
+        return render_template('clientes/novo.html')
+    except Exception as e:
+        logger.error(f"Erro na página novo cliente: {str(e)}")
+        return render_template('erro_amigavel.html',
+                             erro="Erro ao carregar formulário de cliente",
+                             detalhes="Tente novamente em alguns instantes"), 500
+
 @app.route('/produtos')
 def produtos():
     """Página lista de produtos"""
@@ -635,6 +646,17 @@ def produtos():
         return render_template('produtos/listar.html', produtos=produtos_mock)
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'produtos'}), 500
+
+@app.route('/produtos/editar')
+def editar_produto():
+    """Página para editar produto"""
+    try:
+        return render_template('produtos/editar.html')
+    except Exception as e:
+        logger.error(f"Erro na página editar produto: {str(e)}")
+        return render_template('erro_amigavel.html',
+                             erro="Erro ao carregar formulário de edição",
+                             detalhes="Tente novamente em alguns instantes"), 500
 
 @app.route('/vendas')
 def vendas():
