@@ -109,12 +109,12 @@ def get_mock_data():
     """
     dados = {
         'clientes': [
-            # Clientes de Anápolis
-            {'id': 1, 'nome': 'Maria Geovana', 'telefone': '62 99100-0284', 'endereco': 'Av. S-4, 123', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-20'},
-            {'id': 2, 'nome': 'Ana Carolina Silva', 'telefone': '62 98765-4321', 'endereco': 'Rua das Flores, 456', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-21'},
-            {'id': 3, 'nome': 'Juliana Santos', 'telefone': '62 99876-5432', 'endereco': 'Av. Brasil, 789', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-22'},
-            {'id': 4, 'nome': 'Fernanda Costa', 'telefone': '62 98123-4567', 'endereco': 'Rua Central, 321', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-23'},
-            {'id': 5, 'nome': 'Camila Oliveira', 'telefone': '62 99234-5678', 'endereco': 'Av. Goiás, 654', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-24'},
+            # Clientes reais da planilha MIMO
+            {'id': 1, 'nome': 'Daniel', 'telefone': '(62) 99100-0284', 'endereco': 'Av. S-4, Q. 78 L. 01, Loja 02 e 03', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-29'},
+            {'id': 2, 'nome': 'Pedro Busby', 'telefone': '(62) 99100-0284', 'endereco': 'R. Pres. Kennedy, 70 - Venetian Palace', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-29'},
+            {'id': 3, 'nome': 'Maria Geovana Rodrigues', 'telefone': '(62) 98148-1996', 'endereco': 'Aeroporto', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-29'},
+            {'id': 4, 'nome': 'Rebecca', 'telefone': '(62) 98542-7087', 'endereco': 'R. Pres. Kennedy, 70 - Venetian Palace', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-29'},
+            {'id': 5, 'nome': 'Joy Roriz', 'telefone': '(62) 99559-0276', 'endereco': 'Jundiaí', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-29'},
             {'id': 6, 'nome': 'Larissa Ferreira', 'telefone': '62 98345-6789', 'endereco': 'Rua do Comércio, 987', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-25'},
             {'id': 7, 'nome': 'Gabriela Lima', 'telefone': '62 99456-7890', 'endereco': 'Av. Universitária, 147', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-26'},
             {'id': 8, 'nome': 'Beatriz Almeida', 'telefone': '62 98567-8901', 'endereco': 'Rua da Paz, 258', 'cidade': 'Anápolis', 'data_cadastro': '2024-08-27'},
@@ -142,12 +142,12 @@ def get_mock_data():
             {'id': 28, 'nome': 'Pietra Vieira', 'telefone': '61 98567-8901', 'endereco': 'Samambaia, QR 425', 'cidade': 'Brasília', 'data_cadastro': '2024-06-17'},
         ],
         'produtos': [
-            # Frutas Desidratadas (50g) - R$ 15-28
-            {'id': 1, 'nome': 'Manga Desidratada', 'preco_centavos': 1800, 'categoria': 'Frutas Desidratadas', 'descricao': 'Manga desidratada artesanal 50g'},
-            {'id': 2, 'nome': 'Abacaxi Desidratado', 'preco_centavos': 2000, 'categoria': 'Frutas Desidratadas', 'descricao': 'Abacaxi desidratado natural 50g'},
-            {'id': 3, 'nome': 'Banana Desidratada', 'preco_centavos': 1500, 'categoria': 'Frutas Desidratadas', 'descricao': 'Banana desidratada sem açúcar 50g'},
-            {'id': 4, 'nome': 'Maçã Desidratada', 'preco_centavos': 1700, 'categoria': 'Frutas Desidratadas', 'descricao': 'Maçã desidratada crocante 50g'},
-            {'id': 5, 'nome': 'Pêra Desidratada', 'preco_centavos': 1900, 'categoria': 'Frutas Desidratadas', 'descricao': 'Pêra desidratada doce 50g'},
+            # Produtos reais MIMO da planilha
+            {'id': 1, 'nome': 'Experiência MIMO Afeto', 'preco_centavos': 2895, 'categoria': 'Experiências MIMO', 'descricao': 'Produto artesanal MIMO de alta qualidade'},
+            {'id': 2, 'nome': 'Fruta desidratada (50g) - Abacaxi', 'preco_centavos': 2500, 'categoria': 'Frutas Desidratadas', 'descricao': 'Abacaxi desidratado natural 50g'},
+            {'id': 3, 'nome': 'Fruta desidratada (50g) - Banana', 'preco_centavos': 2000, 'categoria': 'Frutas Desidratadas', 'descricao': 'Banana desidratada sem açúcar 50g'},
+            {'id': 4, 'nome': 'Fruta desidratada (50g) - Maçã Fuji', 'preco_centavos': 2000, 'categoria': 'Frutas Desidratadas', 'descricao': 'Maçã Fuji desidratada crocante 50g'},
+            {'id': 5, 'nome': 'Fruta desidratada (50g) - Pera', 'preco_centavos': 2300, 'categoria': 'Frutas Desidratadas', 'descricao': 'Pera desidratada doce 50g'},
             {'id': 6, 'nome': 'Kiwi Desidratado', 'preco_centavos': 2200, 'categoria': 'Frutas Desidratadas', 'descricao': 'Kiwi desidratado exótico 50g'},
             {'id': 7, 'nome': 'Morango Desidratado', 'preco_centavos': 2500, 'categoria': 'Frutas Desidratadas', 'descricao': 'Morango desidratado premium 50g'},
             {'id': 8, 'nome': 'Uva Passa Premium', 'preco_centavos': 1600, 'categoria': 'Frutas Desidratadas', 'descricao': 'Uva passa selecionada 50g'},
