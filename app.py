@@ -753,7 +753,7 @@ def entregas():
 
         entregas_mock = MockPagination(entregas_list)
 
-        return render_template('entregas/listar.html', entregas=entregas_mock)
+        return render_template('entregas/kanban_novo.html')
     except Exception as e:
         return jsonify({'error': str(e), 'page': 'entregas'}), 500
 
