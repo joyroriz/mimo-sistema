@@ -28,13 +28,14 @@ test.describe('MIMO System - Teste Simples Dados Reais', () => {
     console.log(`  - Clientes: ${totalClientes}`);
     console.log(`  - Produtos: ${totalProdutos}`);
     console.log(`  - Vendas: ${totalVendas}`);
-    
+
     // Verificar se há pelo menos algum número válido
     const clientesNum = parseInt(totalClientes) || 0;
     const produtosNum = parseInt(totalProdutos) || 0;
-    
-    if (clientesNum > 0 && produtosNum > 0) {
-      console.log('✅ Sistema carregando com dados!');
+    const vendasNum = parseInt(totalVendas) || 0;
+
+    if (clientesNum > 0 && produtosNum > 0 && vendasNum >= 30) {
+      console.log('✅ Sistema carregando com dados reais da planilha!');
     } else {
       console.log('⚠️ Sistema pode estar com problemas nos dados');
     }
@@ -132,19 +133,45 @@ test.describe('MIMO System - Teste Simples Dados Reais', () => {
 
   test('Verificar API de produtos', async ({ page }) => {
     console.log('🔍 Testando API de produtos...');
-    
+
     try {
       const response = await page.request.get(`${BASE_URL}/api/produtos`);
       console.log(`📡 Status da API: ${response.status()}`);
-      
+
       if (response.status() === 200) {
         const data = await response.json();
         console.log(`📦 Produtos na API: ${data.produtos?.length || 0}`);
-        
+
         if (data.produtos && data.produtos.length > 0) {
           const primeiroProduto = data.produtos[0];
           console.log(`📦 Primeiro produto: ${primeiroProduto.nome} - R$ ${primeiroProduto.preco_centavos/100}`);
           console.log('✅ API de produtos funcionando!');
+        }
+      } else {
+        console.log(`❌ API retornou erro: ${response.status()}`);
+      }
+    } catch (error) {
+      console.log(`❌ Erro na API: ${error.message}`);
+    }
+  });
+
+  test('Verificar API de vendas com dados da planilha', async ({ page }) => {
+    console.log('🔍 Testando API de vendas...');
+
+    try {
+      const response = await page.request.get(`${BASE_URL}/api/vendas`);
+      console.log(`📡 Status da API: ${response.status()}`);
+
+      if (response.status() === 200) {
+        const data = await response.json();
+        console.log(`💰 Vendas na API: ${data.vendas?.length || 0}`);
+
+        if (data.vendas && data.vendas.length >= 30) {
+          const primeiraVenda = data.vendas[0];
+          console.log(`💰 Primeira venda: ${primeiraVenda.cliente_nome} - ${primeiraVenda.produto_nome} - R$ ${primeiraVenda.valor_total}`);
+          console.log('✅ API de vendas funcionando com dados reais da planilha!');
+        } else {
+          console.log('⚠️ Menos vendas que esperado');
         }
       } else {
         console.log(`❌ API retornou erro: ${response.status()}`);

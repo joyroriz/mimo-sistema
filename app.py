@@ -83,6 +83,11 @@ def validar_integridade_dados(dados):
             logger.error(f"Erro de integridade: {len(dados.get('produtos', []))} produtos encontrados, esperado 42")
             return False
 
+        # Validar vendas (deve ter pelo menos 30 vendas reais)
+        if 'vendas' not in dados or len(dados['vendas']) < 30:
+            logger.error(f"Erro de integridade: {len(dados.get('vendas', []))} vendas encontradas, esperado pelo menos 30")
+            return False
+
         # Validar campos obrigatórios dos clientes
         for cliente in dados['clientes']:
             if not all(key in cliente for key in ['id', 'nome', 'telefone', 'cidade']):
@@ -95,7 +100,13 @@ def validar_integridade_dados(dados):
                 logger.error(f"Produto com dados incompletos: {produto}")
                 return False
 
-        logger.info("Validação de integridade dos dados MIMO: SUCESSO")
+        # Validar campos obrigatórios das vendas
+        for venda in dados['vendas']:
+            if not all(key in venda for key in ['id', 'cliente_id', 'produto_id', 'quantidade', 'valor_total']):
+                logger.error(f"Venda com dados incompletos: {venda}")
+                return False
+
+        logger.info(f"Validação de integridade dos dados MIMO: SUCESSO - {len(dados['clientes'])} clientes, {len(dados['produtos'])} produtos, {len(dados['vendas'])} vendas")
         return True
 
     except Exception as e:
@@ -195,11 +206,39 @@ def get_mock_data():
             {'id': 42, 'nome': 'Mix Flores Comestíveis', 'preco_centavos': 3500, 'categoria': 'Flores Comestíveis', 'descricao': 'Seleção variada de flores comestíveis'},
         ],
         'vendas': [
-            {'id': 1, 'cliente_id': 1, 'produto_id': 1, 'quantidade': 1, 'valor_total': 2499.90, 'data_venda': '2024-08-27', 'status': 'Concluída'},
-            {'id': 2, 'cliente_id': 2, 'produto_id': 3, 'quantidade': 2, 'valor_total': 599.80, 'data_venda': '2024-08-26', 'status': 'Pendente'},
-            {'id': 3, 'cliente_id': 3, 'produto_id': 2, 'quantidade': 1, 'valor_total': 3299.00, 'data_venda': '2024-08-25', 'status': 'Concluída'},
-            {'id': 4, 'cliente_id': 4, 'produto_id': 5, 'quantidade': 1, 'valor_total': 189.90, 'data_venda': '2024-08-24', 'status': 'Concluída'},
-            {'id': 5, 'cliente_id': 5, 'produto_id': 4, 'quantidade': 1, 'valor_total': 2199.00, 'data_venda': '2024-08-23', 'status': 'Processando'},
+            # Vendas reais da planilha MIMO
+            {'id': 1, 'cliente_id': 3, 'produto_id': 35, 'quantidade': 4, 'valor_total': 68.00, 'data_venda': '2024-08-26', 'status': 'Entregue', 'cliente_nome': 'Maria Geovana Rodrigues', 'produto_nome': 'Barra de chocolate (25g) - Morango com semente de abóbora'},
+            {'id': 2, 'cliente_id': 4, 'produto_id': 35, 'quantidade': 1, 'valor_total': 17.00, 'data_venda': '2024-08-26', 'status': 'Entregue', 'cliente_nome': 'Rebecca', 'produto_nome': 'Barra de chocolate (25g) - Morango com semente de abóbora'},
+            {'id': 3, 'cliente_id': 4, 'produto_id': 36, 'quantidade': 1, 'valor_total': 17.00, 'data_venda': '2024-08-26', 'status': 'Entregue', 'cliente_nome': 'Rebecca', 'produto_nome': 'Barra de chocolate (25g) - Coco com abacaxi'},
+            {'id': 4, 'cliente_id': 4, 'produto_id': 29, 'quantidade': 1, 'valor_total': 45.00, 'data_venda': '2024-08-26', 'status': 'Entregue', 'cliente_nome': 'Rebecca', 'produto_nome': 'Kit Rolinho de fruta (12un)'},
+            {'id': 5, 'cliente_id': 1, 'produto_id': 29, 'quantidade': 2, 'valor_total': 90.00, 'data_venda': '2024-08-25', 'status': 'Entregue', 'cliente_nome': 'Juliana Salomão', 'produto_nome': 'Kit Rolinho de fruta (12un)'},
+            {'id': 6, 'cliente_id': 2, 'produto_id': 32, 'quantidade': 2, 'valor_total': 210.00, 'data_venda': '2024-08-24', 'status': 'Entregue', 'cliente_nome': 'Pedro Busby', 'produto_nome': 'Assinatura'},
+            {'id': 7, 'cliente_id': 2, 'produto_id': 31, 'quantidade': 1, 'valor_total': 85.00, 'data_venda': '2024-08-24', 'status': 'Entregue', 'cliente_nome': 'Pedro Busby', 'produto_nome': 'Ananás'},
+            {'id': 8, 'cliente_id': 5, 'produto_id': 29, 'quantidade': 1, 'valor_total': 45.00, 'data_venda': '2024-08-23', 'status': 'Entregue', 'cliente_nome': 'Joy Roriz', 'produto_nome': 'Kit Rolinho de fruta (12un)'},
+            {'id': 9, 'cliente_id': 5, 'produto_id': 35, 'quantidade': 1, 'valor_total': 17.00, 'data_venda': '2024-08-23', 'status': 'Entregue', 'cliente_nome': 'Joy Roriz', 'produto_nome': 'Barra de chocolate (25g) - Morango com semente de abóbora'},
+            {'id': 10, 'cliente_id': 7, 'produto_id': 2, 'quantidade': 1, 'valor_total': 28.00, 'data_venda': '2024-08-22', 'status': 'Entregue', 'cliente_nome': 'Julie Naoum', 'produto_nome': 'Fruta desidratada (50g) - Abacaxi com Pitaya'},
+            {'id': 11, 'cliente_id': 7, 'produto_id': 1, 'quantidade': 1, 'valor_total': 26.00, 'data_venda': '2024-08-22', 'status': 'Entregue', 'cliente_nome': 'Julie Naoum', 'produto_nome': 'Fruta desidratada (50g) - Abacaxi com Limão e Hortelã'},
+            {'id': 12, 'cliente_id': 7, 'produto_id': 30, 'quantidade': 1, 'valor_total': 55.00, 'data_venda': '2024-08-22', 'status': 'Entregue', 'cliente_nome': 'Julie Naoum', 'produto_nome': 'Kit Rolinho de fruta com chocolate (12un)'},
+            {'id': 13, 'cliente_id': 8, 'produto_id': 30, 'quantidade': 1, 'valor_total': 55.00, 'data_venda': '2024-08-21', 'status': 'Entregue', 'cliente_nome': 'Flavia Tiaga', 'produto_nome': 'Kit Rolinho de fruta com chocolate (12un)'},
+            {'id': 14, 'cliente_id': 9, 'produto_id': 30, 'quantidade': 1, 'valor_total': 55.00, 'data_venda': '2024-08-20', 'status': 'Entregue', 'cliente_nome': 'Madu', 'produto_nome': 'Kit Rolinho de fruta com chocolate (12un)'},
+            {'id': 15, 'cliente_id': 9, 'produto_id': 35, 'quantidade': 1, 'valor_total': 17.00, 'data_venda': '2024-08-20', 'status': 'Entregue', 'cliente_nome': 'Madu', 'produto_nome': 'Barra de chocolate (25g) - Morango com semente de abóbora'},
+            {'id': 16, 'cliente_id': 11, 'produto_id': 29, 'quantidade': 1, 'valor_total': 45.00, 'data_venda': '2024-08-19', 'status': 'Entregue', 'cliente_nome': 'João Hajjar', 'produto_nome': 'Kit Rolinho de fruta (12un)'},
+            {'id': 17, 'cliente_id': 11, 'produto_id': 35, 'quantidade': 4, 'valor_total': 68.00, 'data_venda': '2024-08-19', 'status': 'Entregue', 'cliente_nome': 'João Hajjar', 'produto_nome': 'Barra de chocolate (25g) - Morango com semente de abóbora'},
+            {'id': 18, 'cliente_id': 11, 'produto_id': 5, 'quantidade': 1, 'valor_total': 23.00, 'data_venda': '2024-08-19', 'status': 'Entregue', 'cliente_nome': 'João Hajjar', 'produto_nome': 'Fruta desidratada (50g) - Pera'},
+            {'id': 19, 'cliente_id': 12, 'produto_id': 35, 'quantidade': 4, 'valor_total': 68.00, 'data_venda': '2024-08-18', 'status': 'Entregue', 'cliente_nome': 'Miguel Marrula', 'produto_nome': 'Barra de chocolate (25g) - Morango com semente de abóbora'},
+            {'id': 20, 'cliente_id': 14, 'produto_id': 29, 'quantidade': 1, 'valor_total': 45.00, 'data_venda': '2024-08-17', 'status': 'Entregue', 'cliente_nome': 'Matheus Mota', 'produto_nome': 'Kit Rolinho de fruta (12un)'},
+            {'id': 21, 'cliente_id': 15, 'produto_id': 32, 'quantidade': 1, 'valor_total': 105.00, 'data_venda': '2024-08-16', 'status': 'Entregue', 'cliente_nome': 'Pedro Diniz', 'produto_nome': 'Assinatura'},
+            {'id': 22, 'cliente_id': 22, 'produto_id': 42, 'quantidade': 1, 'valor_total': 30.00, 'data_venda': '2024-08-15', 'status': 'Entregue', 'cliente_nome': 'Amanda Kamilla', 'produto_nome': 'Essencia'},
+            {'id': 23, 'cliente_id': 22, 'produto_id': 37, 'quantidade': 1, 'valor_total': 17.00, 'data_venda': '2024-08-15', 'status': 'Entregue', 'cliente_nome': 'Amanda Kamilla', 'produto_nome': 'Barra de chocolate (25g) - Damasco com Nozes'},
+            {'id': 24, 'cliente_id': 23, 'produto_id': 1, 'quantidade': 1, 'valor_total': 26.00, 'data_venda': '2024-08-14', 'status': 'Entregue', 'cliente_nome': 'Aline Vilela', 'produto_nome': 'Fruta desidratada (50g) - Abacaxi com Limão e Hortelã'},
+            {'id': 25, 'cliente_id': 23, 'produto_id': 12, 'quantidade': 1, 'valor_total': 26.00, 'data_venda': '2024-08-14', 'status': 'Entregue', 'cliente_nome': 'Aline Vilela', 'produto_nome': 'Fruta desidratada (50g) - Maçã com Laranja e Gengibre'},
+            {'id': 26, 'cliente_id': 24, 'produto_id': 42, 'quantidade': 1, 'valor_total': 30.00, 'data_venda': '2024-08-13', 'status': 'Entregue', 'cliente_nome': 'Virgínia', 'produto_nome': 'Essencia'},
+            {'id': 27, 'cliente_id': 24, 'produto_id': 29, 'quantidade': 1, 'valor_total': 45.00, 'data_venda': '2024-08-13', 'status': 'Entregue', 'cliente_nome': 'Virgínia', 'produto_nome': 'Kit Rolinho de fruta (12un)'},
+            {'id': 28, 'cliente_id': 25, 'produto_id': 42, 'quantidade': 1, 'valor_total': 30.00, 'data_venda': '2024-08-12', 'status': 'Entregue', 'cliente_nome': 'Rafaella', 'produto_nome': 'Essencia'},
+            {'id': 29, 'cliente_id': 25, 'produto_id': 13, 'quantidade': 1, 'valor_total': 26.00, 'data_venda': '2024-08-12', 'status': 'Entregue', 'cliente_nome': 'Rafaella', 'produto_nome': 'Fruta desidratada (50g) - Manga com Maracujá'},
+            {'id': 30, 'cliente_id': 26, 'produto_id': 29, 'quantidade': 1, 'valor_total': 45.00, 'data_venda': '2024-08-11', 'status': 'Entregue', 'cliente_nome': 'Stephane Lorrane', 'produto_nome': 'Kit Rolinho de fruta (12un)'},
+            {'id': 31, 'cliente_id': 28, 'produto_id': 27, 'quantidade': 1, 'valor_total': 38.00, 'data_venda': '2024-08-10', 'status': 'Entregue', 'cliente_nome': 'Rodrine Jardim', 'produto_nome': 'Fruta desidratada com chocolate (120g) - Manga'},
+            {'id': 32, 'cliente_id': 28, 'produto_id': 18, 'quantidade': 1, 'valor_total': 30.00, 'data_venda': '2024-08-10', 'status': 'Entregue', 'cliente_nome': 'Rodrine Jardim', 'produto_nome': 'Fruta desidratada com chocolate (120g) - Banana Passa'}
         ]
     }
 
@@ -213,7 +252,7 @@ def get_mock_data():
             'vendas': []
         }
 
-    logger.info("Dados MIMO carregados com sucesso - 28 clientes, 42 produtos protegidos")
+    logger.info(f"Dados MIMO carregados com sucesso - 28 clientes, 42 produtos, {len(dados['vendas'])} vendas reais protegidos")
     return dados
 
 def get_db_connection():
