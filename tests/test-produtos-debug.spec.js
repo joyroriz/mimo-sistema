@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const BASE_URL = 'https://web-production-d268.up.railway.app';
+const BASE_URL = 'http://localhost:8080';
 
 test('Debug produtos - verificar botões editar', async ({ page }) => {
   await page.goto(`${BASE_URL}/produtos`);

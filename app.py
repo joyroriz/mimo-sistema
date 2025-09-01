@@ -981,6 +981,32 @@ def handle_exception(e):
     return render_template('erro_amigavel.html',
                          error="Ops! Algo deu errado. Tente novamente em alguns instantes."), 500
 
+# ==================== HEALTH CHECK ====================
+
+@app.route('/health')
+def health_check():
+    """Endpoint de verificação de saúde para deployment"""
+    try:
+        # Testar dados
+        data = get_mock_data()
+        is_valid = validar_integridade_dados(data)
+
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': datetime.now().isoformat(),
+            'data_integrity': is_valid,
+            'clientes_count': len(data['clientes']),
+            'produtos_count': len(data['produtos']),
+            'version': '1.0.0'
+        }), 200
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
 # ==================== EXECUÇÃO ===================="
 
 # APIs completas para funcionalidade total
@@ -1200,15 +1226,24 @@ application = app
 
 if __name__ == '__main__':
     import os
-    port = int(os.environ.get('PORT', 8080))
-    debug = os.environ.get('FLASK_ENV') == 'development'
+    try:
+        port = int(os.environ.get('PORT', 8080))
+        debug = os.environ.get('FLASK_ENV') == 'development'
 
-    print("🚀 Iniciando Sistema MIMO Mark1...")
-    print(f"📊 Dashboard: http://localhost:{port}")
-    print(f"👥 Clientes: http://localhost:{port}/clientes")
-    print(f"📦 Produtos: http://localhost:{port}/produtos")
-    print(f"💰 Vendas: http://localhost:{port}/vendas")
-    print(f"🚚 Entregas: http://localhost:{port}/entregas")
-    print(f"❤️ CRM: http://localhost:{port}/crm")
+        print("🚀 Iniciando Sistema MIMO Mark1...")
+        print(f"📊 Dashboard: http://localhost:{port}")
+        print(f"👥 Clientes: http://localhost:{port}/clientes")
+        print(f"📦 Produtos: http://localhost:{port}/produtos")
+        print(f"💰 Vendas: http://localhost:{port}/vendas")
+        print(f"🚚 Entregas: http://localhost:{port}/entregas")
+        print(f"❤️ CRM: http://localhost:{port}/crm")
 
-    app.run(debug=debug, host='0.0.0.0', port=port)
+        # Testar dados antes de iniciar
+        data = get_mock_data()
+        logger.info(f"Sistema iniciado com {len(data['clientes'])} clientes e {len(data['produtos'])} produtos")
+
+        app.run(debug=debug, host='0.0.0.0', port=port)
+    except Exception as e:
+        logger.error(f"Erro ao iniciar aplicação: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise
