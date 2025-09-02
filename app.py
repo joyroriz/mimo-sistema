@@ -608,8 +608,8 @@ def carregar_dados_reais():
 def index():
     """Página inicial - Dashboard"""
     try:
-        # Usar dados mock para Vercel
-        data = get_db_connection()
+        # Usar dados mock diretamente
+        data = get_mock_data()
 
         # Estatísticas básicas usando dados mock
         total_clientes = len(data['clientes'])
@@ -617,7 +617,7 @@ def index():
         total_vendas = len(data['vendas'])
 
         # Vendas do mês (soma dos valores)
-        vendas_mes = sum([venda['valor_total'] for venda in data['vendas']])
+        vendas_mes = sum([venda.get('valor_total', 0) for venda in data['vendas']])
 
         stats = {
             'total_clientes': total_clientes,
@@ -626,6 +626,7 @@ def index():
             'vendas_mes': float(vendas_mes) if vendas_mes else 0.0
         }
 
+        logger.info(f"Dashboard carregado com sucesso: {stats}")
         return render_template('dashboard-refined.html', stats=stats)
     except Exception as e:
         error_response = handle_error_gracefully('carregamento', f"Dashboard: {str(e)}")
