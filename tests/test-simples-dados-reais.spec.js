@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'https://web-production-d268.up.railway.app';
 
 test.describe('MIMO System - Teste Simples Dados Reais', () => {
   

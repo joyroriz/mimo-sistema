@@ -71,7 +71,7 @@
                     <i class="bi bi-people"></i>
                 </div>
                 <h3 id="totalClientes" style="font-size: 2rem; margin-bottom: 0.25rem;">
-                    <span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>
+                    {{ dados.clientes|length }}
                 </h3>
                 <p class="mimo-text-muted mimo-mb-lg">
                     <span id="labelClientes">Total de Clientes</span>
@@ -88,7 +88,7 @@
                     <i class="bi bi-box"></i>
                 </div>
                 <h3 id="totalProdutos" style="font-size: 2rem; margin-bottom: 0.25rem;">
-                    <span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>
+                    {{ dados.produtos|length }}
                 </h3>
                 <p class="mimo-text-muted mimo-mb-lg">
                     <span id="labelProdutos">Total de Produtos</span>
@@ -105,7 +105,7 @@
                     <i class="bi bi-cart"></i>
                 </div>
                 <h3 id="totalVendas" style="font-size: 2rem; margin-bottom: 0.25rem;">
-                    <span class="spinner-border spinner-border-sm mimo-text-gold" role="status"></span>
+                    {{ dados.vendas|length }}
                 </h3>
                 <p class="mimo-text-muted mimo-mb-lg">
                     <span id="labelVendas">Vendas do Período</span>
